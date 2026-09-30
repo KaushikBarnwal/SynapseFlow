@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en" class="markmap-dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SynapseFlow — Interactive Mindmap Studio & Recall Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- D3 & Markmap Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="markmap-view.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17.0"></script>
+
+  <style>
+    :root, .markmap, .markmap-dark, .markmap-dark .markmap {
+      --markmap-code-bg: rgba(56, 189, 248, 0.14) !important;
+      --markmap-code-color: #38bdf8 !important;
+      --markmap-text-color: #f8fafc !important;
+      --markmap-font: 500 13px/1.45 'Plus Jakarta Sans', sans-serif !important;
+      --markmap-circle-open-bg: #1e293b !important;
+      --markmap-table-border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      --bg-dark: #0a0d14;
+      --bg-panel: rgba(15, 23, 42, 0.82);
+      --bg-panel-hover: rgba(30, 41, 59, 0.95);
+      --border-panel: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-green: #22c55e;
+      --accent-yellow: #facc15;
+      --accent-red: #ef4444;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Glass Studio Appbar */
+    header {
+      padding: 10px 24px;
+      height: 60px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      border-bottom: 1px solid var(--border-panel);
+      background: rgba(10, 13, 20, 0.92);
+      backdrop-filter: blur(16px);
+      z-index: 50;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Sidebar toggle button in navbar */
+    .sidebar-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-panel);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sidebar-toggle-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.04);
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .brand-text p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Studio Main Layout (Sidebar + Canvas) */
+    .studio-layout {
+      display: flex;
+      flex: 1;
+      width: 100vw;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Subjects Navigation Sidebar */
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: rgba(10, 13, 20, 0.94);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--border-panel);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 45;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    .sidebar.collapsed {
+      width: 68px;
+    }
+
+    .sidebar-header {
+      padding: 16px 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar.collapsed .sidebar-header {
+      display: none;
+    }
+
+    .sidebar-heading {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .sidebar-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .sidebar-subjects {
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .sidebar.collapsed .sidebar-subjects {
+      padding: 12px 6px;
+    }
+
+    .sub-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      width: 100%;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .sub-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    .sidebar.collapsed .sub-btn:hover {
+      transform: none;
+    }
+
+    .sub-btn.active {
+      color: #fff;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14) 0%, rgba(168, 85, 247, 0.08) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .sub-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18%;
+      bottom: 18%;
+      width: 3.5px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
+    }
+
+    .sub-icon {
+      font-size: 1.25rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.04);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .sub-btn:hover .sub-icon {
+      transform: scale(1.1);
+    }
+
+    .sidebar.collapsed .sub-btn {
+      justify-content: center;
+      padding: 10px 0;
+    }
+
+    .sub-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sidebar.collapsed .sub-info {
+      display: none;
+    }
+
+    .sub-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+    }
+
+    .sub-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .sub-shortcut {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sidebar.collapsed .sub-shortcut {
+      display: none;
+    }
+
+    .sidebar-footer {
+      padding: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .sidebar.collapsed .sidebar-footer {
+      display: none;
+    }
+
+    .sidebar-tips {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 8px;
+      margin-top: 6px;
+    }
+
+    .tips-grid span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tips-grid kbd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      padding: 1px 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 3px;
+      color: #cbd5e1;
+    }
+
+    /* Centered Search Bar in Navbar */
+    .nav-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .search-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-panel);
+      color: var(--text-main);
+      padding: 8px 38px 8px 38px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .search-input:focus {
+      background: rgba(15, 23, 42, 0.95);
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+      max-width: 500px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .search-kbd-hint {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    /* Studio Controls & Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .depth-group {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-panel);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .depth-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .depth-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .depth-btn.active {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-panel);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .tool-btn.active-recall-on {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: var(--accent-green);
+      color: #86efac;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+    }
+
+    /* Mindmap Canvas Area */
+    #canvas-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    #canvas-container:active {
+      cursor: grabbing;
+    }
+
+    #mindmap-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* MARKMAP CUSTOM MODERN THEME (FIX FOR CODE BADGES, CLIPPING & UNDERLINES) */
+    .markmap {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    /* Prevent SVG foreignObject clipping */
+    foreignObject.markmap-foreign,
+    foreignObject {
+      overflow: visible !important;
+    }
+
+    /* Unified typography for both testing element and real SVG container */
+    .markmap-foreign,
+    .markmap-foreign-testing-max {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+      color: #f8fafc !important;
+    }
+
+    /* Card styling applied directly to the inner div measured by Markmap */
+    .markmap-foreign > div,
+    .markmap-foreign-testing-max > div {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+      color: #f8fafc !important;
+      box-sizing: border-box !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      background: rgba(15, 23, 42, 0.92) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+      backdrop-filter: blur(8px) !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      display: inline-block !important;
+      width: max-content !important;
+      max-width: 480px !important;
+      word-break: break-word !important;
+    }
+
+    /* Natural positioning: elements stay strictly within allocated bounding boxes to prevent overlapping */
+    .markmap-foreign > div {
+      transform: none !important;
+    }
+
+    .markmap-foreign > div:hover {
+      background: rgba(30, 41, 59, 0.98) !important;
+      border-color: var(--accent-blue) !important;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.35) !important;
+      transform: translateY(-2px) !important;
+    }
+
+    /* Reset default browser margins on headings and paragraphs so they don't blow out card height */
+    .markmap-foreign h1, .markmap-foreign h2, .markmap-foreign h3,
+    .markmap-foreign h4, .markmap-foreign h5, .markmap-foreign h6,
+    .markmap-foreign p, .markmap-foreign div, .markmap-foreign ul, .markmap-foreign ol, .markmap-foreign li,
+    .markmap-foreign-testing-max h1, .markmap-foreign-testing-max h2, .markmap-foreign-testing-max h3,
+    .markmap-foreign-testing-max h4, .markmap-foreign-testing-max h5, .markmap-foreign-testing-max h6,
+    .markmap-foreign-testing-max p, .markmap-foreign-testing-max div, .markmap-foreign-testing-max ul, .markmap-foreign-testing-max ol, .markmap-foreign-testing-max li {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Elegant label spacing for Syntax Example and titles */
+    .markmap-foreign p, .markmap-foreign strong,
+    .markmap-foreign-testing-max p, .markmap-foreign-testing-max strong {
+      padding-left: 3px !important;
+      margin-bottom: 2px !important;
+    }
+
+    .markmap-foreign h1, .markmap-foreign h2, .markmap-foreign h3,
+    .markmap-foreign h4, .markmap-foreign h5, .markmap-foreign h6,
+    .markmap-foreign-testing-max h1, .markmap-foreign-testing-max h2, .markmap-foreign-testing-max h3,
+    .markmap-foreign-testing-max h4, .markmap-foreign-testing-max h5, .markmap-foreign-testing-max h6 {
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+      display: inline !important;
+      line-height: inherit !important;
+      padding-left: 3px !important;
+    }
+
+    .markmap-foreign strong,
+    .markmap-foreign-testing-max strong {
+      color: #fff !important;
+      font-weight: 700 !important;
+    }
+
+    /* Multi-line Preformatted Code Blocks (Preserves Vertical Indentation & Linebreaks) */
+    .markmap-foreign pre,
+    .markmap-foreign-testing-max pre {
+      display: block !important;
+      margin: 8px 0 3px !important;
+      padding: 10px 14px !important;
+      background: rgba(3, 7, 18, 0.94) !important;
+      border: 1px solid rgba(56, 189, 248, 0.28) !important;
+      border-radius: 6px !important;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7) !important;
+      text-align: left !important;
+      overflow-x: auto !important;
+      white-space: pre !important;
+    }
+
+    .markmap-foreign pre code,
+    .markmap-foreign-testing-max pre code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+      font-size: 11px !important;
+      line-height: 1.55 !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      color: #e2e8f0 !important; /* Neutral crisp base text color */
+      padding: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      display: block !important;
+      white-space: pre !important;
+      text-align: left !important;
+      box-decoration-break: slice !important;
+      -webkit-box-decoration-break: slice !important;
+    }
+
+    /* Vibrant Multi-Language Syntax Highlighter (Python, Java, SQL) */
+    /* 1. Keywords (def, class, return, if, is, SELECT, FROM, WHERE, void, public, static, etc.) */
+    .markmap-foreign pre code .hljs-keyword,
+    .markmap-foreign pre code .token.keyword,
+    .markmap-foreign-testing-max pre code .hljs-keyword,
+    .markmap-foreign-testing-max pre code .token.keyword {
+      color: #c084fc !important; /* Radiant Neon Purple */
+      font-weight: 600 !important;
+    }
+
+    /* 2. Functions & Methods (__init__, __new__, give_raise, println, get_annual_sal, log_work) */
+    .markmap-foreign pre code .hljs-title.function_,
+    .markmap-foreign pre code .hljs-function,
+    .markmap-foreign pre code .token.function,
+    .markmap-foreign-testing-max pre code .hljs-title.function_,
+    .markmap-foreign-testing-max pre code .hljs-function,
+    .markmap-foreign-testing-max pre code .token.function {
+      color: #38bdf8 !important; /* Electric Cyan */
+      font-weight: 600 !important;
+    }
+
+    /* 3. Class Names & Types (Singleton, Animal, Employee, String, DECIMAL, INT) */
+    .markmap-foreign pre code .hljs-title.class_,
+    .markmap-foreign pre code .hljs-title,
+    .markmap-foreign pre code .hljs-type,
+    .markmap-foreign pre code .token.class-name,
+    .markmap-foreign-testing-max pre code .hljs-title.class_,
+    .markmap-foreign-testing-max pre code .hljs-title,
+    .markmap-foreign-testing-max pre code .hljs-type,
+    .markmap-foreign-testing-max pre code .token.class-name {
+      color: #facc15 !important; /* Warm Golden Amber */
+      font-weight: 600 !important;
+    }
+
+    /* 4. Strings ("Google", 'inactive', "Woof", 'data.txt') */
+    .markmap-foreign pre code .hljs-string,
+    .markmap-foreign pre code .token.string,
+    .markmap-foreign-testing-max pre code .hljs-string,
+    .markmap-foreign-testing-max pre code .token.string {
+      color: #4ade80 !important; /* Mint / Emerald Green */
+    }
+
+    /* 5. Numbers (500, 12, 10, 0, 1, 1_000_000) */
+    .markmap-foreign pre code .hljs-number,
+    .markmap-foreign pre code .token.number,
+    .markmap-foreign-testing-max pre code .hljs-number,
+    .markmap-foreign-testing-max pre code .token.number {
+      color: #fb923c !important; /* Bright Tangerine Orange */
+      font-weight: 600 !important;
+    }
+
+    /* 6. Comments (# ..., // ..., -- ...) */
+    .markmap-foreign pre code .hljs-comment,
+    .markmap-foreign pre code .token.comment,
+    .markmap-foreign-testing-max pre code .hljs-comment,
+    .markmap-foreign-testing-max pre code .token.comment {
+      color: #64748b !important; /* Subtle Muted Slate */
+      font-style: italic !important;
+    }
+
+    /* 7. Builtins & Booleans & Literals (None, null, true, false, self, cls, super) */
+    .markmap-foreign pre code .hljs-literal,
+    .markmap-foreign pre code .hljs-built_in,
+    .markmap-foreign pre code .token.boolean,
+    .markmap-foreign pre code .token.builtin,
+    .markmap-foreign pre code .token.constant,
+    .markmap-foreign-testing-max pre code .hljs-literal,
+    .markmap-foreign-testing-max pre code .hljs-built_in,
+    .markmap-foreign-testing-max pre code .token.boolean,
+    .markmap-foreign-testing-max pre code .token.builtin,
+    .markmap-foreign-testing-max pre code .token.constant {
+      color: #f43f5e !important; /* Rose / Coral */
+      font-weight: 600 !important;
+    }
+
+    /* 8. Operators (=, *, +, -, IN, OR, AND, etc.) */
+    .markmap-foreign pre code .hljs-operator,
+    .markmap-foreign pre code .token.operator,
+    .markmap-foreign-testing-max pre code .hljs-operator,
+    .markmap-foreign-testing-max pre code .token.operator {
+      color: #94a3b8 !important; /* Cool Silver Gray */
+    }
+
+    /* 9. Punctuation & Params ((), {}, [], :, ;, ., cls, self) */
+    .markmap-foreign pre code .hljs-punctuation,
+    .markmap-foreign pre code .token.punctuation,
+    .markmap-foreign pre code .hljs-params,
+    .markmap-foreign-testing-max pre code .hljs-punctuation,
+    .markmap-foreign-testing-max pre code .token.punctuation,
+    .markmap-foreign-testing-max pre code .hljs-params {
+      color: #e2e8f0 !important; /* Crisp neutral */
+    }
+
+    /* 10. Decorators & Annotations (@classmethod, @staticmethod, @Override, @functools.wraps) */
+    .markmap-foreign pre code .hljs-meta,
+    .markmap-foreign pre code .hljs-meta .hljs-keyword,
+    .markmap-foreign pre code .token.decorator,
+    .markmap-foreign pre code .token.annotation,
+    .markmap-foreign-testing-max pre code .hljs-meta,
+    .markmap-foreign-testing-max pre code .hljs-meta .hljs-keyword,
+    .markmap-foreign-testing-max pre code .token.decorator,
+    .markmap-foreign-testing-max pre code .token.annotation {
+      color: #a78bfa !important; /* Soft Lavender Violet */
+      font-weight: 600 !important;
+    }
+
+    /* Neon Dark Inline Code Badge (Only for inline code outside <pre>) */
+    .markmap-foreign :not(pre) > code,
+    .markmap-foreign-testing-max :not(pre) > code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 0.85em !important;
+      background: rgba(56, 189, 248, 0.14) !important;
+      background-color: rgba(56, 189, 248, 0.14) !important;
+      color: #38bdf8 !important;
+      padding: 1.5px 6px !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(56, 189, 248, 0.3) !important;
+      display: inline !important;
+      vertical-align: baseline !important;
+      line-height: inherit !important;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+      white-space: nowrap !important;
+    }
+
+    /* Hide the conflicting default underline line that slices across card bottoms */
+    .markmap-node > line {
+      display: none !important;
+    }
+
+    /* Markmap Curved Organic Links */
+    path.markmap-link {
+      fill: none;
+      stroke-width: 2.2px;
+      opacity: 0.85;
+      transition: stroke-width 0.2s, opacity 0.2s;
+    }
+
+    path.markmap-link:hover {
+      stroke-width: 3.8px;
+      opacity: 1;
+    }
+
+    /* Node Circles / Fold Handles */
+    circle.markmap-node-circle {
+      stroke-width: 2.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    circle.markmap-node-circle:hover {
+      r: 8px;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    /* Search Highlight Pulse */
+    .search-highlight .markmap-foreign > div,
+    .search-highlight .markmap-foreign {
+      border-color: #facc15 !important;
+      background: rgba(234, 179, 8, 0.25) !important;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.6) !important;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    /* Floating Status & Recall Info HUD */
+    .hud-bar {
+      position: absolute;
+      bottom: 20px;
+      left: 24px;
+      background: rgba(10, 13, 20, 0.85);
+      border: 1px solid var(--border-panel);
+      backdrop-filter: blur(12px);
+      padding: 8px 16px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      z-index: 40;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    /* Active recall indicator */
+    .recall-banner {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #86efac;
+      display: none;
+      backdrop-filter: blur(10px);
+      z-index: 40;
+      box-shadow: 0 4px 18px rgba(34, 197, 94, 0.2);
+    }
+
+    .recall-banner.visible {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -8px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body class="markmap-dark">
+
+  <header>
+    <div class="brand-title-wrap">
+      <button class="sidebar-toggle-btn" id="btn-toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">☰</button>
+      <div class="brand-logo">⚡</div>
+      <div class="brand-text">
+        <h1>SynapseFlow</h1>
+        <p>Interactive Knowledge & Memory Visualizer</p>
+      </div>
+    </div>
+
+    <!-- Center Search Bar (In between navbar) -->
+    <div class="nav-center">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Search topics, traps, keywords (/)..." oninput="handleSearch()" />
+        <kbd class="search-kbd-hint">/</kbd>
+      </div>
+    </div>
+
+    <!-- Right Toolbar Controls -->
+    <div class="toolbar">
+      <!-- Depth Level Controller -->
+      <div class="depth-group">
+        <button class="depth-btn" title="Show only main domains" onclick="setExpandDepth(1)">L1</button>
+        <button class="depth-btn active" title="Show categories & topics (Roadmap view)" onclick="setExpandDepth(2)">L2</button>
+        <button class="depth-btn" title="Show sub-branches" onclick="setExpandDepth(3)">L3</button>
+        <button class="depth-btn" title="Expand all nodes" onclick="setExpandDepth(99)">All</button>
+      </div>
+
+      <!-- Active Recall Mode Toggle -->
+      <button class="tool-btn" id="btn-active-recall" onclick="toggleActiveRecall()" title="Collapses leaf answers so you can test yourself before expanding! (Press R)">
+        ⚡ Active Recall
+      </button>
+
+      <!-- Fit View -->
+      <button class="tool-btn" onclick="resetFit()" title="Center and fit mindmap to screen (Press F)">
+        🎯 Fit View
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button class="tool-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen Zen Mode">
+        ⛶
+      </button>
+    </div>
+  </header>
+
+  <!-- Studio Main Workspace -->
+  <div class="studio-layout">
+    <!-- Left Subjects Navigation Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-heading">Curriculum</span>
+        <span class="sidebar-badge">5 Subjects</span>
+      </div>
+
+      <div class="sidebar-subjects">
+        <button class="sub-btn active" data-sub="java" onclick="switchSubject('java')" title="Java: OOP, JVM, Concurrency (Press 1)">
+          <span class="sub-icon">☕</span>
+          <div class="sub-info">
+            <span class="sub-name">Java</span>
+            <span class="sub-desc">OOP, JVM & Concurrency</span>
+          </div>
+          <kbd class="sub-shortcut">1</kbd>
+        </button>
+
+        <button class="sub-btn" data-sub="python" onclick="switchSubject('python')" title="Python: Internals, GIL, Traps (Press 2)">
+          <span class="sub-icon">🐍</span>
+          <div class="sub-info">
+            <span class="sub-name">Python</span>
+            <span class="sub-desc">Internals, GIL & Traps</span>
+          </div>
+          <kbd class="sub-shortcut">2</kbd>
+        </button>
+
+        <button class="sub-btn" data-sub="os" onclick="switchSubject('os')" title="Operating Systems: Processes, TLB, Deadlocks (Press 3)">
+          <span class="sub-icon">🖥️</span>
+          <div class="sub-info">
+            <span class="sub-name">Operating Systems</span>
+            <span class="sub-desc">Processes, Memory & TLB</span>
+          </div>
+          <kbd class="sub-shortcut">3</kbd>
+        </button>
+
+        <button class="sub-btn" data-sub="networking" onclick="switchSubject('networking')" title="Networking: OSI, TCP/UDP, Protocols (Press 4)">
+          <span class="sub-icon">🌐</span>
+          <div class="sub-info">
+            <span class="sub-name">Networking</span>
+            <span class="sub-desc">OSI, TCP/UDP & Protocols</span>
+          </div>
+          <kbd class="sub-shortcut">4</kbd>
+        </button>
+
+        <button class="sub-btn" data-sub="sql" onclick="switchSubject('sql')" title="SQL & Databases: B+ Trees, Joins, ACID (Press 5)">
+          <span class="sub-icon">🗄️</span>
+          <div class="sub-info">
+            <span class="sub-name">SQL & Databases</span>
+            <span class="sub-desc">B+ Trees, Joins & ACID</span>
+          </div>
+          <kbd class="sub-shortcut">5</kbd>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-tips">
+          <div>⌨️ <strong>Shortcuts</strong></div>
+          <div class="tips-grid">
+            <span><kbd>1-5</kbd> Topic</span>
+            <span><kbd>F</kbd> Fit</span>
+            <span><kbd>R</kbd> Recall</span>
+            <span><kbd>/</kbd> Search</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Interactive Mindmap Canvas -->
+    <main id="canvas-container">
+      <!-- Active Recall Banner -->
+      <div class="recall-banner" id="recall-banner">
+        <span>🧠 Active Recall Mode ON:</span> Test yourself on each topic, then click circles to reveal answers!
+      </div>
+
+      <svg id="mindmap-svg"></svg>
+
+      <!-- HUD Status Bar -->
+      <div class="hud-bar">
+        <div class="hud-item">
+          <div class="hud-dot"></div>
+          <span id="hud-subject-label">Java Learning Roadmap</span>
+        </div>
+        <div class="hud-item">
+          <span>💡 Pan: <strong>Click & Drag</strong></span>
+        </div>
+        <div class="hud-item">
+          <span>🔍 Zoom: <strong>Scroll Wheel</strong></span>
+        </div>
+        <div class="hud-item">
+          <span>🌳 Fold/Unfold: <strong>Click Dots</strong></span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- EMBEDDED MARKDOWN ASSETS (100% Offline Safe, Zero CORS Issues) -->
+  <script type="text/markdown" id="md-data-java">
+---
+markmap:
+  colorFreezeLevel: 2
+  initialExpandLevel: 2
+  maxWidth: 480
+---
+
+# ☕ Java Learning Roadmap & Interview Prep
+
+## 1. Core Fundamentals
+### Syntax & Variables
+- **Primitive Data Types**: `byte` (1B), `short` (2B), `int` (4B), `long` (8B), `float` (4B), `double` (8B), `char` (2B), `boolean`
+- **Wrapper Classes**: `Integer`, `Double`, `Boolean` (Objects on Heap)
+- **`final` Keyword**:
+  - Variable: Value cannot be reassigned
+  - Method: Cannot be overridden in subclass
+  - Class: Cannot be inherited (e.g., `String`, `Integer`)
+- **`static` Keyword**:
+  - Bound to Class, not object instance; shared memory in Metaspace
+### Reference vs Value Equality (`==` vs `.equals()`)
+- **Syntax Example**:
+  ```java
+  String s1 = "java";
+  String s2 = new String("java");
+
+  // Compares Heap memory address references
+  boolean refEqual = (s1 == s2); // false
+
+  // Compares logical character values
+  boolean valEqual = s1.equals(s2); // true
+
+  // Null-safe content comparison
+  boolean safeEqual = Objects.equals(s1, s2); // true
+  ```
+- *Key Difference*: `==` checks whether both references point to the exact same memory address. `.equals()` evaluates logical contents.
+### Control Flow & Exception Handling
+- **Control Flow**: `if-else`, `switch` (pattern matching in Java 21), `for`, enhanced `for-each`, `while`
+- **Try-Catch-Finally**:
+  - Catch order: Subclass exceptions must precede superclasses
+  - `finally`: Executes even if `return` is called (except `System.exit(0)`)
+- **Try-with-Resources (Java 7+)**:
+  ```java
+  // Automatically calls close() on AutoCloseable
+  try (BufferedReader br = new BufferedReader(
+         new FileReader("data.txt"))) {
+    String line = br.readLine();
+    return line;
+  } catch (IOException e) {
+    e.printStackTrace();
+  }
+  ```
+### Strings & Immutability
+- **String Immutability**: Backed by `byte[]` array; thread-safe, secure, caches hashcode
+- **String Constant Pool**: Located in Heap; reuses literals (`"abc"`)
+- **`StringBuilder` vs `StringBuffer`**:
+  - `StringBuilder`: Mutable, fast, not thread-safe (single thread)
+  - `StringBuffer`: Mutable, thread-safe (all synchronized methods, slower)
+
+## 2. Object-Oriented Programming (OOP) Deep Dive
+### Encapsulation (Protecting Invariants)
+- **Core Purpose**: Protecting **business invariants** and hiding internal implementation details
+- **Why Public Fields are Dangerous**: If `account.balance` is public, external code can execute `account.balance = -999999;` bypassing all logic
+- **Encapsulated Solution**: Private fields + controlled behavioral methods (`deposit(amount)` validates positive values)
+- **Loose Coupling**: You can change internal representation (e.g. `double` to `BigDecimal`) without breaking any caller code
+- **Access Modifiers**: `private` (class only), `package-private` (no modifier, package only), `protected` (package + subclasses), `public` (everywhere)
+### Inheritance & Constructor Chaining
+- **The 'Is-A' Relationship**: Use inheritance only when true taxonomy exists (`Dog IS-AN Animal`, `ElectricCar IS-A Car`)
+- **Constructor Chaining (`super()`)**:
+  - `super()` MUST be the first line in a subclass constructor
+  - Why? Parent state in the Heap must be initialized before the child's specialized fields can be constructed
+- **The Diamond Problem**:
+  - If Class A has `foo()`, and Classes B and C both inherit and override `foo()`, which `foo()` does Class D inherit if `D extends B, C`?
+  - Ambiguity! Java prevents this by allowing single class inheritance only
+- **Favor Composition Over Inheritance ('Has-A')**:
+  - Do NOT inherit just to borrow code; inherit only for polymorphic behavior
+  - E.g. A `Car HAS-AN Engine` (composition), rather than `Car EXTENDS Engine`
+### Polymorphism (Compile-Time vs Runtime)
+- **Compile-Time Polymorphism (Method Overloading)**:
+  ```java
+  class Calculator {
+    // Same name, distinct parameter signatures
+    int add(int a, int b) {
+      return a + b;
+    }
+
+    double add(double a, double b) {
+      return a + b;
+    }
+  }
+  ```
+  - *Key Difference*: Resolved statically at compile-time based on variable reference types.
+- **Runtime Polymorphism (Method Overriding)**:
+  ```java
+  class Animal {
+    void makeSound() {
+      System.out.println("Generic sound");
+    }
+  }
+
+  class Dog extends Animal {
+    @Override
+    void makeSound() {
+      System.out.println("Woof");
+    }
+  }
+
+  Animal pet = new Dog();
+  pet.makeSound(); // Prints "Woof" via vtable dynamic dispatch
+  ```
+  - *Key Difference*: Resolved dynamically at runtime by JVM consulting the object's Virtual Method Table (`vtable`).
+### Abstraction (Abstract Class vs Interface)
+- **Syntax Example**:
+  ```java
+  // Abstract Class = IDENTITY ('What an object IS')
+  abstract class Vehicle {
+    protected int speed;
+
+    Vehicle(int speed) {
+      this.speed = speed;
+    }
+
+    abstract void drive();
+  }
+
+  // Interface = CAPABILITY ('What an object CAN DO')
+  interface Autonomous {
+    int SENSOR_COUNT = 8;
+
+    void navigate();
+
+    default void selfPark() {
+      System.out.println("Auto parking");
+    }
+  }
+  ```
+- *Key Differences*:
+  - A class can extend only **one** Abstract Class, but implement **multiple** Interfaces.
+  - Abstract classes have instance fields and constructors; interfaces contain behavior contracts and `default`/`private` methods.
+
+## 3. JVM Architecture & Memory Model
+### JVM Runtime Memory Areas
+- **Heap Memory (Shared)**:
+  - Stores all object instances and arrays
+  - Subdivided into Young Gen (Eden, S0, S1) and Old / Tenured Gen
+- **Metaspace (Shared, Java 8+)**:
+  - Stores class bytecode, constant pool, static variables in **native OS memory**
+- **JVM Stack (Per-Thread)**:
+  - Stack frames per method call (Local variables, Operand stack, Frame data)
+- **PC Register**: Tracks current JVM instruction address per thread
+- **Native Method Stack**: Manages C/C++ native method execution (JNI)
+### Just-In-Time (JIT) Compiler
+- Converts hot bytecode paths directly into native machine code (C1 client / C2 server compiler)
+- Optimizations: Method inlining, loop unrolling, escape analysis, lock coarsening
+
+## 4. Garbage Collection (GC)
+### Generational Hypothesis & Phases
+- Most objects die shortly after allocation (Young Gen)
+- **Minor GC**: Collects Eden $\rightarrow$ survivors copied between `S0` and `S1`
+- **Promotion**: Objects surviving 15 rounds (`-XX:MaxTenuringThreshold`) move to Old Gen
+- **Major / Full GC**: Cleans Old Gen and Metaspace; causes longer Stop-The-World (STW) pauses
+### Modern GC Collectors
+- **Parallel GC**: High-throughput batch processing
+- **G1 GC (Garbage-First)**: Divides heap into equal-sized regions; prioritizes garbage-heavy regions to meet pause goals
+- **ZGC & Shenandoah**: Ultra-low latency (<1ms pause times); runs reference marking and compaction **concurrently**
+
+## 5. Concurrency & Multithreading
+### Thread Lifecycle States
+- `NEW` $\rightarrow$ `RUNNABLE` $\rightarrow$ `BLOCKED` $\rightarrow$ `WAITING` $\rightarrow$ `TIMED_WAITING` $\rightarrow$ `TERMINATED`
+### `synchronized` & Lock Escalation
+- Intrinsic monitor lock on object header (Mark Word)
+- **Escalation Path**: Biased Lock $\rightarrow$ Lightweight Lock (CAS spinlock) $\rightarrow$ Heavyweight Lock (OS mutex)
+### `volatile` vs Atomic
+- **`volatile`**: Flushes reads/writes to main RAM (visibility + happens-before); does **NOT** make `count++` atomic
+- **`AtomicInteger`**: Uses hardware-level CAS (Compare-And-Swap) for lock-free atomicity
+- **Double-Checked Locking Singleton**:
+  ```java
+  public class SafeSingleton {
+    private static volatile SafeSingleton instance;
+
+    private SafeSingleton() {}
+
+    public static SafeSingleton getInstance() {
+      if (instance == null) {
+        synchronized (SafeSingleton.class) {
+          if (instance == null) {
+            instance = new SafeSingleton();
+          }
+        }
+      }
+      return instance;
+    }
+  }
+  ```
+### Java 21 Virtual Threads (Project Loom)
+- Lightweight M:N user-mode threads managed by JVM
+  ```java
+  try (var executor =
+      Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> {
+      // High-throughput lightweight blocking I/O
+      fetchRemoteData();
+    });
+  }
+  ```
+- Thousands of times lighter than 1:1 OS platform threads; ideal for high-throughput blocking I/O
+
+## 6. Collections Framework (JCF)
+### Lists
+- **`ArrayList`**: Dynamic array; $\mathcal{O}(1)$ random access, $\mathcal{O}(n)$ insert/delete
+- **`LinkedList`**: Doubly linked list; $\mathcal{O}(1)$ insert/delete at ends, $\mathcal{O}(n)$ access
+### Maps & Sets
+- **`HashMap` Internals**:
+  - Array of buckets (`Node<K,V>[] table`), default capacity 16, load factor 0.75
+  - Index formula: `(n - 1) & hash(key)`
+  - **Treeification**: Converts bucket linked list to **Red-Black Tree** when length $\ge 8$ and capacity $\ge 64$
+- **`ConcurrentHashMap`**: Thread-safe with segment/bucket-level locking; no global lock
+- **`HashSet`**: Backed internally by a `HashMap` (values stored as dummy Object)
+
+## 7. ⚠️ Tricky MCQ Traps & Edge Cases
+### 🚨 String Pool Trap
+- **Trap**: `String s1 = "abc"; String s2 = new String("abc"); (s1 == s2)`
+- **Correct**: Returns `false`! `s1` points to String Pool; `s2` points to new heap instance. Always use `.equals()`.
+### 🚨 Autoboxing Null Pointer Trap
+- **Trap**: `Integer x = null; if (x == 0) ...`
+- **Correct**: Throws `NullPointerException`! Comparing with primitive invokes `x.intValue()`.
+### 🚨 `equals()` and `hashCode()` Contract
+- **Trap**: Overriding `equals()` without `hashCode()`
+- **Correct**: Breaks `HashMap`/`HashSet` lookups! If `a.equals(b)` is true, `a.hashCode() == b.hashCode()` MUST be true.
+### 🚨 Array Equality Trap
+- **Trap**: `int[] a = {1, 2}; int[] b = {1, 2}; a.equals(b)`
+- **Correct**: Returns `false`! Arrays do not override `equals()`; use `Arrays.equals(a, b)`.
+
+## 8. 🏆 Top 5 Must-Remember Rules
+- **1. HashMap Treeification**: Linked list converts to Red-Black tree at depth 8 ($\mathcal{O}(\log n)$ worst-case)
+- **2. volatile != atomic**: `volatile` guarantees visibility and instruction ordering, not atomicity
+- **3. Overriding Rule**: Cannot reduce visibility (e.g., overriding `public` method with `protected` fails compilation)
+- **4. Type Erasure**: Java generics are erased to `Object` or bounds at compile time; cannot do `new T()`
+- **5. Virtual Threads**: Use Virtual Threads (`Executors.newVirtualThreadPerTaskExecutor()`) for I/O tasks in Java 21+
+  </script>
+  <script type="text/markdown" id="md-data-python">
+---
+markmap:
+  colorFreezeLevel: 2
+  initialExpandLevel: 2
+  maxWidth: 480
+---
+
+# 🐍 Python Learning Roadmap & Interview Prep
+
+## 1. Python Architecture & Internals
+### CPython & Bytecode
+- **Compilation**: Source `.py` compiles to bytecode `.pyc` (stored in `__pycache__`)
+- **PVM (Python Virtual Machine)**: Stack-based engine that evaluates bytecode instructions sequentially
+- **Dynamic Typing**: Variable names are labels referencing objects on the heap
+### Global Interpreter Lock (GIL)
+- **What it is**: Mutex in CPython ensuring only **one thread executes Python bytecode at a time**
+- **Why it exists**: Protects CPython's reference counting memory manager from race conditions
+- **I/O vs CPU**:
+  - Speeds up I/O-bound tasks (GIL released during network/disk wait)
+  - Does **NOT** speed up CPU-bound tasks
+- **Bypassing the GIL**: Use `multiprocessing`, C/C++/Rust extensions (NumPy), or Python 3.13 free-threaded mode
+### Memory Management & Garbage Collection
+- **Reference Counting (Primary)**:
+  - Every object tracks reference count (`sys.getrefcount(obj)`)
+  - Deallocated immediately when count reaches `0`
+- **Generational Cyclic GC (Secondary)**:
+  - Detects unreachable reference cycles (e.g., `A` references `B` and `B` references `A`)
+  - 3 generations (Gen 0, 1, 2) based on survival frequency
+- **Small Integer & String Interning**:
+  - Pre-allocates numbers `-5` to `256` as singletons
+  - Automatically interns identifier-like strings for $\mathcal{O}(1)$ pointer dict lookups
+
+## 2. Data Structures & Mutability
+### Value Equality vs Memory Identity (`==` vs `is`)
+- **Syntax Example**:
+  ```python
+  a = [1, 2, 3]
+  b = [1, 2, 3]
+
+  # Value equality (calls __eq__)
+  val_eq = (a == b)  # True
+
+  # Memory identity (id(a) == id(b))
+  id_eq = (a is b)   # False
+  ```
+- *Key Difference*: `==` checks if two objects contain equivalent data. `is` checks if both variables point to the exact same physical heap memory address. Always use `is` for singletons like `None`.
+### Mutable vs Immutable Types
+- **Immutable**: `int`, `float`, `str`, `tuple`, `frozenset`, `bytes` (value cannot change in-place)
+- **Mutable**: `list`, `dict`, `set`, `bytearray` (modified in-place)
+### Copy Semantics (`copy` vs `deepcopy`)
+- **Syntax Example**:
+  ```python
+  import copy
+
+  orig = [[1, 2], [3, 4]]
+
+  # Outer list duplicated; nested [1, 2] references shared
+  shallow = copy.copy(orig)
+
+  # Fully recursive independent clone of all levels
+  deep = copy.deepcopy(orig)
+  ```
+- **Assignment (`b = a`)**: Merely creates a new reference to the same heap object
+### Dictionaries Under the Hood
+- Implemented as a **sparse hash table** with open addressing and pseudo-random probing
+- Average lookup/insert: $\mathcal{O}(1)$
+- **Key Requirement**: Must be **hashable** (implements `__hash__` and `__eq__`, typically immutable)
+- **Insertion-Ordered**: Maintained as compact array since Python 3.7
+
+## 3. Advanced Language Features
+### List Comprehension vs Generator Expression
+- **Syntax Example**:
+  ```python
+  # List Comprehension: Eagerly builds full list in RAM
+  squares_list = [
+    x**2
+    for x in range(1_000_000)
+    if x % 2 == 0
+  ]
+
+  # Generator Expression: Lazy stream, yields 1 item on-demand
+  squares_gen = (
+    x**2
+    for x in range(1_000_000)
+    if x % 2 == 0
+  )
+  ```
+- *Key Difference*: Use list comprehension when you need random access or indexing; use generators for massive streams or pipeline processing.
+### Iterators & Generators
+- **Iterable**: Any object with `__iter__()` returning an iterator
+- **Iterator**: Object with `__iter__()` and `__next__()`; raises `StopIteration` when finished
+- **Generator Function**: Uses `yield`; lazily evaluates values on-demand
+- **Memory Advantage**: $\mathcal{O}(1)$ constant memory space (great for multi-gigabyte log streaming)
+### Decorators & Closures
+- **Closure**: Inner function retaining variables from outer enclosing scope after outer returns
+- **Decorator**: Higher-order function wrapping and extending another function
+- **Syntax Example**:
+  ```python
+  import functools
+  import time
+
+  def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+      t0 = time.time()
+      res = func(*args, **kwargs)
+      print(f"Elapsed: {time.time() - t0:.4f}s")
+      return res
+    return wrapper
+  ```
+- **`@functools.wraps`**: Preserves original function's `__name__` and `__doc__`
+### Context Managers (`with` statement)
+- Manages setup and teardown guaranteed even on exceptions
+- **Syntax Example**:
+  ```python
+  class ManagedFile:
+    def __init__(self, filename):
+      self.filename = filename
+      self.file = None
+
+    def __enter__(self):
+      self.file = open(self.filename, 'r')
+      return self.file
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+      if self.file:
+        self.file.close()
+  ```
+
+## 4. Object-Oriented Programming (OOP)
+### Instance vs Class vs Static Methods
+- **Syntax Example**:
+  ```python
+  class Employee:
+    company = "Google"
+
+    # 1. Instance Method: Receives instance 'self'
+    def log_work(self, hours):
+      self.total_hours += hours
+
+    # 2. Class Method: Receives class type 'cls'
+    @classmethod
+    def set_company(cls, name):
+      cls.company = name
+
+    # 3. Static Method: Namespace utility helper
+    @staticmethod
+    def is_valid_email(email):
+      return "@" in email
+  ```
+- *Key Differences*:
+  - Instance methods modify object state via `self`.
+  - Class methods (`@classmethod`) modify class state or provide alternative constructors via `cls`.
+  - Static methods (`@staticmethod`) take neither `self` nor `cls`; plain utility bound to class namespace.
+### `__new__` vs `__init__`
+- **Syntax Example**:
+  ```python
+  class Singleton:
+    _instance = None
+
+    # 1. __new__: Allocates and returns raw instance
+    def __new__(cls, *args, **kwargs):
+      if cls._instance is None:
+        cls._instance = super().__new__(cls)
+      return cls._instance
+
+    # 2. __init__: Sets attributes on the instance
+    def __init__(self, name):
+      self.name = name
+  ```
+- *Key Difference*: `__new__` runs first to physically construct and return the instance object. `__init__` receives that created instance and configures its attributes.
+### Multiple Inheritance & MRO
+- **MRO (Method Resolution Order)**: Order base classes are searched
+- Uses **C3 Linearization Algorithm** (preserves monotonicity and local precedence)
+- Inspect via `Class.mro()` or `Class.__mro__`
+
+## 5. Concurrency Models
+### `threading` vs `multiprocessing` vs `asyncio`
+- **`threading`**: Preemptive OS threads; shared heap; restricted by GIL (Best for I/O tasks)
+- **`multiprocessing`**: Preemptive OS processes; separate memory & GILs (Best for CPU tasks)
+- **`asyncio`**: Single-threaded cooperative multitasking via event loop (Massive scale for I/O sockets)
+
+## 6. ⚠️ Tricky MCQ Traps & Edge Cases
+### 🚨 Mutable Default Argument Trap
+- **Trap**: `def add(val, lst=[]): lst.append(val); return lst`
+- **Why**: Default expression evaluated once at function definition; all calls without argument share same list!
+- **Fix**: Use `lst=None` and instantiate inside: `if lst is None: lst = []`
+### 🚨 List Multiplication Pointer Trap
+- **Trap**: `a = [[0] * 3] * 2; a[0][0] = 99` $\rightarrow$ both rows change!
+- **Why**: Outer multiplication copies references to the exact same inner list.
+- **Fix**: Use list comprehension: `a = [[0] * 3 for _ in range(2)]`
+### 🚨 LEGB Variable Scope Trap
+- **Trap**: Modifying global variable inside function without `global` keyword raises `UnboundLocalError`
+- **Order**: Local $\rightarrow$ Enclosing $\rightarrow$ Global $\rightarrow$ Built-in
+### 🚨 Truthy vs Falsey Traps
+- **Empty objects evaluate to False**: `0`, `0.0`, `""`, `[]`, `()`, `{}`, `set()`, `None`
+- Never check `if x == None:`; always use `if x is None:`
+
+## 7. 🏆 Top 5 Must-Remember Rules
+- **1. Immutable Default Arguments**: Never use mutable objects (`[]`, `{}`) as default parameters
+- **2. Generators for Streaming**: Use generator expressions `(x for x in ...)` over lists to avoid OOM memory crashes
+- **3. GIL Workaround**: Use `multiprocessing` for CPU-bound computations; `asyncio`/`threading` for I/O sockets
+- **4. is vs ==**: Use `is` only for identity/singletons (`None`, `True`, `False`); use `==` for data values
+- **5. MRO Order**: Python searches methods left-to-right obeying C3 linearization without revisiting visited classes
+  </script>
+  <script type="text/markdown" id="md-data-os">
+---
+markmap:
+  colorFreezeLevel: 2
+  initialExpandLevel: 2
+  maxWidth: 340
+---
+
+# 🖥️ Operating Systems Learning Roadmap & Interview Prep
+
+## 1. Process & Thread Management
+### Process vs Thread
+- **Process**:
+  - Independent program in execution with private virtual address space (Text, Data, Heap, Stack)
+  - Heavyweight context switch (switches page tables, flushes TLB cache)
+  - Failure isolation: Crash in one process doesn't bring down others
+- **Thread**:
+  - Smallest schedulable unit of execution inside a process
+  - Shares parent process's heap, code, open file descriptors, and data segment
+  - Private Program Counter (PC), CPU registers, and Stack
+  - Lightweight creation and fast context switching
+### Process States & Life Cycle
+- **New**: Program being created and loaded into memory
+- **Ready**: In RAM queue, waiting for CPU assignment by scheduler
+- **Running**: Instructions executing on CPU
+- **Waiting / Blocked**: Paused waiting for I/O completion or lock acquisition
+- **Terminated**: Finished execution; resources reclaimed
+- **Zombie Process**: Terminated process still in process table because parent hasn't called `wait()`
+- **Orphan Process**: Parent process died; reparented to `init` / `systemd` (PID 1) to be reaped
+### Inter-Process Communication (IPC)
+- **Shared Memory**: Fastest IPC method; direct RAM access without kernel copying (requires mutex/semaphores)
+- **Message Passing / Queues**: Safe across systems; OS-managed buffer
+- **Pipes**: Unidirectional byte streams (anonymous pipes for parent-child; named pipes/FIFOs for unrelated processes)
+- **Sockets**: Local (Unix domain sockets) and networked IPC
+
+## 2. CPU Scheduling Algorithms
+### Preemptive vs Non-Preemptive
+- **Preemptive**: OS can forcibly interrupt running process (Round Robin, SRTF)
+- **Non-Preemptive**: Process holds CPU until it voluntarily yields or terminates (FCFS, basic SJF)
+### Classic Algorithms
+- **First-Come, First-Served (FCFS)**: Simple queue; suffers from **Convoy Effect** (short jobs wait behind CPU hogs)
+- **Shortest Job First (SJF)**: Optimal average wait time, but impossible to know exact burst time; risks starvation
+- **Round Robin (RR)**: Time-sharing with fixed **Time Quantum**
+  - Quantum too large $\rightarrow$ degrades to FCFS
+  - Quantum too small $\rightarrow$ excessive context-switching overhead
+- **Priority Scheduling**: Processes executed by priority; solve starvation via **Aging** (gradually boosting waiting process priority)
+
+## 3. Memory Management & Virtual Memory
+### Virtual Memory & Paging
+- **Virtual Address Space**: Illusion provided to each process of contiguous private memory
+- **Paging**: Physical RAM divided into fixed-size **Frames**; virtual memory divided into equal **Pages** (typically 4KB)
+- **Page Table**: Maps Virtual Page Numbers (VPN) to Physical Frame Numbers (PFN)
+- **Fragmentation**: Paging eliminates external fragmentation; suffers only from **Internal Fragmentation** (unused space in final page)
+### Translation Lookaside Buffer (TLB)
+- Hardware associative cache inside the CPU (MMU) storing recent page translations
+- **TLB Hit**: Address translated in 1 CPU cycle
+- **TLB Miss**: CPU must walk multi-level page tables in RAM (slower)
+### Page Faults & Thrashing
+- **Page Fault**: Trap interrupt when process accesses valid virtual page not currently in physical RAM
+- **Thrashing**: Memory oversubscribed; system spends 99% of time swapping pages between RAM and disk instead of executing instructions
+  - Fix: Decrease multiprogramming degree, use Working Set Model, add RAM
+### Page Replacement Algorithms
+- **FIFO**: First-in, first-out; suffers from **Belady's Anomaly** (adding frames can increase page faults)
+- **LRU (Least Recently Used)**: Replaces page unused for longest time; optimal practical approach (Clock algorithm)
+- **Optimal (OPT / MIN)**: Evicts page that won't be used for longest future duration (theoretical benchmark)
+
+## 4. Concurrency, Synchronization & Deadlocks
+### Critical Section & Race Conditions
+- **Race Condition**: Multiple threads access shared data concurrently; outcome depends on execution timing
+- **Critical Section**: Code block accessing shared resources
+- **Requirements for Solution**: Mutual Exclusion, Progress, Bounded Waiting
+### Mutex vs Semaphore vs Spinlock
+- **Mutex**: Locking mechanism with ownership (only locking thread can release it)
+- **Binary Semaphore**: Signaling flag (values 0 or 1); thread A can wait, thread B can signal
+- **Counting Semaphore**: Manages a finite pool of $N$ identical resources
+- **Spinlock**: Busy-waits in a CPU loop; efficient only in multi-core kernels for microscopic hold times
+### Deadlocks & Coffman Conditions
+- **4 Necessary Conditions**:
+  - 1. **Mutual Exclusion**: Non-shareable resource
+  - 2. **Hold and Wait**: Process holding resources requests additional ones
+  - 3. **No Preemption**: Resources cannot be forcibly revoked
+  - 4. **Circular Wait**: Cyclic dependency of waiting processes ($P_0 \rightarrow P_1 \rightarrow \dots \rightarrow P_0$)
+- **Deadlock Handling**:
+  - **Prevention**: Invalidate 1 of 4 conditions (e.g., enforce strict global resource ordering)
+  - **Avoidance**: **Banker's Algorithm** (safely grant requests only if system stays in safe state)
+  - **Detection & Recovery**: Kill/preempt processes using Resource Allocation Graphs (cycle check)
+
+## 5. Hardware & Dual Mode Architecture
+### User Mode vs Kernel Mode
+- **User Mode (Ring 3)**: Applications run with restricted instructions; cannot directly touch hardware
+- **Kernel Mode (Ring 0)**: Unrestricted CPU hardware access and privileged instructions
+- **System Call**: Controlled gateway from user mode to kernel mode via software trap
+### Interrupts vs Traps
+- **Hardware Interrupt**: Asynchronous signal from hardware device (keyboard, network card, disk)
+- **Trap / Software Interrupt**: Synchronous event triggered by CPU instruction (divide-by-zero, page fault, syscall)
+
+## 6. ⚠️ Tricky MCQ Traps & Edge Cases
+### 🚨 Belady's Anomaly Trap
+- **Trap**: "Does adding more RAM frames always decrease page faults?"
+- **Correct**: **NO!** In FIFO page replacement, increasing frames can cause MORE page faults. LRU does not suffer from this.
+### 🚨 Zombie vs Orphan Trap
+- **Trap**: "What is a process whose parent dies before it called?"
+- **Correct**: **Orphan Process** (adopted by PID 1 `init`). A **Zombie** is a completed process whose parent hasn't reaped it via `wait()`.
+### 🚨 Spinlock on Single-Core Trap
+- **Trap**: "Can spinlocks be used on a single-core CPU?"
+- **Correct**: **NO!** The spinning thread monopolizes the only CPU core, preventing the lock holder from ever making progress.
+
+## 7. 🏆 Top 5 Must-Remember Rules
+- **1. Remember Coffman Conditions**: Break any 1 of the 4 conditions to prevent deadlocks entirely
+- **2. Explain Page Fault Steps**: Trap $\rightarrow$ Save registers $\rightarrow$ Fetch page from disk $\rightarrow$ Update page table $\rightarrow$ Restart instruction
+- **3. Mutex vs Semaphore**: Mutex = Lock with ownership; Semaphore = Signaling between threads
+- **4. Internal vs External Fragmentation**: Paging has internal fragmentation; Segmentation has external
+- **5. Context Switch Overhead**: Pure overhead; saving CPU registers, swapping page tables, and flushing TLB
+
+  </script>
+  <script type="text/markdown" id="md-data-networking">
+---
+markmap:
+  colorFreezeLevel: 2
+  initialExpandLevel: 2
+  maxWidth: 340
+---
+
+# 🌐 Computer Networking Interview Roadmap
+
+## 1. Architectural Models
+### OSI 7-Layer Model
+- **L7 Application**: End-user protocols (`HTTP`, `HTTPS`, `DNS`, `SSH`, `FTP`, `SMTP`)
+- **L6 Presentation**: Encryption (`TLS/SSL`), data compression, formatting (`ASCII`, `JSON`)
+- **L5 Session**: Manages connections, authentication tokens, `RPC`, and checkpoints
+- **L4 Transport**: End-to-end communication, port addressing (`0-65535`), `TCP`/`UDP`
+- **L3 Network**: Logical addressing (`IPv4`/`IPv6`), packet routing, `ICMP`, `ARP`
+- **L2 Data Link**: Physical frame delivery, `MAC` addresses, collision-free switching
+- **L1 Physical**: Electrical signals, radio waves, optical pulses, cables, repeaters
+### TCP/IP 4-Layer Model
+- **Application Layer**: Merges OSI L5, L6, and L7
+- **Transport Layer**: Matches OSI L4 (TCP / UDP)
+- **Internet Layer**: Matches OSI L3 (IP, ICMP, ARP)
+- **Network Access**: Merges OSI L1 and L2 (Ethernet, Wi-Fi)
+### Data Encapsulation (PDUs)
+- **Application**: Data
+- **Transport**: Segment (TCP header with source/dest ports)
+- **Network**: Packet (IP header with source/dest IP)
+- **Data Link**: Frame (Ethernet header with source/dest MAC)
+- **Physical**: Raw bits over wire
+
+## 2. Transport Layer: TCP vs UDP
+### TCP (Transmission Control Protocol)
+- **Connection-Oriented**: Requires 3-way handshake before transmitting data
+- **Reliable Delivery**: Automatic retransmission upon packet loss (`ACK` tracking)
+- **Ordered Packets**: Uses sequence numbers to reassemble segments in order
+- **Header Size**: 20–60 bytes (heavier overhead)
+- **Use Cases**: Web (`HTTP/HTTPS`), File transfers (`FTP`, `SSH`), Email (`SMTP`)
+### UDP (User Datagram Protocol)
+- **Connectionless**: "Fire and forget" datagrams without handshakes
+- **Unreliable / Best-Effort**: No `ACK`s, no retransmissions, no order guarantee
+- **Header Size**: Fixed 8 bytes (ultra-lightweight and fast)
+- **Use Cases**: Live video streaming, VoIP calls, Online multiplayer gaming, `DNS` queries
+### TCP 3-Way Handshake (Connection Setup)
+- **Step 1 (`SYN`)**: Client sends `SYN` with initial sequence number $ISN_c = X$
+- **Step 2 (`SYN-ACK`)**: Server replies with `SYN-ACK` ($ACK = X + 1, ISN_s = Y$)
+- **Step 3 (`ACK`)**: Client acknowledges ($ACK = Y + 1$); socket is now `ESTABLISHED`
+### TCP 4-Way Teardown (Connection Termination)
+- **Step 1 (`FIN`)**: Client sends `FIN` to close outbound transmission
+- **Step 2 (`ACK`)**: Server acknowledges `FIN` (server can still finish sending pending data)
+- **Step 3 (`FIN`)**: Server sends its own `FIN` when done
+- **Step 4 (`ACK`)**: Client acknowledges `FIN`
+- **`TIME_WAIT` State (2MSL)**: Client waits $2 \times \text{Maximum Segment Lifetime}$ to guarantee final ACK reached server and delayed duplicate packets expire
+### Flow Control vs Congestion Control
+- **Flow Control (End-to-End)**: Prevents sender from overwhelming receiver buffer (`rwnd` window)
+- **Congestion Control (Network-Wide)**: Prevents sender from overloading intermediate routers
+  - **Slow Start**: Exponential window increase ($1 \rightarrow 2 \rightarrow 4 \rightarrow 8$)
+  - **Congestion Avoidance**: Additive increase (+1 per RTT) upon reaching `ssthresh`
+  - **Fast Retransmit**: Retransmits packet immediately after receiving 3 duplicate ACKs
+
+## 3. Network Layer & IP Addressing
+### IPv4 vs IPv6
+- **IPv4**: 32-bit address, 4 octets (`192.168.1.1`), $\approx 4.3 \text{ billion}$ total addresses
+- **IPv6**: 128-bit address, 8 groups of 4 hex digits (`2001:0db8::1`), $3.4 \times 10^{38}$ addresses
+### Subnetting Math (CIDR)
+- **Formula for Total IPs**: $2^{(32 - \text{prefix})}$ (e.g., `/24` $\rightarrow 2^8 = 256$)
+- **Formula for Usable Hosts**: $2^{(32 - \text{prefix})} - 2$ (Subtract Network ID and Broadcast IP)
+- **Example `/28`**: $32 - 28 = 4 \rightarrow 2^4 = 16$ IPs $\rightarrow$ 14 usable hosts
+### Private IP Ranges (RFC 1918)
+- **Class A**: `10.0.0.0/8` (`10.0.0.0` – `10.255.255.255`)
+- **Class B**: `172.16.0.0/12` (`172.16.0.0` – `172.31.255.255`)
+- **Class C**: `192.168.0.0/16` (`192.168.0.0` – `192.168.255.255`)
+- **Loopback**: `127.0.0.1` (`localhost`)
+- **APIPA**: `169.254.0.0/16` (Self-assigned when DHCP fails)
+### NAT & PAT (Address Translation)
+- **NAT (Network Address Translation)**: Maps private internal IPs to public routable IP
+- **PAT (Port Address Translation)**: Maps multiple private hosts to a single public IP using distinct source port numbers
+### ARP & ICMP
+- **ARP (Address Resolution Protocol)**: Resolves IP address to physical `MAC` address on local LAN
+- **ICMP (Internet Control Message Protocol)**: Diagnostic error messaging used by `ping` and `traceroute` (TTL expiration)
+
+## 4. Application Layer & Famous Protocols Master Reference
+### Famous Core Protocols Quick Reference
+- **DNS (Domain Name System - Port 53, UDP/TCP)**:
+  - Resolves human-readable domain names into IP addresses
+  - Hierarchy: Recursive Resolver $\rightarrow$ Root (`.`) $\rightarrow$ TLD (`.com`, `.org`) $\rightarrow$ Authoritative (`google.com`)
+  - Key Records: `A` (IPv4), `AAAA` (IPv6), `CNAME` (canonical alias), `MX` (mail exchange), `TXT` (SPF/DKIM verification)
+- **DHCP (Dynamic Host Configuration - Ports 67 Server / 68 Client, UDP)**:
+  - Automatically leases IP configuration to devices joining a network
+  - The **DORA** sequence: **D**iscover (broadcast) $\rightarrow$ **O**ffer $\rightarrow$ **R**equest $\rightarrow$ **A**cknowledge
+- **ARP (Address Resolution Protocol - L2/L3 Bridge)**:
+  - Maps 32-bit IP addresses to 48-bit physical MAC addresses on the local broadcast domain
+  - Gratuitous ARP: Broadcasts to announce IP changes or detect duplicate IPs
+- **ICMP (Internet Control Message Protocol - Layer 3)**:
+  - Diagnostic error-reporting protocol (**Has NO port numbers!**)
+  - Powers `ping` (Echo Request/Reply) and `traceroute` (TTL expiration in transit)
+- **HTTP / HTTPS & TLS 1.3 (Ports 80/443, TCP)**:
+  - Stateless application protocol; HTTPS wraps HTTP inside TLS 1.3 encryption (ECDHE key exchange + AES-GCM cipher)
+- **FTP / SFTP / SSH (Ports 20, 21 / 22, TCP)**:
+  - FTP uses two channels: Port 21 (Control/commands) and Port 20 (Data transfer)
+  - SSH / SFTP: Encrypted remote terminal and file transfer on Port 22
+- **SMTP / POP3 / IMAP (Email Protocols)**:
+  - SMTP (Port 25 / 587): Sends email from client to server or between mail transfer agents
+  - POP3 (Port 110 / 995): Downloads email and removes it from server
+  - IMAP (Port 143 / 993): Synchronizes email state bi-directionally across multiple devices
+- **WebSockets (Ports 80/443, TCP)**:
+  - Full-duplex persistent bidirectional TCP connection upgraded from HTTP (Status `101 Switching Protocols`)
+### "What Happens When You Type google.com?"
+- **1. Browser Cache**: Checks browser history, OS cache, and hosts file
+- **2. DNS Query**: Recursive lookup (Root $\rightarrow$ `.com` TLD $\rightarrow$ Authoritative)
+- **3. ARP Lookup**: Resolves default gateway router's MAC address
+- **4. TCP Handshake**: 3-way handshake (`SYN` $\rightarrow$ `SYN-ACK` $\rightarrow$ `ACK`) on port 443
+- **5. TLS 1.3 Handshake**: Certificate verification, Diffie-Hellman symmetric key exchange
+- **6. HTTP Request**: Sends encrypted `GET / HTTP/2` request
+- **7. Server Response**: Server returns `200 OK` with HTML/CSS/JS payload
+- **8. Rendering**: Browser parses DOM + CSSOM $\rightarrow$ Render Tree $\rightarrow$ Layout $\rightarrow$ Paint
+### HTTP Evolution
+- **HTTP/1.1**: Persistent connections, but suffers from Head-of-Line (HoL) blocking
+- **HTTP/2**: Binary framing, **Multiplexing** over single TCP stream, HPACK header compression
+- **HTTP/3**: Built on **QUIC over UDP**; eliminates TCP-level HoL blocking and enables 0-RTT handshakes
+### Real-Time Communication
+- **WebSockets**: Full-duplex persistent bidirectional TCP connection
+- **Server-Sent Events (SSE)**: Unidirectional real-time stream from server to client over HTTP
+- **Long Polling**: Client repeatedly requests server; server holds connection open until data is ready
+
+## 5. Hardware & Switching
+### Hub vs Switch vs Router
+- **Hub (L1)**: Dumb repeater; shares 1 collision domain and 1 broadcast domain
+- **Switch (L2)**: Intelligent forwarding using MAC address **CAM table**; separate collision domain per port
+- **Router (L3)**: Forwards packets between different subnets using IP routing tables; separates broadcast domains
+### Routing Protocols
+- **Interior (Within Autonomous System)**:
+  - **OSPF (Open Shortest Path First)**: Link-state protocol using Dijkstra's shortest path algorithm
+  - **RIP (Routing Information Protocol)**: Distance-vector protocol using hop counts (max 15)
+- **Exterior (Between Autonomous Systems)**:
+  - **BGP (Border Gateway Protocol)**: Path-vector protocol powering global Internet routing
+
+## 6. ⚠️ Tricky MCQ Traps & Edge Cases
+### 🚨 Switch vs Router Layer Trap
+- **Trap**: "In which layer does a network Switch operate?"
+- **Correct**: **Layer 2 (Data Link)** using MAC addresses! (Routers operate at Layer 3 using IP)
+### 🚨 ARP vs DNS Trap
+- **Trap**: "What is ARP used for?"
+- **Correct**: **ARP maps IP $\rightarrow$ MAC**. DNS maps Domain Name $\rightarrow$ IP!
+### 🚨 TCP vs UDP Delivery Trap
+- **Trap**: "Does UDP guarantee delivery if network latency is zero?"
+- **Correct**: **NO**. UDP has zero acknowledgement or retransmission mechanisms in its protocol specification.
+### 🚨 Private IP Trap
+- **Trap**: "Which of these is a public routable IP? `10.5.1.1`, `172.20.1.1`, `192.168.1.1`, `8.8.8.8`"
+- **Correct**: **`8.8.8.8`** (Google Public DNS). The others fall inside RFC 1918 private ranges!
+
+## 7. 🏆 Top 5 Must-Remember Interview Tips
+- **1. Remember the OSI Layers**: Please Do Not Throw Sausage Pizza Away (L1 Physical to L7 Application)
+- **2. Master the TCP 3-Way Handshake**: `SYN` $\rightarrow$ `SYN-ACK` $\rightarrow$ `ACK` with sequence number math ($X+1, Y+1$)
+- **3. Subnetting Rule**: Usable hosts $= 2^{(32 - \text{prefix})} - 2$. Always remember to subtract Network ID and Broadcast
+- **4. Practice the URL Flow**: Be ready to explain the full journey from keystroke to DOM paint
+- **5. Explain TCP TIME_WAIT**: Lasts 2MSL to prevent duplicate packet corruption in future sockets and ensure server got final ACK
+
+  </script>
+  <script type="text/markdown" id="md-data-sql">
+---
+markmap:
+  colorFreezeLevel: 2
+  initialExpandLevel: 2
+  maxWidth: 480
+---
+
+# 🗄️ SQL & Databases Learning Roadmap & Interview Prep
+
+## 1. SQL Sub-Languages (DDL vs DML vs DQL vs DCL vs TCL)
+### DDL (Data Definition Language)
+- Defines and modifies database schema structure (Auto-commits immediately in most engines!)
+- Commands: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`
+- **`TRUNCATE` Syntax**:
+  ```sql
+  TRUNCATE TABLE employees;
+  ```
+  - *Key Difference*: Deallocates storage pages directly; resets auto-increment/sequences; $\mathcal{O}(1)$ speed; cannot use `WHERE`; does not fire row triggers; cannot rollback in MySQL.
+### DML (Data Manipulation Language)
+- Manages and mutates data rows within existing tables (Transactional; requires `COMMIT` to persist)
+- Commands: `INSERT`, `UPDATE`, `DELETE`, `MERGE`
+- **`DELETE` Syntax**:
+  ```sql
+  DELETE FROM employees
+  WHERE status = 'inactive';
+  ```
+  - *Key Difference*: Row-by-row deletion; logged in Undo/Rollback log; allows `WHERE` filtering; fires row-level triggers; reversible via `ROLLBACK`.
+### DQL, DCL & TCL
+- **DQL (Data Query Language)**: `SELECT` (pure data retrieval without state mutation)
+- **DCL (Data Control Language)**: Manages permissions & privileges:
+  ```sql
+  GRANT SELECT, INSERT
+  ON emp
+  TO analyst_role;
+  ```
+  ```sql
+  REVOKE DELETE
+  ON emp
+  FROM intern_role;
+  ```
+- **TCL (Transaction Control Language)**: Manages transaction boundaries:
+  ```sql
+  SAVEPOINT sp1;
+  ROLLBACK TO sp1;
+  COMMIT;
+  ```
+
+## 2. Logical Query Execution Order
+### Order of Clauses
+- **1. `FROM` & `JOIN`**: Identifies source tables, evaluates `ON` conditions, and creates cartesian/joined sets
+- **2. `WHERE`**: Row-level filtering **before** grouping (cannot use aggregates)
+- **3. `GROUP BY`**: Partitions filtered rows into distinct aggregated buckets
+- **4. `HAVING`**: Filters groups based on aggregate results (`HAVING COUNT(*) > 5`)
+- **5. `SELECT`**: Computes expressions, handles column aliases, and window functions
+- **6. `DISTINCT`**: Eliminates duplicate rows from the projected columns
+- **7. `ORDER BY`**: Sorts the output rows (can use `SELECT` aliases!)
+- **8. `LIMIT` / `OFFSET`**: Paginates and restricts total returned rows
+### Common Alias Trap
+- You **cannot** use a `SELECT` alias inside a `WHERE` clause because `WHERE` runs at Step 2 while `SELECT` runs at Step 5!
+
+## 3. Joins & Set Operations (With Syntax Examples)
+### `INNER JOIN` (Matching Intersection)
+- Syntax:
+  ```sql
+  SELECT e.name, d.dept_name
+  FROM emp e
+  INNER JOIN dept d
+    ON e.dept_id = d.id;
+  ```
+- *Key Difference*: Retains **only** rows where the join predicate matches in **both** tables. Unmatched rows on either side are omitted.
+### `LEFT JOIN` (All Left + Matching Right)
+- Syntax:
+  ```sql
+  SELECT e.name, d.dept_name
+  FROM emp e
+  LEFT JOIN dept d
+    ON e.dept_id = d.id;
+  ```
+- *Key Difference*: Preserves **every** row from the left table (`emp`). If no corresponding record exists in `dept`, right columns populate with `NULL`.
+### Anti-Join Pattern (Exclusion Search)
+- Syntax:
+  ```sql
+  SELECT e.name
+  FROM emp e
+  LEFT JOIN dept d
+    ON e.dept_id = d.id
+  WHERE d.id IS NULL;
+  ```
+- *Key Difference*: Pinpoints records in the left table that have **zero matches** in the right table (significantly faster and safer than `NOT IN`).
+### `RIGHT JOIN` (Matching Left + All Right)
+- Syntax:
+  ```sql
+  SELECT e.name, d.dept_name
+  FROM emp e
+  RIGHT JOIN dept d
+    ON e.dept_id = d.id;
+  ```
+- *Key Difference*: Preserves **every** row from the right table (`dept`), filling unmatched left columns with `NULL`.
+### `FULL OUTER JOIN` (Union of Both Tables)
+- Syntax:
+  ```sql
+  SELECT e.name, d.dept_name
+  FROM emp e
+  FULL OUTER JOIN dept d
+    ON e.dept_id = d.id;
+  ```
+- *Key Difference*: Preserves all rows from both tables, filling missing counterparts with `NULL`. (In MySQL: emulate via `LEFT JOIN UNION RIGHT JOIN`).
+### `CROSS JOIN` (Cartesian Product)
+- Syntax:
+  ```sql
+  SELECT p.color, s.size
+  FROM products p
+  CROSS JOIN sizes s;
+  ```
+- *Key Difference*: Pairs every row in table $A$ with every row in table $B$ ($M \times N$ total rows). **No `ON` clause**.
+### `SELF JOIN` (Hierarchical Relationships)
+- Syntax:
+  ```sql
+  SELECT e.name AS emp,
+         m.name AS manager
+  FROM emp e
+  LEFT JOIN emp m
+    ON e.manager_id = m.id;
+  ```
+- *Key Difference*: Joins a table to itself using two distinct table aliases (`e` and `m`) to resolve parent-child relationships.
+### Set Operations (`UNION` vs `UNION ALL`)
+- **`UNION`**: Combines result sets vertically and runs an implicit deduplication sort (slower).
+- **`UNION ALL`**: Appends result sets vertically **without deduplication** (fast, $\mathcal{O}(N)$).
+- **`INTERSECT`**: Returns only rows present in both queries.
+- **`EXCEPT` / `MINUS`**: Returns rows from the first query that do not exist in the second.
+
+## 4. Database Normalization & Forms
+### Purpose of Normalization
+- Eliminates **Insertion, Update, and Deletion Anomalies** and minimizes data redundancy.
+- Golden Rule: *"Every attribute must depend on the key, the whole key, and nothing but the key (so help me Codd)."*
+### 1NF (First Normal Form) - Atomicity
+- Values in each cell must be **atomic** (no multi-valued columns, CSV lists, or JSON blobs).
+- Table must have a defined Primary Key and no duplicate rows.
+### 2NF (Second Normal Form) - No Partial Dependency
+- Must satisfy 1NF.
+- **No Partial Dependencies**: Non-key attributes must depend on the **entire** composite Primary Key, not just a subset of it.
+- *Fix*: Move partially-dependent columns to a separate dedicated table with the subset key.
+### 3NF (Third Normal Form) - No Transitive Dependency
+- Must satisfy 2NF.
+- **No Transitive Dependencies**: Non-key attributes must NOT depend on other non-key attributes ($X \rightarrow Y \rightarrow Z$).
+- *Example*: In `(EmpID, DeptID, DeptName)`, `DeptName` depends on `DeptID` which depends on `EmpID`. Move `(DeptID, DeptName)` to a separate `Department` table.
+### BCNF (Boyce-Codd Normal Form)
+- Strict variant of 3NF: For every functional dependency $X \rightarrow Y$, the determinant $X$ **must be a Super Key**.
+### OLTP vs OLAP Denormalization Tradeoff
+- **OLTP (Online Transaction Processing)**: Highly normalized (3NF) to maximize write throughput and eliminate data anomalies during rapid updates.
+- **OLAP (Online Analytical Processing)**: Denormalized (Star / Snowflake Schema with Fact & Dimension tables) to eliminate costly joins during read-heavy reporting aggregations.
+
+## 5. PL/SQL & Procedural SQL
+### Block Structure
+- Syntax:
+  ```sql
+  DECLARE
+    v_bonus NUMBER := 500;
+  BEGIN
+    UPDATE emp
+    SET salary = salary + v_bonus
+    WHERE dept_id = 10;
+  EXCEPTION
+    WHEN OTHERS THEN
+      ROLLBACK;
+  END;
+  ```
+- *Core Blocks*: `DECLARE` (variables, cursors), `BEGIN` (executable logic), `EXCEPTION` (error handling), `END;`
+### Stored Procedures vs Functions
+- **Stored Procedure**:
+  - Syntax:
+    ```sql
+    CREATE OR REPLACE PROCEDURE give_raise(
+      p_id IN INT,
+      p_amt IN DECIMAL
+    ) AS
+    BEGIN
+      UPDATE emp
+      SET salary = salary + p_amt
+      WHERE id = p_id;
+      COMMIT;
+    END;
+    ```
+  - *Key Differences*: Invoked via `CALL` or `EXEC`; can execute DML and commit/rollback transactions; outputs values via `OUT` parameters; **cannot** be called inside `SELECT`.
+- **Stored Function**:
+  - Syntax:
+    ```sql
+    CREATE OR REPLACE FUNCTION get_annual_sal(
+      p_id IN INT
+    ) RETURN DECIMAL AS
+      v_sal DECIMAL;
+    BEGIN
+      SELECT salary * 12 INTO v_sal
+      FROM emp
+      WHERE id = p_id;
+      RETURN v_sal;
+    END;
+    ```
+  - *Key Differences*: **Must return** a single value via `RETURN`; **can** be used directly in SQL queries; cannot execute transaction commits inside SQL queries.
+### Triggers
+- Automatic routines triggered by database events (`INSERT`, `UPDATE`, `DELETE`).
+- Syntax:
+  ```sql
+  CREATE OR REPLACE TRIGGER trg_audit_emp
+  AFTER UPDATE OF salary ON emp
+  FOR EACH ROW
+  BEGIN
+    INSERT INTO emp_audit(emp_id, old_sal, new_sal, changed_at)
+    VALUES (:OLD.id, :OLD.salary, :NEW.salary, SYSDATE);
+  END;
+  ```
+- **Timing**: `BEFORE` (data sanitization, validation) vs `AFTER` (audit logging, downstream sync) vs `INSTEAD OF` (updating views).
+- **Scope**: Statement-level vs Row-level (`FOR EACH ROW` with `:OLD` and `:NEW`).
+### Cursors (Row-by-Row Evaluation)
+- Programmer-managed query result set pointer:
+- Syntax:
+  ```sql
+  DECLARE
+    CURSOR c_emp IS
+      SELECT id, salary FROM emp;
+    v_id emp.id%TYPE;
+    v_sal emp.salary%TYPE;
+  BEGIN
+    OPEN c_emp;
+    LOOP
+      FETCH c_emp INTO v_id, v_sal;
+      EXIT WHEN c_emp%NOTFOUND;
+    END LOOP;
+    CLOSE c_emp;
+  END;
+  ```
+- **Implicit Cursor**: Created automatically for DML (`SQL%FOUND`, `SQL%NOTFOUND`, `SQL%ROWCOUNT`).
+- **Explicit Cursor Lifecycle**: `OPEN` $\rightarrow$ `FETCH` in a loop $\rightarrow$ `CLOSE`.
+### Autonomous Transactions
+- `PRAGMA AUTONOMOUS_TRANSACTION`: Executes an independent sub-transaction that commits or rolls back without affecting the outer parent transaction (essential for error audit logging tables).
+
+## 6. Indexing & Query Optimization
+### B+ Tree Indexes
+- Balanced multi-way search tree; default in PostgreSQL, MySQL (InnoDB), and Oracle
+- All data pointers live in **leaf nodes** connected as a doubly linked list
+- High fanout $\rightarrow$ small depth ($\approx 3\text{--}4$ disk seeks for millions of rows)
+- Range queries (`BETWEEN`, `>`, `<`) perform fast sequential leaf walks
+### Clustered vs Non-Clustered Indexes
+- **Clustered Index**:
+  - Dictates the physical storage order of data rows on disk
+  - Only **one** clustered index per table (typically Primary Key)
+  - Leaf nodes store the actual row data
+- **Non-Clustered (Secondary) Index**:
+  - Stored in a separate structure; leaf nodes contain indexed columns + pointer to clustered key
+  - Requires a **bookmark lookup** to retrieve unindexed columns unless it's a **Covering Index**
+### SARGable Queries & Prefix Rule
+- **SARGable (Search Argument Able)**: Query conditions that can use index seeks
+  - Avoid wrapping indexed columns in functions (e.g., `WHERE YEAR(date) = 2026` forces a Full Table Scan)
+  - Rewrite as range:
+    ```sql
+    WHERE date >= '2026-01-01'
+      AND date < '2027-01-01'
+    ```
+- **Leftmost Prefix Rule**: Composite index on `(A, B, C)` can only be used by queries filtering `A`, `(A, B)`, or `(A, B, C)`
+
+## 7. Transactions & ACID Properties
+### ACID Principles
+- **Atomicity**: All operations commit successfully or all rollback ("All-or-Nothing")
+- **Consistency**: Database transitions from one valid state to another, obeying all integrity constraints
+- **Isolation**: Concurrent transactions execute without cross-interference
+- **Durability**: Once committed, writes survive server crashes via Write-Ahead Log (WAL)
+### Concurrency Read Phenomena
+- **Dirty Read**: Transaction reads uncommitted modifications made by another transaction
+- **Non-Repeatable Read**: Re-reading the same row within a transaction returns different values due to another committed update
+- **Phantom Read**: Re-running a range query returns newly inserted rows committed by another transaction
+### Isolation Levels Matrix
+- **Read Uncommitted**: Suffers from Dirty Reads, Non-Repeatable Reads, and Phantoms
+- **Read Committed**: Prevents Dirty Reads; allows Non-Repeatable Reads and Phantoms (PostgreSQL/Oracle default)
+- **Repeatable Read**: Prevents Dirty and Non-Repeatable Reads; allows Phantoms (MySQL InnoDB default)
+- **Serializable**: Strict serial execution; prevents all anomalies
+
+## 8. Window Functions & CTEs
+### Ranking Functions Syntax
+- **`ROW_NUMBER()`**: Sequential integers without ties ($1, 2, 3, 4$)
+  ```sql
+  SELECT name,
+    ROW_NUMBER() OVER (
+      PARTITION BY dept_id
+      ORDER BY salary DESC
+    ) AS row_num
+  FROM emp;
+  ```
+- **`RANK()`**: Same rank for ties; skips numbers afterwards ($1, 1, 3, 4$)
+- **`DENSE_RANK()`**: Same rank for ties; never skips numbers ($1, 1, 2, 3$)
+  ```sql
+  SELECT name, salary,
+    DENSE_RANK() OVER (
+      PARTITION BY dept_id
+      ORDER BY salary DESC
+    ) AS sal_rank
+  FROM emp;
+  ```
+### Value Functions
+- **`LEAD(col, 1)` / `LAG(col, 1)`**: Accesses subsequent or previous row without a self-join:
+  ```sql
+  SELECT name, salary,
+    LAG(salary, 1) OVER (
+      ORDER BY hire_date
+    ) AS prev_emp_sal
+  FROM emp;
+  ```
+- **`OVER (PARTITION BY ... ORDER BY ...)`**: Defines the evaluation window partition frame
+### Common Table Expressions (CTEs)
+- Syntax:
+  ```sql
+  WITH DeptAvg AS (
+    SELECT dept_id,
+           AVG(salary) AS avg_sal
+    FROM emp
+    GROUP BY dept_id
+  )
+  SELECT e.name, e.salary, d.avg_sal
+  FROM emp e
+  JOIN DeptAvg d
+    ON e.dept_id = d.dept_id
+  WHERE e.salary > d.avg_sal;
+  ```
+- Can be **Recursive CTEs** (ideal for organizational hierarchies, trees, and graphs)
+
+## 9. ⚠️ Tricky MCQ Traps & Edge Cases
+### 🚨 Three-Valued Logic of NULL Trap
+- **Trap**: `SELECT * FROM emp WHERE salary = NULL;`
+- **Correct**: Returns **0 rows**! NULL represents `UNKNOWN`; any comparison with `= NULL` evaluates to UNKNOWN. Always use `IS NULL`.
+### 🚨 `NOT IN` with NULL Subquery Trap
+- **Trap**: `WHERE id NOT IN (1, 2, NULL)`
+- **Correct**: Returns **0 rows**! Expands to `id != 1 AND id != 2 AND id != NULL`. Since `id != NULL` is UNKNOWN, the entire condition fails. Use `NOT EXISTS` instead.
+### 🚨 `COUNT(*)` vs `COUNT(col)` Trap
+- **Trap**: "Does `COUNT(salary)` return the same count as `COUNT(*)`?"
+- **Correct**: **NO!** `COUNT(*)` counts all rows; `COUNT(col)` ignores rows where `col` is `NULL`.
+### 🚨 `DELETE` vs `TRUNCATE` Trap
+- **Trap**: "Can TRUNCATE be rolled back in standard MySQL?"
+- **Correct**: **NO!** `TRUNCATE` is DDL (deallocates storage pages and resets auto-increment). `DELETE` is DML (row-by-row logged).
+
+## 10. 🏆 Top 5 Must-Remember Rules
+- **1. Remember Query Execution Order**: `FROM` $\rightarrow$ `WHERE` $\rightarrow$ `GROUP BY` $\rightarrow$ `HAVING` $\rightarrow$ `SELECT` $\rightarrow$ `ORDER BY`
+- **2. Safe Subquery Filtering**: Always favor `NOT EXISTS` over `NOT IN` to prevent NULL-induced zero-result bugs
+- **3. B+ Tree Covering Index**: Include queried columns in secondary indexes to eliminate expensive bookmark lookups
+- **4. DENSE_RANK for Top-N**: Use `DENSE_RANK()` when finding the Nth highest value with ties
+- **5. Write SARGable Filters**: Never apply functions to indexed columns in `WHERE` clauses
+  </script>
+
+  <!-- STUDIO CLIENT LOGIC -->
+  <script>
+    let currentSubject = 'java';
+    let currentDepth = 2;
+    let isActiveRecall = false;
+    let mmInstance = null;
+    let currentRoot = null;
+    let transformer = null;
+
+    function init() {
+      if (!window.markmap) {
+        console.error('Markmap library failed to load from CDN');
+        return;
+      }
+
+      transformer = new window.markmap.Transformer();
+      loadSubject('java', 2);
+    }
+
+    function switchSubject(subjectId) {
+      currentSubject = subjectId;
+      document.querySelectorAll('.sub-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sub === subjectId);
+      });
+      loadSubject(subjectId, currentDepth);
+    }
+
+    function loadSubject(subjectId, depth = 2) {
+      const el = document.getElementById('md-data-' + subjectId);
+      if (!el) return;
+      const rawMarkdown = el.textContent.trim();
+
+      // Transform markdown to tree
+      const { root } = transformer.transform(rawMarkdown);
+      currentRoot = root;
+
+      // Apply initial depth
+      applyDepthToNode(currentRoot, depth);
+
+      // Create or update markmap
+      const svg = document.querySelector('#mindmap-svg');
+      if (!mmInstance) {
+        mmInstance = window.markmap.Markmap.create(svg, {
+          colorFreezeLevel: 2,
+          duration: 350,
+          maxWidth: 480,
+          nodeMinHeight: 24,
+          paddingX: 18,
+          spacingHorizontal: 85,
+          spacingVertical: 18
+        }, currentRoot);
+      } else {
+        mmInstance.setData(currentRoot);
+        mmInstance.fit();
+      }
+
+      // Update HUD
+      const labels = {
+        java: '☕ Java Learning Roadmap & Interview Prep',
+        python: '🐍 Python Learning Roadmap & Interview Prep',
+        os: '🖥️ Operating Systems Learning Roadmap',
+        networking: '🌐 Computer Networking Roadmap',
+        sql: '🗄️ SQL & Databases Learning Roadmap'
+      };
+      document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
+    }
+
+    function applyDepthToNode(node, targetDepth, curDepth = 0) {
+      if (curDepth >= targetDepth) {
+        if (node.children && node.children.length > 0) {
+          node.payload = node.payload || {};
+          node.payload.fold = 1; // 1 = folded
+        }
+      } else {
+        if (node.payload) {
+          node.payload.fold = 0; // 0 = unfolded
+        }
+      }
+      if (node.children) {
+        node.children.forEach(c => applyDepthToNode(c, targetDepth, curDepth + 1));
+      }
+    }
+
+    function setExpandDepth(depth) {
+      currentDepth = depth;
+      document.querySelectorAll('.depth-btn').forEach(btn => {
+        const text = btn.innerText;
+        btn.classList.toggle('active', 
+          (depth === 1 && text === 'L1') ||
+          (depth === 2 && text === 'L2') ||
+          (depth === 3 && text === 'L3') ||
+          (depth >= 99 && text === 'All')
+        );
+      });
+
+      if (!currentRoot || !mmInstance) return;
+      applyDepthToNode(currentRoot, depth);
+      mmInstance.setData(currentRoot);
+      mmInstance.fit();
+    }
+
+    function toggleActiveRecall() {
+      isActiveRecall = !isActiveRecall;
+      const btn = document.getElementById('btn-active-recall');
+      const banner = document.getElementById('recall-banner');
+      btn.classList.toggle('active-recall-on', isActiveRecall);
+      banner.classList.toggle('visible', isActiveRecall);
+
+      if (isActiveRecall) {
+        setExpandDepth(2);
+      } else {
+        setExpandDepth(currentDepth);
+      }
+    }
+
+    function resetFit() {
+      if (mmInstance) mmInstance.fit();
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      document.querySelectorAll('.search-highlight').forEach(el => el.classList.remove('search-highlight'));
+
+      if (!query) return;
+
+      let firstMatch = null;
+      document.querySelectorAll('.markmap-node').forEach(node => {
+        if (node.textContent.toLowerCase().includes(query)) {
+          node.classList.add('search-highlight');
+          if (!firstMatch) firstMatch = node;
+        }
+      });
+
+      if (firstMatch && mmInstance) {
+        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+        setTimeout(() => {
+          if (mmInstance) mmInstance.fit();
+        }, 260);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      setTimeout(() => {
+        if (mmInstance) mmInstance.fit();
+      }, 200);
+    }
+
+    // Interactive Keyboard Shortcuts (1-5, F, R, /, Ctrl+B)
+    window.addEventListener('keydown', (e) => {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        if (e.key === 'Escape') {
+          document.activeElement.blur();
+        }
+        return;
+      }
+
+      if (e.key === '1') { switchSubject('java'); }
+      else if (e.key === '2') { switchSubject('python'); }
+      else if (e.key === '3') { switchSubject('os'); }
+      else if (e.key === '4') { switchSubject('networking'); }
+      else if (e.key === '5') { switchSubject('sql'); }
+      else if (e.key.toLowerCase() === 'f') { resetFit(); }
+      else if (e.key.toLowerCase() === 'r') { toggleActiveRecall(); }
+      else if (e.key === '/') {
+        e.preventDefault();
+        const input = document.getElementById('search-input');
+        if (input) input.focus();
+      }
+      else if (e.key.toLowerCase() === 'b' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    });
+
+    window.addEventListener('load', init);
+    window.addEventListener('resize', () => { if (mmInstance) mmInstance.fit(); });
+  </script>
+</body>
+</html>
