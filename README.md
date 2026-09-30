@@ -26,7 +26,7 @@ flowchart TD
   3. Under *Build and deployment*, set **Source** to `Deploy from a branch` and select `main` / `root`.
   4. Your studio will be live at:
      ```text
-     https://<your-username>.github.io/<repository-name>/
+     https://kaushikbarnwal.github.io/SynapseFlow/
      ```
   *(Because the entry file is `index.html`, GitHub Pages serves the studio automatically at the root address without needing any extra file extensions!)*
 
