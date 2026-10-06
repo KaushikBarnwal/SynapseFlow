@@ -69,7 +69,7 @@ I intentionally kept the stack lightweight, robust, and dependency-free:
 | **Mindmap Engine** | **D3.js (v7) + Markmap** | Powers the dynamic vector layout, zoom/pan drag physics, and node expansion states. |
 | **Custom Graph Math** | **[`markmap-view.js`](markmap-view.js)** | I patched the line-routing calculations so the branch curves connect symmetrically to the exact vertical center of node circles, preventing text uplift. |
 | **Syntax Highlighting** | **Highlight.js (`hljs`)** | Custom neon palette for Python, Java, and SQL keywords, classes, functions, strings, and trap snippets. |
-| **Data Architecture** | **Embedded `<script type="text/markdown">`** | **Zero-CORS Offline Design**: Browsers block local `fetch()` calls on `file:///` URLs due to sandbox security. By embedding the curricula directly into DOM data containers, the app works 100% offline anywhere without CORS errors. |
+| **Data Architecture** | **Modular Offline Scripts (`data/*.js`)** | **Zero-CORS Scalable Architecture**: Curricula are decoupled into standalone data modules (`data/*.js`) compiled from raw Markdown. By loading via standard `<script>` tags, the studio functions 100% offline under `file:///` without CORS errors and scales smoothly to 30K+ LOC. |
 
 ---
 
@@ -86,7 +86,11 @@ SynapseFlow/
 │   └── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
 ├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
 │   ├── java.js                   # Compiled Java curriculum module
-│   └── python.js                 # Compiled Python curriculum module
+│   ├── python.js                 # Compiled Python curriculum module
+│   ├── os.js                     # Compiled Operating Systems module
+│   ├── networking.js             # Compiled Computer Networks module
+│   ├── sql.js                    # Compiled Databases & SQL module
+│   └── dsa.js                    # Compiled Data Structures Theory module
 ├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
