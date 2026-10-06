@@ -77,13 +77,17 @@ I intentionally kept the stack lightweight, robust, and dependency-free:
 
 ```text
 SynapseFlow/
-├── subjects/                     # 📚 My markdown curricula & interview cheat sheets
+├── subjects/                     # 📚 Raw Markdown curricula (edit freely in VS Code!)
 │   ├── java-prep.md              # Java internals, JVM memory, Concurrency & Collections
 │   ├── python-prep.md            # Python data model, GIL, OOP, Generators & Memory
 │   ├── os-prep.md                # Operating Systems, CPU scheduling, Virtual Memory & Locks
 │   ├── networking-prep.md        # Computer Networks, OSI layers, TCP/UDP & Protocols
 │   ├── sql-prep.md               # SQL, DDL/DML, Execution Order, Joins & PL/SQL
 │   └── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
+├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
+│   ├── java.js                   # Compiled Java curriculum module
+│   └── python.js                 # Compiled Python curriculum module
+├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
 └── README.md                     # 📖 Project documentation & study guide
