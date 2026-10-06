@@ -82,7 +82,8 @@ SynapseFlow/
 │   ├── python-prep.md            # Python data model, GIL, OOP, Generators & Memory
 │   ├── os-prep.md                # Operating Systems, CPU scheduling, Virtual Memory & Locks
 │   ├── networking-prep.md        # Computer Networks, OSI layers, TCP/UDP & Protocols
-│   └── sql-prep.md               # SQL, DDL/DML, Execution Order, Joins & PL/SQL
+│   ├── sql-prep.md               # SQL, DDL/DML, Execution Order, Joins & PL/SQL
+│   └── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
 └── README.md                     # 📖 Project documentation & study guide
@@ -99,6 +100,7 @@ SynapseFlow/
 | **Operating Systems** | **[`subjects/os-prep.md`](subjects/os-prep.md)** | Process vs Thread memory, CPU Scheduling (CFS, Round Robin), Virtual Memory, TLB, Page Fault mechanics, Deadlocks (Coffman conditions), Mutex vs Semaphore. |
 | **Computer Networks** | **[`subjects/networking-prep.md`](subjects/networking-prep.md)** | OSI 7 Layers, Key Protocols (DNS, DHCP, ARP, TCP 3-Way Handshake, UDP, HTTP/1.1 vs HTTP/2 vs HTTP/3, WebSockets, TLS 1.3), CIDR Subnetting math. |
 | **SQL & Databases** | **[`subjects/sql-prep.md`](subjects/sql-prep.md)** | DDL vs DML (`TRUNCATE` vs `DELETE`), Query Execution Order, All Joins & Anti-Joins, Normalization (1NF-BCNF, OLTP vs OLAP), PL/SQL (Procedures, Triggers, Cursors), B+ Trees, ACID & Isolation. |
+| **Data Structures (Theory)** | **[`subjects/dsa-prep.md`](subjects/dsa-prep.md)** | Complexity Asymptotics, Cache Locality, Dynamic Arrays, Circular Deque, HashMap collisions & treeification, BST deletions, Heaps Floyd construction, Self-balancing (AVL & Red-Black), DSU, Tries, B/B+ Trees, LRU/LFU cache, Bloom Filters. |
 
 ---
 
@@ -108,7 +110,7 @@ When studying in the web studio, I mapped everything to quick hotkeys:
 
 | Key | Action |
 | :---: | :--- |
-| `1` - `5` | Switch subjects instantly (`1` Java, `2` Python, `3` OS, `4` Networks, `5` SQL) |
+| `1` - `6` | Switch subjects instantly (`1` Java, `2` Python, `3` OS, `4` Networks, `5` SQL, `6` DSA) |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |
