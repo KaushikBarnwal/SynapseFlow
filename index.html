@@ -150,12 +150,11 @@
       border-right: 1px solid var(--border-panel);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 45;
       position: relative;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
+      height: 100%;
     }
 
     .sidebar::-webkit-scrollbar {
@@ -206,6 +205,16 @@
       flex-direction: column;
       gap: 6px;
       flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar-subjects::-webkit-scrollbar {
+      width: 4px;
+    }
+    .sidebar-subjects::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
     }
 
     .sidebar.collapsed .sidebar-subjects {
@@ -260,7 +269,6 @@
     }
 
     .sub-icon {
-      font-size: 1.25rem;
       width: 32px;
       height: 32px;
       display: flex;
@@ -268,12 +276,26 @@
       justify-content: center;
       border-radius: var(--radius-sm);
       background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       flex-shrink: 0;
-      transition: transform 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sub-icon svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .sub-btn:hover .sub-icon {
-      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: scale(1.05);
+    }
+
+    .sub-btn:hover .sub-icon svg {
+      transform: scale(1.12);
     }
 
     .sidebar.collapsed .sub-btn {
@@ -317,16 +339,229 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-dim);
       font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s ease;
+    }
+
+    /* Category Accordion Groups */
+    .category-group {
+      margin-bottom: 8px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .category-group.chord-armed {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.04);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.15);
+    }
+
+    .cat-header {
+      width: 100%;
+      padding: 9px 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .cat-header:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .cat-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .cat-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      flex-shrink: 0;
+    }
+
+    .cat-icon svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .cat-title {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cat-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .cat-shortcut {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--accent-blue);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cat-chevron {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .category-group.collapsed .cat-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .cat-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px 6px 8px 6px;
+      max-height: 420px;
+      opacity: 1;
+      transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.2s ease;
+    }
+
+    .category-group.collapsed .cat-content {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+
+    /* Disabled / Coming Soon Sub-items */
+    .sub-btn.sub-disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      filter: grayscale(0.65);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+
+    .sub-btn.sub-disabled:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(234, 179, 8, 0.3);
+      transform: none;
+      opacity: 0.65;
+    }
+
+    .sub-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-soon {
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.35);
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    /* Chord Armed Pulsing Badges */
+    .chord-armed .sub-shortcut {
+      background: rgba(56, 189, 248, 0.22) !important;
+      border-color: var(--accent-blue) !important;
+      color: #38bdf8 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+      animation: chordPulse 0.8s infinite alternate;
+    }
+
+    @keyframes chordPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.15); }
+    }
+
+    /* Floating Toast Notification */
+    .synapse-toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+      backdrop-filter: blur(16px);
+      color: #f8fafc;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .synapse-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .sidebar.collapsed .sub-shortcut {
       display: none;
     }
 
+    .sidebar.collapsed .cat-title,
+    .sidebar.collapsed .cat-meta {
+      display: none;
+    }
+
+    .sidebar.collapsed .category-group {
+      background: transparent;
+      border: none;
+      margin-bottom: 4px;
+    }
+
+    .sidebar.collapsed .cat-content {
+      padding: 0;
+    }
+
     .sidebar-footer {
-      padding: 14px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(0, 0, 0, 0.18);
+      flex-shrink: 0;
+      padding: 10px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(10, 13, 20, 0.98);
+      backdrop-filter: blur(16px);
+      z-index: 10;
     }
 
     .sidebar.collapsed .sidebar-footer {
@@ -336,30 +571,43 @@
     .sidebar-tips {
       font-size: 0.72rem;
       color: var(--text-dim);
-      line-height: 1.5;
+    }
+
+    .tips-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      font-weight: 700;
     }
 
     .tips-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px 8px;
-      margin-top: 6px;
+      gap: 5px 8px;
     }
 
     .tips-grid span {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      font-size: 0.69rem;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .tips-grid kbd {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      padding: 1px 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1.5px 5px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 3px;
-      color: #cbd5e1;
+      color: #38bdf8;
+      flex-shrink: 0;
     }
 
     /* Centered Search Bar in Navbar */
@@ -480,6 +728,35 @@
       color: #fff;
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .tool-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+    }
+
+    .tool-btn:hover svg {
+      transform: scale(1.15);
+    }
+
+    .btn-icon-recall {
+      color: #f59e0b;
+    }
+
+    .tool-btn.active-recall-on .btn-icon-recall {
+      color: #86efac;
+    }
+
+    .btn-icon-fit {
+      color: #f43f5e;
+    }
+
+    .tool-btn:hover .btn-icon-fit {
+      color: #fb7185;
     }
 
     .tool-btn.active-recall-on {
@@ -823,6 +1100,27 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      transition: color 0.15s ease;
+      user-select: none;
+    }
+
+    .hud-item:hover {
+      color: #f8fafc;
+    }
+
+    .hud-action-svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent-blue);
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+    }
+
+    .hud-item:hover .hud-action-svg {
+      color: #7dd3fc;
+      transform: scale(1.15);
     }
 
     .hud-dot {
@@ -869,8 +1167,18 @@
 
   <header>
     <div class="brand-title-wrap">
-      <button class="sidebar-toggle-btn" id="btn-toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">☰</button>
-      <div class="brand-logo">⚡</div>
+      <button class="sidebar-toggle-btn" id="btn-toggle-sidebar" onclick="toggleSidebar()" title="Toggle Sidebar (Ctrl+B)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#fff" stroke="#fff"/>
+        </svg>
+      </div>
       <div class="brand-text">
         <h1>SynapseFlow</h1>
         <p>Interactive Knowledge & Memory Visualizer</p>
@@ -880,7 +1188,12 @@
     <!-- Center Search Bar (In between navbar) -->
     <div class="nav-center">
       <div class="search-wrap">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
         <input type="text" id="search-input" class="search-input" placeholder="Search topics, traps, keywords (/)..." oninput="handleSearch()" />
         <kbd class="search-kbd-hint">/</kbd>
       </div>
@@ -898,17 +1211,33 @@
 
       <!-- Active Recall Mode Toggle -->
       <button class="tool-btn" id="btn-active-recall" onclick="toggleActiveRecall()" title="Collapses leaf answers so you can test yourself before expanding! (Press R)">
-        ⚡ Active Recall
+        <svg viewBox="0 0 24 24" class="btn-icon-recall" fill="currentColor">
+          <path d="M13 2L3 14h7v8l11-12h-8l0-8z"/>
+        </svg>
+        <span>Active Recall</span>
       </button>
 
       <!-- Fit View -->
       <button class="tool-btn" onclick="resetFit()" title="Center and fit mindmap to screen (Press F)">
-        🎯 Fit View
+        <svg viewBox="0 0 24 24" class="btn-icon-fit" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor"/>
+          <line x1="12" y1="1" x2="12" y2="4"/>
+          <line x1="12" y1="20" x2="12" y2="23"/>
+          <line x1="1" y1="12" x2="4" y2="12"/>
+          <line x1="20" y1="12" x2="23" y2="12"/>
+        </svg>
+        <span>Fit View</span>
       </button>
 
       <!-- Fullscreen Toggle -->
       <button class="tool-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen Zen Mode">
-        ⛶
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/>
+          <polyline points="9 21 3 21 3 15"/>
+          <polyline points="21 15 21 21 15 21"/>
+          <polyline points="3 9 3 3 9 3"/>
+        </svg>
       </button>
     </div>
   </header>
@@ -919,73 +1248,237 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <span class="sidebar-heading">Curriculum</span>
-        <span class="sidebar-badge">5 Subjects</span>
+        <span class="sidebar-badge">3 Divisions</span>
       </div>
 
       <div class="sidebar-subjects">
-        <button class="sub-btn active" data-sub="java" onclick="switchSubject('java')" title="Java: OOP, JVM, Concurrency (Press 1)">
-          <span class="sub-icon">☕</span>
-          <div class="sub-info">
-            <span class="sub-name">Java</span>
-            <span class="sub-desc">OOP, JVM & Concurrency</span>
-          </div>
-          <kbd class="sub-shortcut">1</kbd>
-        </button>
+        <!-- DIVISION 1: Languages & Runtimes -->
+        <div class="category-group" id="cat-languages">
+          <button class="cat-header" onclick="toggleCategory('languages')" title="Languages & Runtimes (Press 1)">
+            <div class="cat-title-wrap">
+              <span class="cat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6" stroke="#38bdf8"/>
+                  <polyline points="8 6 2 12 8 18" stroke="#38bdf8"/>
+                </svg>
+              </span>
+              <span class="cat-title">Languages & Runtimes</span>
+            </div>
+            <div class="cat-meta">
+              <kbd class="cat-shortcut">1</kbd>
+              <span class="cat-chevron">▾</span>
+            </div>
+          </button>
+          <div class="cat-content">
+            <button class="sub-btn active" data-sub="java" onclick="switchSubject('java')" title="Java: OOP, JVM, Concurrency (Press 1 then A)">
+              <span class="sub-icon" title="Java">
+                <!-- Official Java Logo (High-contrast dual-tone for Dark Theme) -->
+                <svg viewBox="18 0 92 128" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Steam Wisps (Flame Orange & Crimson) -->
+                  <path fill="#f97316" d="M69.802 61.271c6.025 6.935-1.58 13.17-1.58 13.17s15.289-7.891 8.269-17.777c-6.559-9.215-11.587-13.792 15.635-29.58 0 .001-42.731 10.67-22.324 34.187z"/>
+                  <path fill="#ef4444" d="M76.491 1.587S89.459 14.563 64.188 34.51c-20.266 16.006-4.621 25.13-.007 35.559-11.831-10.673-20.509-20.07-14.688-28.815C58.041 28.42 81.722 22.195 76.491 1.587z"/>
+                  <!-- Cup Body & Saucer (Vibrant Electric Cyan & Sky Blue) -->
+                  <path fill="#38bdf8" d="M47.617 98.12s-4.767 2.774 3.397 3.71c9.892 1.13 14.947.968 25.845-1.092 0 0 2.871 1.795 6.873 3.351-24.439 10.47-55.308-.607-36.115-5.969zm-2.988-13.665s-5.348 3.959 2.823 4.805c10.567 1.091 18.91 1.18 33.354-1.6 0 0 1.993 2.025 5.132 3.131-29.542 8.64-62.446.68-41.309-6.336z"/>
+                  <path fill="#0284c7" d="M102.123 108.229s3.529 2.91-3.888 5.159c-14.102 4.272-58.706 5.56-71.094.171-4.451-1.938 3.899-4.625 6.526-5.192 2.739-.593 4.303-.485 4.303-.485-4.953-3.487-32.013 6.85-13.743 9.815 49.821 8.076 90.817-3.637 77.896-9.468zM49.912 70.294s-22.686 5.389-8.033 7.348c6.188.828 18.518.638 30.011-.326 9.39-.789 18.813-2.474 18.813-2.474s-3.308 1.419-5.704 3.053c-23.042 6.061-67.544 3.238-54.731-2.958 10.832-5.239 19.644-4.643 19.644-4.643zm40.697 22.747c23.421-12.167 12.591-23.86 5.032-22.285-1.848.385-2.677.72-2.677.72s.688-1.079 2-1.543c14.953-5.255 26.451 15.503-4.823 23.725 0-.002.359-.327.468-.617z"/>
+                  <path fill="#38bdf8" d="M52.214 126.021c22.476 1.437 57-.8 57.817-11.436 0 0-1.571 4.032-18.577 7.231-19.186 3.612-42.854 3.191-56.887.874 0 .001 2.875 2.381 17.647 3.331z"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">Java & JVM</span>
+                <span class="sub-desc">OOP, JVM & Concurrency</span>
+              </div>
+              <kbd class="sub-shortcut">A</kbd>
+            </button>
 
-        <button class="sub-btn" data-sub="python" onclick="switchSubject('python')" title="Python: Internals, GIL, Traps (Press 2)">
-          <span class="sub-icon">🐍</span>
-          <div class="sub-info">
-            <span class="sub-name">Python</span>
-            <span class="sub-desc">Internals, GIL & Traps</span>
+            <button class="sub-btn" data-sub="python" onclick="switchSubject('python')" title="Python: Internals, GIL, Traps (Press 1 then B)">
+              <span class="sub-icon" title="Python">
+                <!-- Official Python Logo -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.9 2c-3.3 0-5.2.4-5.2 2.4v2.5h5.3v.8H4.8C2.6 7.7 1.5 9.2 1.5 12.3c0 3.2 1.4 4.6 3.6 4.6h1.8v-2.3c0-2.3 2.1-4.3 4.5-4.3h5.4c2 0 3.6-1.5 3.6-3.4V4.4C20.4 2.5 16.3 2 11.9 2zm-2.9 1.7a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" fill="#387EB8"/>
+                  <path d="M12.1 22c3.3 0 5.2-.4 5.2-2.4v-2.5h-5.3v-.8h7.2c2.2 0 3.3-1.5 3.3-4.6 0-3.2-1.4-4.6-3.6-4.6h-1.8v2.3c0 2.3-2.1 4.3-4.5 4.3H7.2c-2 0-3.6 1.5-3.6 3.4v2.5C3.6 21.5 7.7 22 12.1 22zm2.9-1.7a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="#FFE052"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">Python & CPython</span>
+                <span class="sub-desc">Internals, GIL & Traps</span>
+              </div>
+              <kbd class="sub-shortcut">B</kbd>
+            </button>
           </div>
-          <kbd class="sub-shortcut">2</kbd>
-        </button>
+        </div>
 
-        <button class="sub-btn" data-sub="os" onclick="switchSubject('os')" title="Operating Systems: Processes, TLB, Deadlocks (Press 3)">
-          <span class="sub-icon">🖥️</span>
-          <div class="sub-info">
-            <span class="sub-name">Operating Systems</span>
-            <span class="sub-desc">Processes, Memory & TLB</span>
-          </div>
-          <kbd class="sub-shortcut">3</kbd>
-        </button>
+        <!-- DIVISION 2: CS Core Systems -->
+        <div class="category-group collapsed" id="cat-cscore">
+          <button class="cat-header" onclick="toggleCategory('cscore')" title="CS Core Systems (Press 2)">
+            <div class="cat-title-wrap">
+              <span class="cat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="7" rx="1.5" stroke="#a855f7"/>
+                  <rect x="2" y="14" width="20" height="7" rx="1.5" stroke="#a855f7"/>
+                  <line x1="6" y1="6.5" x2="6.01" y2="6.5" stroke="#a855f7" stroke-width="2.5"/>
+                  <line x1="6" y1="17.5" x2="6.01" y2="17.5" stroke="#a855f7" stroke-width="2.5"/>
+                </svg>
+              </span>
+              <span class="cat-title">CS Core Systems</span>
+            </div>
+            <div class="cat-meta">
+              <kbd class="cat-shortcut">2</kbd>
+              <span class="cat-chevron">▾</span>
+            </div>
+          </button>
+          <div class="cat-content">
+            <button class="sub-btn" data-sub="os" onclick="switchSubject('os')" title="Operating Systems: Processes, TLB, Deadlocks (Press 2 then A)">
+              <span class="sub-icon" title="Operating Systems">
+                <!-- OS / CPU Microchip Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="2" stroke="#38bdf8"/>
+                  <rect x="8.5" y="8.5" width="7" height="7" rx="1" fill="rgba(56,189,248,0.25)" stroke="#38bdf8"/>
+                  <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" stroke="#94a3b8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">Operating Systems</span>
+                <span class="sub-desc">Processes, Memory & TLB</span>
+              </div>
+              <kbd class="sub-shortcut">A</kbd>
+            </button>
 
-        <button class="sub-btn" data-sub="networking" onclick="switchSubject('networking')" title="Networking: OSI, TCP/UDP, Protocols (Press 4)">
-          <span class="sub-icon">🌐</span>
-          <div class="sub-info">
-            <span class="sub-name">Networking</span>
-            <span class="sub-desc">OSI, TCP/UDP & Protocols</span>
-          </div>
-          <kbd class="sub-shortcut">4</kbd>
-        </button>
+            <button class="sub-btn" data-sub="networking" onclick="switchSubject('networking')" title="Networking: OSI, TCP/UDP, Protocols (Press 2 then B)">
+              <span class="sub-icon" title="Computer Networks">
+                <!-- Computer Networks / Topology Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="4.5" r="2.5" stroke="#a855f7" fill="rgba(168,85,247,0.25)"/>
+                  <circle cx="4.5" cy="18" r="2.5" stroke="#a855f7" fill="rgba(168,85,247,0.25)"/>
+                  <circle cx="19.5" cy="18" r="2.5" stroke="#a855f7" fill="rgba(168,85,247,0.25)"/>
+                  <path d="M12 7v4.5m-2.2 2.2l-3.8 2.8m8.2-5l3.8 2.8" stroke="#c084fc"/>
+                  <circle cx="12" cy="13" r="1.5" fill="#a855f7"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">Computer Networks</span>
+                <span class="sub-desc">OSI, TCP/UDP & Protocols</span>
+              </div>
+              <kbd class="sub-shortcut">B</kbd>
+            </button>
 
-        <button class="sub-btn" data-sub="sql" onclick="switchSubject('sql')" title="SQL & Databases: B+ Trees, Joins, ACID (Press 5)">
-          <span class="sub-icon">🗄️</span>
-          <div class="sub-info">
-            <span class="sub-name">SQL & Databases</span>
-            <span class="sub-desc">B+ Trees, Joins & ACID</span>
+            <button class="sub-btn" data-sub="sql" onclick="switchSubject('sql')" title="SQL & Databases: B+ Trees, Joins, ACID (Press 2 then C)">
+              <span class="sub-icon" title="SQL & Databases">
+                <!-- Database Cylinders Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="8" ry="3" stroke="#38bdf8" fill="rgba(56,189,248,0.25)"/>
+                  <path d="M4 5v5c0 1.66 3.58 3 8 3s8-1.34 8-3V5" stroke="#38bdf8"/>
+                  <path d="M4 10v5c0 1.66 3.58 3 8 3s8-1.34 8-3v-5" stroke="#38bdf8"/>
+                  <path d="M4 15v4c0 1.66 3.58 3 8 3s8-1.34 8-3v-4" stroke="#38bdf8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">Databases & SQL</span>
+                <span class="sub-desc">B+ Trees, Joins & ACID</span>
+              </div>
+              <kbd class="sub-shortcut">C</kbd>
+            </button>
           </div>
-          <kbd class="sub-shortcut">5</kbd>
-        </button>
+        </div>
 
-        <button class="sub-btn" data-sub="dsa" onclick="switchSubject('dsa')" title="Data Structures: Basics, Moderate & Advanced (Press 6)">
-          <span class="sub-icon">🧱</span>
-          <div class="sub-info">
-            <span class="sub-name">Data Structures</span>
-            <span class="sub-desc">Basics, Moderate & Advanced</span>
+        <!-- DIVISION 3: Data Structures & Algorithms -->
+        <div class="category-group collapsed" id="cat-dsa">
+          <button class="cat-header" onclick="toggleCategory('dsa')" title="Data Structures & Algorithms (Press 3)">
+            <div class="cat-title-wrap">
+              <span class="cat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="5" r="2.5" stroke="#22c55e"/>
+                  <circle cx="6" cy="18" r="2.5" stroke="#22c55e"/>
+                  <circle cx="18" cy="18" r="2.5" stroke="#22c55e"/>
+                  <path d="M10.5 7L7.5 15.5m6-8.5l3 8.5" stroke="#22c55e"/>
+                </svg>
+              </span>
+              <span class="cat-title">Data Structures & Algo</span>
+            </div>
+            <div class="cat-meta">
+              <kbd class="cat-shortcut">3</kbd>
+              <span class="cat-chevron">▾</span>
+            </div>
+          </button>
+          <div class="cat-content">
+            <button class="sub-btn" data-sub="dsa" onclick="switchSubject('dsa')" title="DS Theory: Basics, Moderate & Advanced (Press 3 then A)">
+              <span class="sub-icon" title="Data Structures Theory">
+                <!-- Connected Tree Graph Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="4" r="2.5" stroke="#22c55e" fill="rgba(34,197,94,0.25)"/>
+                  <circle cx="6" cy="12" r="2.5" stroke="#22c55e" fill="rgba(34,197,94,0.25)"/>
+                  <circle cx="18" cy="12" r="2.5" stroke="#22c55e" fill="rgba(34,197,94,0.25)"/>
+                  <circle cx="6" cy="20" r="2" stroke="#4ade80"/>
+                  <circle cx="18" cy="20" r="2" stroke="#4ade80"/>
+                  <path d="M12 6.5l-4.5 3.5m4.5-3.5l4.5 3.5M6 14.5v3.5M18 14.5v3.5" stroke="#4ade80"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <span class="sub-name">DS Theory & Blueprint</span>
+                <span class="sub-desc">Basics, Moderate & Advanced</span>
+              </div>
+              <kbd class="sub-shortcut">A</kbd>
+            </button>
+
+            <!-- Greyed out & Coming Soon -->
+            <button class="sub-btn sub-disabled" data-sub="dsa-code" onclick="showToast('DS Code & Memory Operations module is coming soon!', '⏳')" title="DS Code & Memory Operations (Coming Soon)">
+              <span class="sub-icon" title="Code Operations">
+                <!-- Code Brackets Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6" stroke="#facc15"/>
+                  <polyline points="8 6 2 12 8 18" stroke="#facc15"/>
+                  <line x1="14" y1="4" x2="10" y2="20" stroke="#94a3b8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">DS Code & Operations</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Insert, Delete & Reversal Code</span>
+              </div>
+              <kbd class="sub-shortcut">B</kbd>
+            </button>
+
+            <!-- Greyed out & Coming Soon -->
+            <button class="sub-btn sub-disabled" data-sub="dsa-algo" onclick="showToast('Algorithm Design & Patterns module is coming soon!', '⏳')" title="Algorithm Design & Patterns (Coming Soon)">
+              <span class="sub-icon" title="Algorithm Patterns">
+                <!-- Algorithm Flow Lightning Logo -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#facc15" fill="rgba(250,204,21,0.25)"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Algorithm Design</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Two Pointers, DP & Graphs</span>
+              </div>
+              <kbd class="sub-shortcut">C</kbd>
+            </button>
           </div>
-          <kbd class="sub-shortcut">6</kbd>
-        </button>
+        </div>
       </div>
 
+      <!-- Fixed Bottom-Left Shortcut Guide -->
       <div class="sidebar-footer">
         <div class="sidebar-tips">
-          <div>⌨️ <strong>Shortcuts</strong></div>
+          <div class="tips-header">
+            <span>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-right:4px;">
+                <rect x="2" y="4" width="20" height="16" rx="2" stroke="#94a3b8"/>
+                <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10" stroke="#94a3b8"/>
+              </svg>
+              <strong>Shortcuts</strong>
+            </span>
+          </div>
           <div class="tips-grid">
-            <span><kbd>1-6</kbd> Topic</span>
+            <span><kbd>1-3</kbd> Cat ➔ <kbd>A-C</kbd></span>
             <span><kbd>F</kbd> Fit</span>
-            <span><kbd>R</kbd> Recall</span>
             <span><kbd>/</kbd> Search</span>
+            <span><kbd>Esc</kbd> Cancel</span>
+            <span><kbd>Ctrl+B</kbd> Sidebar</span>
+            <span><kbd>R</kbd> Recall</span>
           </div>
         </div>
       </div>
@@ -995,7 +1488,11 @@
     <main id="canvas-container">
       <!-- Active Recall Banner -->
       <div class="recall-banner" id="recall-banner">
-        <span>🧠 Active Recall Mode ON:</span> Test yourself on each topic, then click circles to reveal answers!
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:4px;">
+          <path d="M9.5 2A4.5 4.5 0 0 0 5 6.5c0 1.6.8 3 2 3.8v2.7a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.7c1.2-.8 2-2.2 2-3.8A4.5 4.5 0 0 0 9.5 2z" stroke="#86efac"/>
+          <path d="M8 17h4m-3 3h2" stroke="#86efac"/>
+        </svg>
+        <span><strong>Active Recall Mode ON:</strong> Test yourself on each topic, then click circles to reveal answers!</span>
       </div>
 
       <svg id="mindmap-svg"></svg>
@@ -1004,16 +1501,36 @@
       <div class="hud-bar">
         <div class="hud-item">
           <div class="hud-dot"></div>
-          <span id="hud-subject-label">Java Learning Roadmap</span>
+          <span id="hud-subject-label">Java & JVM Ecosystem</span>
         </div>
-        <div class="hud-item">
-          <span>💡 Pan: <strong>Click & Drag</strong></span>
+        <div class="hud-item" title="Pan (Click & Drag)">
+          <svg viewBox="0 0 24 24" class="hud-action-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="5 9 2 12 5 15"/>
+            <polyline points="9 5 12 2 15 5"/>
+            <polyline points="15 19 12 22 9 19"/>
+            <polyline points="19 9 22 12 19 15"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <line x1="12" y1="2" x2="12" y2="22"/>
+          </svg>
+          <span><strong>Click & Drag</strong></span>
         </div>
-        <div class="hud-item">
-          <span>🔍 Zoom: <strong>Scroll Wheel</strong></span>
+        <div class="hud-item" title="Zoom (Scroll Wheel)">
+          <svg viewBox="0 0 24 24" class="hud-action-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+          <span><strong>Scroll Wheel</strong></span>
         </div>
-        <div class="hud-item">
-          <span>🌳 Fold/Unfold: <strong>Click Dots</strong></span>
+        <div class="hud-item" title="Fold / Unfold: Click circle dots on branches to collapse or expand">
+          <!-- Interactive Node Dot Toggle Icon (Expand/Collapse Circle) -->
+          <svg viewBox="0 0 24 24" class="hud-action-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+          </svg>
+          <span><strong>Click Dots</strong></span>
         </div>
       </div>
     </main>
@@ -2411,6 +2928,14 @@ markmap:
       document.querySelectorAll('.sub-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.sub === subjectId);
       });
+      // Auto-expand parent category
+      if (subjectId === 'java' || subjectId === 'python') {
+        expandCategory('languages');
+      } else if (subjectId === 'os' || subjectId === 'networking' || subjectId === 'sql') {
+        expandCategory('cscore');
+      } else if (subjectId === 'dsa') {
+        expandCategory('dsa');
+      }
       loadSubject(subjectId, currentDepth);
     }
 
@@ -2445,12 +2970,12 @@ markmap:
 
       // Update HUD
       const labels = {
-        java: '☕ Java Learning Roadmap & Interview Prep',
-        python: '🐍 Python Learning Roadmap & Interview Prep',
-        os: '🖥️ Operating Systems Learning Roadmap',
-        networking: '🌐 Computer Networking Roadmap',
-        sql: '🗄️ SQL & Databases Learning Roadmap',
-        dsa: '🧱 Data Structures (Theory) Roadmap'
+        java: 'Java & JVM Ecosystem Roadmap',
+        python: 'Python & CPython Internals Roadmap',
+        os: 'Operating Systems & Kernel Roadmap',
+        networking: 'Computer Networks & Protocols Roadmap',
+        sql: 'SQL & Database Systems Roadmap',
+        dsa: 'Data Structures (Theory & Blueprint) Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -2547,7 +3072,117 @@ markmap:
       }, 200);
     }
 
-    // Interactive Keyboard Shortcuts (1-5, F, R, /, Ctrl+B)
+    // Exclusive Accordion Category Toggles
+    const ALL_CATEGORIES = ['languages', 'cscore', 'dsa'];
+
+    function toggleCategory(catId) {
+      const targetEl = document.getElementById('cat-' + catId);
+      if (!targetEl) return;
+      const wasCollapsed = targetEl.classList.contains('collapsed');
+
+      if (wasCollapsed) {
+        // Expand clicked division, collapse all other divisions
+        ALL_CATEGORIES.forEach(id => {
+          const el = document.getElementById('cat-' + id);
+          if (el) {
+            if (id === catId) {
+              el.classList.remove('collapsed');
+            } else {
+              el.classList.add('collapsed');
+            }
+          }
+        });
+        armChord(catId === 'languages' ? '1' : catId === 'cscore' ? '2' : '3');
+      } else {
+        targetEl.classList.add('collapsed');
+        disarmChord();
+      }
+    }
+
+    function expandCategory(catId) {
+      ALL_CATEGORIES.forEach(id => {
+        const el = document.getElementById('cat-' + id);
+        if (el) {
+          if (id === catId) {
+            el.classList.remove('collapsed');
+          } else {
+            el.classList.add('collapsed');
+          }
+        }
+      });
+    }
+
+    // Modal Sequential Chord Navigation Engine
+    let activeChordCategory = null;
+    let chordTimeout = null;
+
+    function armChord(categoryNum) {
+      disarmChord();
+      activeChordCategory = categoryNum;
+      const catMap = {
+        '1': { id: 'cat-languages', name: 'Languages & Runtimes', keys: '[A] Java, [B] Python' },
+        '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL' },
+        '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' }
+      };
+      const info = catMap[categoryNum];
+      if (!info) return;
+
+      expandCategory(info.id.replace('cat-', ''));
+      const groupEl = document.getElementById(info.id);
+      if (groupEl) groupEl.classList.add('chord-armed');
+
+      showToast(`⚡ ${info.name}: Press ${info.keys}`, '⌨️');
+
+      chordTimeout = setTimeout(() => {
+        disarmChord();
+      }, 3500);
+    }
+
+    function disarmChord() {
+      activeChordCategory = null;
+      if (chordTimeout) clearTimeout(chordTimeout);
+      document.querySelectorAll('.category-group').forEach(el => el.classList.remove('chord-armed'));
+    }
+
+    function handleChordKey(letter) {
+      const char = letter.toLowerCase();
+      if (!activeChordCategory) return false;
+
+      if (activeChordCategory === '1') {
+        if (char === 'a') { switchSubject('java'); disarmChord(); return true; }
+        if (char === 'b') { switchSubject('python'); disarmChord(); return true; }
+      } else if (activeChordCategory === '2') {
+        if (char === 'a') { switchSubject('os'); disarmChord(); return true; }
+        if (char === 'b') { switchSubject('networking'); disarmChord(); return true; }
+        if (char === 'c') { switchSubject('sql'); disarmChord(); return true; }
+      } else if (activeChordCategory === '3') {
+        if (char === 'a') { switchSubject('dsa'); disarmChord(); return true; }
+        if (char === 'b') { showToast('💻 DS Code & Memory Operations module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'c') { showToast('⚡ Algorithm Design & Patterns module is coming soon!', '⏳'); disarmChord(); return true; }
+      }
+      return false;
+    }
+
+    let toastTimeout = null;
+    function showToast(message, icon = '🚀') {
+      let toast = document.getElementById('synapse-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'synapse-toast';
+        toast.className = 'synapse-toast';
+        toast.innerHTML = `<span id="toast-icon"></span><span id="toast-message"></span>`;
+        document.body.appendChild(toast);
+      }
+      document.getElementById('toast-icon').innerText = icon;
+      document.getElementById('toast-message').innerText = message;
+      toast.classList.add('show');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Interactive Keyboard Shortcuts (1-3 Accordion Chords, F, R, /, Ctrl+B)
     window.addEventListener('keydown', (e) => {
       if (document.activeElement && document.activeElement.tagName === 'INPUT') {
         if (e.key === 'Escape') {
@@ -2556,12 +3191,36 @@ markmap:
         return;
       }
 
-      if (e.key === '1') { switchSubject('java'); }
-      else if (e.key === '2') { switchSubject('python'); }
-      else if (e.key === '3') { switchSubject('os'); }
-      else if (e.key === '4') { switchSubject('networking'); }
-      else if (e.key === '5') { switchSubject('sql'); }
-      else if (e.key === '6') { switchSubject('dsa'); }
+      // Escape cancels armed chord mode
+      if (e.key === 'Escape') {
+        if (activeChordCategory) {
+          disarmChord();
+          showToast('Chord navigation cancelled', '✕');
+          return;
+        }
+      }
+
+      // Check if modal chord key (A, B, C) was pressed
+      if (activeChordCategory && (e.key.toLowerCase() === 'a' || e.key.toLowerCase() === 'b' || e.key.toLowerCase() === 'c')) {
+        if (handleChordKey(e.key)) {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      // Category / Division Accordion Shortcuts
+      if (e.key === '1') {
+        e.preventDefault();
+        armChord('1');
+      }
+      else if (e.key === '2') {
+        e.preventDefault();
+        armChord('2');
+      }
+      else if (e.key === '3') {
+        e.preventDefault();
+        armChord('3');
+      }
       else if (e.key.toLowerCase() === 'f') { resetFit(); }
       else if (e.key.toLowerCase() === 'r') { toggleActiveRecall(); }
       else if (e.key === '/') {
@@ -2578,5 +3237,11 @@ markmap:
     window.addEventListener('load', init);
     window.addEventListener('resize', () => { if (mmInstance) mmInstance.fit(); });
   </script>
+
+  <!-- Floating Toast Notification -->
+  <div id="synapse-toast" class="synapse-toast">
+    <span id="toast-icon">🚀</span>
+    <span id="toast-message">Notification</span>
+  </div>
 </body>
 </html>

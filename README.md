@@ -106,16 +106,18 @@ SynapseFlow/
 
 ## ⌨️ Studio Shortcuts (Built for Speed)
 
-When studying in the web studio, I mapped everything to quick hotkeys:
+When studying in the web studio, navigate topics with quick hotkeys and modal chords:
 
 | Key | Action |
 | :---: | :--- |
-| `1` - `6` | Switch subjects instantly (`1` Java, `2` Python, `3` OS, `4` Networks, `5` SQL, `6` DSA) |
+| `1` $\rightarrow$ `A` / `B` | **Languages & Runtimes**: `1` then `A` for Java, `1` then `B` for Python |
+| `2` $\rightarrow$ `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
+| `3` $\rightarrow$ `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |
 | `Ctrl + B` | Toggle the **Subject Sidebar** |
-| `Esc` | Exit search |
+| `Esc` | Disarm chord navigation or exit search |
 
 ---
 
