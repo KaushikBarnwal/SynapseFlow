@@ -18,7 +18,8 @@ const subjectMap = {
   'networking-prep.md': 'networking',
   'sql-prep.md': 'sql',
   'dsa-prep.md': 'dsa',
-  'git-prep.md': 'git'
+  'git-prep.md': 'git',
+  'docker-prep.md': 'docker'
 };
 
 console.log('⚡ SynapseFlow: Syncing subjects/ -> data/*.js ...');

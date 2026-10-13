@@ -38,9 +38,9 @@ markmap:
 - \`git config --global user.email "email"\`: Sets committer email (must match GitHub profile for verified badge)
 - \`git config --list --show-origin\`: Displays all active configurations and the config files defining them
 - **Configuration Hierarchy (Interview Trap)**:
-  - \`Local\` (\`.git/config\`) $\\rightarrow$ Overrides \`Global\`
-  - \`Global\` (\`~/.gitconfig\`) $\\rightarrow$ Overrides \`System\`
-  - \`System\` (\`/etc/gitconfig\`) $\\rightarrow$ Fallback machine-wide defaults
+  - \`Local\` (\`.git/config\`) → Overrides \`Global\`
+  - \`Global\` (\`~/.gitconfig\`) → Overrides \`System\`
+  - \`System\` (\`/etc/gitconfig\`) → Fallback machine-wide defaults
 
 ## 3. Basic Workflow & Commit Lifecycle
 ### Staging Operations
@@ -111,7 +111,7 @@ markmap:
 - \`git reflog\`: Local ledger recording every single HEAD movement (checkouts, commits, rebases, hard resets)
 - **Recovering "Accidentally Deleted" Commits**:
   - Even after \`git reset --hard\`, old commit object remains in reflog for ~30-90 days before garbage collection (\`git gc\`)
-  - Locate lost commit SHA in reflog $\\rightarrow$ \`git reset --hard <sha>\` or \`git branch recovery <sha>\`
+  - Locate lost commit SHA in reflog → \`git reset --hard <sha>\` or \`git branch recovery <sha>\`
 
 ## 6. Stashing, Forensics & Power Tools
 ### Context Switching with Stash
@@ -130,7 +130,7 @@ markmap:
 ### Advanced Bug Hunting & Cherry-Picking
 - \`git bisect\`:
   - Binary search algorithm through commit history to isolate exact commit that introduced regression
-  - \`git bisect start\` $\\rightarrow$ \`git bisect bad\` $\\rightarrow$ \`git bisect good <commit>\` $\\rightarrow$ test $\\rightarrow$ \`git bisect reset\`
+  - \`git bisect start\` → \`git bisect bad\` → \`git bisect good <commit>\` → test → \`git bisect reset\`
 - \`git cherry-pick <commit>\`: Copies and replays a specific commit from an external branch onto current HEAD
 
 ## 7. Remote Repositories, GitHub & Team Workflows
@@ -146,9 +146,9 @@ markmap:
   - \`Fork\`: Creates remote copy of repository under your personal GitHub account (open source contribution model)
   - \`Clone\`: Downloads local copy of any accessible repository to your physical workstation
 - **Pull Request (PR) Lifecycle**:
-  - Feature branch created $\\rightarrow$ commits pushed $\\rightarrow$ PR opened with description & issue link
+  - Feature branch created → commits pushed → PR opened with description & issue link
   - Automated CI checks trigger (unit tests, linters, security scans)
-  - Peer code review $\\rightarrow$ approvals $\\rightarrow$ merge into main branch
+  - Peer code review → approvals → merge into main branch
 - **GitHub Merge Strategies**:
   - **Create a merge commit**: Retains full branch history and individual commit hashes
   - **Squash and merge**: Condenses all feature branch commits into a single clean commit on base branch
