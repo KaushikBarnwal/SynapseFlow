@@ -17,7 +17,8 @@ const subjectMap = {
   'os-prep.md': 'os',
   'networking-prep.md': 'networking',
   'sql-prep.md': 'sql',
-  'dsa-prep.md': 'dsa'
+  'dsa-prep.md': 'dsa',
+  'git-prep.md': 'git'
 };
 
 console.log('⚡ SynapseFlow: Syncing subjects/ -> data/*.js ...');
