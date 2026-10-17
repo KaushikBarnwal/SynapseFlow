@@ -1,6 +1,6 @@
 # 👨‍💻 SynapseFlow
 ### The Visual Knowledge Engine & Active Recall System for Software Engineers
-*(Python • Java • Operating Systems • Computer Networking • SQL & Databases)*
+*(Python • Java • Operating Systems • Computer Networking • SQL & Databases • Git & GitHub • Docker • Kubernetes)*
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-38bdf8?style=for-the-badge&logo=github)](https://kaushikbarnwal.github.io/SynapseFlow/)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-22c55e?style=for-the-badge)](index.html)
@@ -16,7 +16,7 @@ Instead of flipping through 50-page PDFs or flat Notion checklists, I built Syna
 
 ## 💡 Why I Built This
 
-When prepping for tech interviews across multiple domains (Python, Java, OS, Networks, Databases), I ran into three big frustrations:
+When prepping for tech interviews across multiple domains (Python, Java, OS, Networks, Databases, DevOps & Tooling), I ran into three big frustrations:
 
 1. **Information Overload**: Traditional docs are linear and flat. You lose sight of the big picture and forget how low-level OS memory maps to the JVM Heap or DB Buffer Pools.
 2. **Passive Reading vs. Active Recall**: Staring at solved answers tricks your brain into thinking you know it. I needed a tool that hides the answers by default and forces me to explain the mechanics before expanding.
@@ -83,14 +83,20 @@ SynapseFlow/
 │   ├── os-prep.md                # Operating Systems, CPU scheduling, Virtual Memory & Locks
 │   ├── networking-prep.md        # Computer Networks, OSI layers, TCP/UDP & Protocols
 │   ├── sql-prep.md               # SQL, DDL/DML, Execution Order, Joins & PL/SQL
-│   └── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
+│   ├── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
+│   ├── git-prep.md               # Git 3 Trees, Object Model, Fast-Forward/Rebase & Recovery
+│   ├── docker-prep.md            # Docker Namespaces, Cgroups, Multi-Stage Builds & Compose
+│   └── k8s-prep.md               # Kubernetes Control Plane, Worker Nodes, Networking & Storage
 ├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
 │   ├── java.js                   # Compiled Java curriculum module
 │   ├── python.js                 # Compiled Python curriculum module
 │   ├── os.js                     # Compiled Operating Systems module
 │   ├── networking.js             # Compiled Computer Networks module
 │   ├── sql.js                    # Compiled Databases & SQL module
-│   └── dsa.js                    # Compiled Data Structures Theory module
+│   ├── dsa.js                    # Compiled Data Structures Theory module
+│   ├── git.js                    # Compiled Git & GitHub module
+│   ├── docker.js                 # Compiled Docker & Containers module
+│   └── k8s.js                    # Compiled Kubernetes module
 ├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
@@ -109,6 +115,9 @@ SynapseFlow/
 | **Computer Networks** | **[`subjects/networking-prep.md`](subjects/networking-prep.md)** | OSI 7 Layers, Key Protocols (DNS, DHCP, ARP, TCP 3-Way Handshake, UDP, HTTP/1.1 vs HTTP/2 vs HTTP/3, WebSockets, TLS 1.3), CIDR Subnetting math. |
 | **SQL & Databases** | **[`subjects/sql-prep.md`](subjects/sql-prep.md)** | DDL vs DML (`TRUNCATE` vs `DELETE`), Query Execution Order, All Joins & Anti-Joins, Normalization (1NF-BCNF, OLTP vs OLAP), PL/SQL (Procedures, Triggers, Cursors), B+ Trees, ACID & Isolation. |
 | **Data Structures (Theory)** | **[`subjects/dsa-prep.md`](subjects/dsa-prep.md)** | Complexity Asymptotics, Cache Locality, Dynamic Arrays, Circular Deque, HashMap collisions & treeification, BST deletions, Heaps Floyd construction, Self-balancing (AVL & Red-Black), DSU, Tries, B/B+ Trees, LRU/LFU cache, Bloom Filters. |
+| **Git & GitHub** | **[`subjects/git-prep.md`](subjects/git-prep.md)** | 3 Trees Architecture (Working, Staging, HEAD), Object Storage (Blob, Tree, Commit, Tag), Fast-Forward vs 3-Way Merge, Merge vs Rebase, Soft/Mixed/Hard Reset, `git reflog` disaster recovery, `git bisect`, Branch Protection & PR workflows. |
+| **Docker & Containers** | **[`subjects/docker-prep.md`](subjects/docker-prep.md)** | Container vs VM, Linux Namespaces & Cgroups, UnionFS/Overlay2, Image layer caching, `CMD` vs `ENTRYPOINT`, `COPY` vs `ADD`, Multi-stage builds, Volumes vs Bind Mounts, Network drivers, Docker Compose orchestration, Security & non-root containers. |
+| **Kubernetes (K8s)** | **[`subjects/k8s-prep.md`](subjects/k8s-prep.md)** | Control Plane (`kube-apiserver`, `etcd` Raft quorum, `kube-scheduler` 2-phase filtering/scoring, `controller-manager`), Worker nodes (`kubelet`, `kube-proxy` iptables/IPVS), Deployments vs StatefulSets vs DaemonSets, Probes, Services, Ingress, PV/PVC/StorageClasses, and Forensics (`CrashLoopBackOff`, `OOMKilled`). |
 
 ---
 
@@ -118,9 +127,10 @@ When studying in the web studio, navigate topics with quick hotkeys and modal ch
 
 | Key | Action |
 | :---: | :--- |
-| `1` $\rightarrow$ `A` / `B` | **Languages & Runtimes**: `1` then `A` for Java, `1` then `B` for Python |
-| `2` $\rightarrow$ `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
-| `3` $\rightarrow$ `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
+| `1` → `A` / `B` | **Languages & Runtimes**: `1` then `A` for Java, `1` then `B` for Python |
+| `2` → `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
+| `3` → `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
+| `4` → `A` / `B` / `C` / `D` | **Modern Tooling & Infra**: `4` then `A` for Git, `B` for Docker, `C` for K8s, `D` for Postman *(Soon)* |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |
