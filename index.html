@@ -1526,8 +1526,8 @@
               </div>
               <kbd class="sub-shortcut">C</kbd>
             </button>
-            <!-- Postman & API Tools: Greyed out & Coming Soon -->
-            <button class="sub-btn sub-disabled" data-sub="postman" onclick="showToast('Postman & API Tools module is coming soon!', '⏳')" title="Postman & API Tools (Coming Soon)">
+            <!-- Postman & API Tools -->
+            <button class="sub-btn" data-sub="postman" onclick="switchSubject('postman')" title="Postman: REST, Token Chaining & Newman CI (Press 4 then D)">
               <span class="sub-icon" title="Postman">
                 <!-- API / Rocket Logo -->
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1536,10 +1536,7 @@
                 </svg>
               </span>
               <div class="sub-info">
-                <div class="sub-name-wrap">
-                  <span class="sub-name">Postman & APIs</span>
-                  <span class="badge-soon">SOON</span>
-                </div>
+                <span class="sub-name">Postman & APIs</span>
                 <span class="sub-desc">REST, Mocking & CI Tests</span>
               </div>
               <kbd class="sub-shortcut">D</kbd>
@@ -1640,6 +1637,7 @@
   <script src="data/git.js"></script>
   <script src="data/docker.js"></script>
   <script src="data/k8s.js"></script>
+  <script src="data/postman.js"></script>
 
   <!-- STUDIO CLIENT LOGIC -->
   <script>
@@ -1672,7 +1670,7 @@
         expandCategory('cscore');
       } else if (subjectId === 'dsa') {
         expandCategory('dsa');
-      } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s') {
+      } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
       }
       loadSubject(subjectId, currentDepth);
@@ -1722,7 +1720,8 @@
         dsa: 'Data Structures (Theory & Blueprint) Roadmap',
         git: 'Git & GitHub Architecture & CLI Roadmap',
         docker: 'Docker & Containerization Ecosystem Roadmap',
-        k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap'
+        k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
+        postman: 'Postman & API Lifecycle Engineering Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -1870,7 +1869,7 @@
         '1': { id: 'cat-languages', name: 'Languages & Runtimes', keys: '[A] Java, [B] Python' },
         '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL' },
         '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' },
-        '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman (Soon)' }
+        '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' }
       };
       const info = catMap[categoryNum];
       if (!info) return;
@@ -1911,7 +1910,7 @@
         if (char === 'a') { switchSubject('git'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('docker'); disarmChord(); return true; }
         if (char === 'c') { switchSubject('k8s'); disarmChord(); return true; }
-        if (char === 'd') { showToast('🚀 Postman & API Tools module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'd') { switchSubject('postman'); disarmChord(); return true; }
       }
       return false;
     }

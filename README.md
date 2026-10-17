@@ -1,6 +1,6 @@
 # 👨‍💻 SynapseFlow
 ### The Visual Knowledge Engine & Active Recall System for Software Engineers
-*(Python • Java • Operating Systems • Computer Networking • SQL & Databases • Git & GitHub • Docker • Kubernetes)*
+*(Python • Java • Operating Systems • Computer Networking • SQL & Databases • Git & GitHub • Docker • Kubernetes • Postman & APIs)*
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-38bdf8?style=for-the-badge&logo=github)](https://kaushikbarnwal.github.io/SynapseFlow/)
 [![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-22c55e?style=for-the-badge)](index.html)
@@ -86,7 +86,8 @@ SynapseFlow/
 │   ├── dsa-prep.md               # Data Structures Theory (Basics, Moderate & Advanced)
 │   ├── git-prep.md               # Git 3 Trees, Object Model, Fast-Forward/Rebase & Recovery
 │   ├── docker-prep.md            # Docker Namespaces, Cgroups, Multi-Stage Builds & Compose
-│   └── k8s-prep.md               # Kubernetes Control Plane, Worker Nodes, Networking & Storage
+│   ├── k8s-prep.md               # Kubernetes Control Plane, Worker Nodes, Networking & Storage
+│   └── postman-prep.md           # Postman HTTP/REST, Auth, Token Chaining & Newman CI
 ├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
 │   ├── java.js                   # Compiled Java curriculum module
 │   ├── python.js                 # Compiled Python curriculum module
@@ -96,7 +97,8 @@ SynapseFlow/
 │   ├── dsa.js                    # Compiled Data Structures Theory module
 │   ├── git.js                    # Compiled Git & GitHub module
 │   ├── docker.js                 # Compiled Docker & Containers module
-│   └── k8s.js                    # Compiled Kubernetes module
+│   ├── k8s.js                    # Compiled Kubernetes module
+│   └── postman.js                # Compiled Postman & API Lifecycle module
 ├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
@@ -118,6 +120,7 @@ SynapseFlow/
 | **Git & GitHub** | **[`subjects/git-prep.md`](subjects/git-prep.md)** | 3 Trees Architecture (Working, Staging, HEAD), Object Storage (Blob, Tree, Commit, Tag), Fast-Forward vs 3-Way Merge, Merge vs Rebase, Soft/Mixed/Hard Reset, `git reflog` disaster recovery, `git bisect`, Branch Protection & PR workflows. |
 | **Docker & Containers** | **[`subjects/docker-prep.md`](subjects/docker-prep.md)** | Container vs VM, Linux Namespaces & Cgroups, UnionFS/Overlay2, Image layer caching, `CMD` vs `ENTRYPOINT`, `COPY` vs `ADD`, Multi-stage builds, Volumes vs Bind Mounts, Network drivers, Docker Compose orchestration, Security & non-root containers. |
 | **Kubernetes (K8s)** | **[`subjects/k8s-prep.md`](subjects/k8s-prep.md)** | Control Plane (`kube-apiserver`, `etcd` Raft quorum, `kube-scheduler` 2-phase filtering/scoring, `controller-manager`), Worker nodes (`kubelet`, `kube-proxy` iptables/IPVS), Deployments vs StatefulSets vs DaemonSets, Probes, Services, Ingress, PV/PVC/StorageClasses, and Forensics (`CrashLoopBackOff`, `OOMKilled`). |
+| **Postman & APIs** | **[`subjects/postman-prep.md`](subjects/postman-prep.md)** | REST Constraints, Idempotency & Safety (`PUT` vs `PATCH`), HTTP Status Code taxonomy, Bearer JWT & OAuth 2.0 PKCE, Pre-request & Chai.js Test scripts, Dynamic Token Chaining, Mock Servers, Newman CLI headless CI/CD automation, and CORS preflight forensics. |
 
 ---
 
@@ -130,7 +133,7 @@ When studying in the web studio, navigate topics with quick hotkeys and modal ch
 | `1` → `A` / `B` | **Languages & Runtimes**: `1` then `A` for Java, `1` then `B` for Python |
 | `2` → `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
 | `3` → `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
-| `4` → `A` / `B` / `C` / `D` | **Modern Tooling & Infra**: `4` then `A` for Git, `B` for Docker, `C` for K8s, `D` for Postman *(Soon)* |
+| `4` → `A` / `B` / `C` / `D` | **Modern Tooling & Infra**: `4` then `A` for Git, `B` for Docker, `C` for K8s, `D` for Postman |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |

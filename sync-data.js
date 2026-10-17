@@ -20,7 +20,8 @@ const subjectMap = {
   'dsa-prep.md': 'dsa',
   'git-prep.md': 'git',
   'docker-prep.md': 'docker',
-  'k8s-prep.md': 'k8s'
+  'k8s-prep.md': 'k8s',
+  'postman-prep.md': 'postman'
 };
 
 console.log('⚡ SynapseFlow: Syncing subjects/ -> data/*.js ...');
