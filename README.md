@@ -87,7 +87,8 @@ SynapseFlow/
 │   ├── git-prep.md               # Git 3 Trees, Object Model, Fast-Forward/Rebase & Recovery
 │   ├── docker-prep.md            # Docker Namespaces, Cgroups, Multi-Stage Builds & Compose
 │   ├── k8s-prep.md               # Kubernetes Control Plane, Worker Nodes, Networking & Storage
-│   └── postman-prep.md           # Postman HTTP/REST, Auth, Token Chaining & Newman CI
+│   ├── postman-prep.md           # Postman HTTP/REST, Auth, Token Chaining & Newman CI
+│   └── js-ts-prep.md             # JavaScript & TypeScript: V8, Event Loop, Closures & Type System
 ├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
 │   ├── java.js                   # Compiled Java curriculum module
 │   ├── python.js                 # Compiled Python curriculum module
@@ -98,7 +99,8 @@ SynapseFlow/
 │   ├── git.js                    # Compiled Git & GitHub module
 │   ├── docker.js                 # Compiled Docker & Containers module
 │   ├── k8s.js                    # Compiled Kubernetes module
-│   └── postman.js                # Compiled Postman & API Lifecycle module
+│   ├── postman.js                # Compiled Postman & API Lifecycle module
+│   └── js-ts.js                  # Compiled JavaScript & TypeScript module
 ├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
@@ -121,6 +123,7 @@ SynapseFlow/
 | **Docker & Containers** | **[`subjects/docker-prep.md`](subjects/docker-prep.md)** | Container vs VM, Linux Namespaces & Cgroups, UnionFS/Overlay2, Image layer caching, `CMD` vs `ENTRYPOINT`, `COPY` vs `ADD`, Multi-stage builds, Volumes vs Bind Mounts, Network drivers, Docker Compose orchestration, Security & non-root containers. |
 | **Kubernetes (K8s)** | **[`subjects/k8s-prep.md`](subjects/k8s-prep.md)** | Control Plane (`kube-apiserver`, `etcd` Raft quorum, `kube-scheduler` 2-phase filtering/scoring, `controller-manager`), Worker nodes (`kubelet`, `kube-proxy` iptables/IPVS), Deployments vs StatefulSets vs DaemonSets, Probes, Services, Ingress, PV/PVC/StorageClasses, and Forensics (`CrashLoopBackOff`, `OOMKilled`). |
 | **Postman & APIs** | **[`subjects/postman-prep.md`](subjects/postman-prep.md)** | REST Constraints, Idempotency & Safety (`PUT` vs `PATCH`), HTTP Status Code taxonomy, Bearer JWT & OAuth 2.0 PKCE, Pre-request & Chai.js Test scripts, Dynamic Token Chaining, Mock Servers, Newman CLI headless CI/CD automation, and CORS preflight forensics. |
+| **JavaScript & TS** | **[`subjects/js-ts-prep.md`](subjects/js-ts-prep.md)** | V8 Engine pipeline (Ignition bytecode, TurboFan JIT, Hidden Classes & Inline Caching), Event Loop & Microtask Queue starvation, Execution Contexts & Temporal Dead Zone (TDZ), 4 Rules of `this` binding, Prototypal Inheritance & prototype chain lookups, Closures & Memory Leaks, Hand-written Polyfills (`debounce`, `throttle`, `deepClone`), TypeScript Type System (`infer`, Conditional Types, Mapped Types, Discriminated Unions), and Critical Rendering Path (CRP, Reflow vs Repaint). |
 
 ---
 
@@ -134,6 +137,7 @@ When studying in the web studio, navigate topics with quick hotkeys and modal ch
 | `2` → `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
 | `3` → `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
 | `4` → `A` / `B` / `C` / `D` | **Modern Tooling & Infra**: `4` then `A` for Git, `B` for Docker, `C` for K8s, `D` for Postman |
+| `5` → `A` | **Full-Stack & Web Ecosystem**: `5` then `A` for JavaScript & TypeScript |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |
@@ -149,10 +153,10 @@ Here is the exact method I use to study and retain these concepts:
 1. **Step 1 — The Macro Scaffold**: I start at depth `L1` or `L2` to absorb the bird's-eye view of how the domain is structured.
 2. **Step 2 — Prompt & Self-Test**: I press `R` to turn on Active Recall. I look at a topic title (like *“`__new__` vs `__init__`”* or *“`TRUNCATE` vs `DELETE`”*), explain the internal mechanics out loud in 60 seconds, and then click the node to verify my answer.
 3. **Step 3 — Cross-Domain Neural Linking**: I connect the dots across different subjects:
-   - OS Virtual Memory $\longleftrightarrow$ JVM Heap/Metaspace $\longleftrightarrow$ DB Buffer Pool
-   - OS Kernel Threads $\longleftrightarrow$ Java Virtual Threads $\longleftrightarrow$ Python GIL
-   - OS Mutex/Semaphores $\longleftrightarrow$ Java `synchronized` $\longleftrightarrow$ SQL Row-Level Locks
-   - Network Sockets $\longleftrightarrow$ OS IPC $\longleftrightarrow$ Python Asyncio Event Loop
+   - OS Virtual Memory ⟷ JVM Heap/Metaspace ⟷ DB Buffer Pool
+   - OS Kernel Threads ⟷ Java Virtual Threads ⟷ Python GIL
+   - OS Mutex/Semaphores ⟷ Java `synchronized` ⟷ SQL Row-Level Locks
+   - Network Sockets ⟷ OS IPC ⟷ Python Asyncio Event Loop
 
 ---
 

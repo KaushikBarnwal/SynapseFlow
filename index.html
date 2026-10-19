@@ -1656,7 +1656,7 @@
           </button>
           <div class="cat-content">
             <!-- JavaScript & TypeScript -->
-            <button class="sub-btn sub-disabled" data-sub="js" onclick="showToast('JavaScript & TypeScript Internals module is coming soon!', '⏳')" title="JavaScript: V8, Event Loop & Closures (Coming Soon)">
+            <button class="sub-btn" data-sub="js-ts" onclick="switchSubject('js-ts')" title="JavaScript & TypeScript: V8, Event Loop & Generics (Press 5 then A)">
               <span class="sub-icon" title="JavaScript & TypeScript">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" stroke="#facc15" fill="rgba(250,204,21,0.15)"/>
@@ -1664,10 +1664,7 @@
                 </svg>
               </span>
               <div class="sub-info">
-                <div class="sub-name-wrap">
-                  <span class="sub-name">JavaScript & TS</span>
-                  <span class="badge-soon">SOON</span>
-                </div>
+                <span class="sub-name">JavaScript & TS</span>
                 <span class="sub-desc">V8, Event Loop & Closures</span>
               </div>
               <kbd class="sub-shortcut">A</kbd>
@@ -1997,6 +1994,9 @@
   <script src="data/k8s.js"></script>
   <script src="data/postman.js"></script>
 
+  <!-- MODULAR CURRICULA: Full-Stack & Web Ecosystem Division (100% Offline Safe, Zero CORS) -->
+  <script src="data/js-ts.js"></script>
+
   <!-- STUDIO CLIENT LOGIC -->
   <script>
     let currentSubject = 'java';
@@ -2019,8 +2019,18 @@
     function switchSubject(subjectId) {
       currentSubject = subjectId;
       document.querySelectorAll('.sub-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sub === subjectId);
+        const isActive = btn.dataset.sub === subjectId;
+        btn.classList.toggle('active', isActive);
+        if (isActive) {
+          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
+      // Clear active search when switching subjects to avoid stale state
+      const searchInput = document.getElementById('search-input');
+      if (searchInput && searchInput.value) {
+        searchInput.value = '';
+        document.querySelectorAll('.search-highlight').forEach(el => el.classList.remove('search-highlight'));
+      }
       // Auto-expand parent category
       if (subjectId === 'java' || subjectId === 'python') {
         expandCategory('languages');
@@ -2030,6 +2040,8 @@
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
+      } else if (subjectId === 'js-ts') {
+        expandCategory('web');
       }
       loadSubject(subjectId, currentDepth);
     }
@@ -2079,7 +2091,8 @@
         git: 'Git & GitHub Architecture & CLI Roadmap',
         docker: 'Docker & Containerization Ecosystem Roadmap',
         k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
-        postman: 'Postman & API Lifecycle Engineering Roadmap'
+        postman: 'Postman & API Lifecycle Engineering Roadmap',
+        'js-ts': 'JavaScript & TypeScript Internals Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -2136,11 +2149,41 @@
       if (mmInstance) mmInstance.fit();
     }
 
+    function searchAndExpandTree(node, query) {
+      let hasMatch = false;
+      if (node.content && node.content.toLowerCase().includes(query)) {
+        hasMatch = true;
+      }
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          if (searchAndExpandTree(child, query)) {
+            hasMatch = true;
+          }
+        });
+      }
+      if (hasMatch && node.payload) {
+        node.payload.fold = 0; // Unfold ancestor branch so matching node is rendered
+      }
+      return hasMatch;
+    }
+
     function handleSearch() {
       const query = document.getElementById('search-input').value.toLowerCase().trim();
       document.querySelectorAll('.search-highlight').forEach(el => el.classList.remove('search-highlight'));
-
-      if (!query) return;
+      if (!query) {
+        if (currentRoot && mmInstance) {
+          applyDepthToNode(currentRoot, currentDepth);
+          mmInstance.setData(currentRoot);
+          mmInstance.fit();
+        }
+        return;
+      }
+      if (currentRoot && mmInstance) {
+        // Reset to base depth, then unfold branches containing search matches
+        applyDepthToNode(currentRoot, currentDepth);
+        searchAndExpandTree(currentRoot, query);
+        mmInstance.setData(currentRoot);
+      }
 
       let firstMatch = null;
       document.querySelectorAll('.markmap-node').forEach(node => {
@@ -2164,7 +2207,6 @@
         }, 260);
       }
     }
-
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -2228,8 +2270,8 @@
         '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL, [D] Postgres (Soon), [E] MySQL (Soon), [F] Mongo (Soon)' },
         '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' },
         '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' },
-        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS, [B] HTML/CSS, [C] React, [D] Next, [E] Vue, [F] Node, [G] Django' },
-        '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy, [B] Pandas, [C] Viz, [D] Sklearn, [E] TensorFlow' }
+        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS (Soon), [C] React (Soon), [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
+        '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy (Soon), [B] Pandas (Soon), [C] Viz (Soon), [D] Sklearn (Soon), [E] TensorFlow (Soon)' }
       };
       const info = catMap[categoryNum];
       if (!info) return;
@@ -2277,7 +2319,7 @@
         if (char === 'c') { switchSubject('k8s'); disarmChord(); return true; }
         if (char === 'd') { switchSubject('postman'); disarmChord(); return true; }
       } else if (activeChordCategory === '5') {
-        if (char === 'a') { showToast('💛 JavaScript & TypeScript Internals module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'a') { switchSubject('js-ts'); disarmChord(); return true; }
         if (char === 'b') { showToast('🎨 HTML5 & Modern CSS module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'c') { showToast('⚛️ React Ecosystem module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'd') { showToast('▲ Next.js Full-Stack module is coming soon!', '⏳'); disarmChord(); return true; }
@@ -2317,6 +2359,8 @@
     window.addEventListener('keydown', (e) => {
       if (document.activeElement && document.activeElement.tagName === 'INPUT') {
         if (e.key === 'Escape') {
+          document.activeElement.value = '';
+          handleSearch();
           document.activeElement.blur();
         }
         return;
