@@ -1248,7 +1248,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <span class="sidebar-heading">Curriculum</span>
-        <span class="sidebar-badge">4 Divisions</span>
+        <span class="sidebar-badge">6 Divisions</span>
       </div>
 
       <div class="sidebar-subjects">
@@ -1303,6 +1303,42 @@
                 <span class="sub-desc">Internals, GIL & Traps</span>
               </div>
               <kbd class="sub-shortcut">B</kbd>
+            </button>
+
+            <!-- C & C++ (Coming Soon) -->
+            <button class="sub-btn sub-disabled" data-sub="cpp" onclick="showToast('C & C++ Systems Programming module is coming soon!', '⏳')" title="C & C++: Pointers, Memory & STL (Coming Soon)">
+              <span class="sub-icon" title="C & C++">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 8h4m-2-2v4m2 4h4m-2-2v4" stroke="#38bdf8"/>
+                  <path d="M10 9a4 4 0 0 0-8 0v6a4 4 0 0 0 8 0" stroke="#0284c7" stroke-width="2.2"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">C & C++ Systems</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Pointers, Memory & STL</span>
+              </div>
+              <kbd class="sub-shortcut">C</kbd>
+            </button>
+
+            <!-- PHP (Coming Soon) -->
+            <button class="sub-btn sub-disabled" data-sub="php" onclick="showToast('PHP & Zend Engine module is coming soon!', '⏳')" title="PHP: OPcache, Lifecycle & PSR (Coming Soon)">
+              <span class="sub-icon" title="PHP">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="12" rx="10" ry="6" stroke="#818cf8"/>
+                  <path d="M7 10v4m0-2h2a1 1 0 0 0 1-1v0a1 1 0 0 0-1-1H7zm5-2v4m0-1h1.5a1 1 0 0 0 1-1v0a1 1 0 0 0-1-1H12zm4 2v4" stroke="#a5b4fc"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">PHP & Zend Engine</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">OPcache, Lifecycle & PSR</span>
+              </div>
+              <kbd class="sub-shortcut">D</kbd>
             </button>
           </div>
         </div>
@@ -1376,6 +1412,62 @@
                 <span class="sub-desc">B+ Trees, Joins & ACID</span>
               </div>
               <kbd class="sub-shortcut">C</kbd>
+            </button>
+
+            <!-- PostgreSQL (Coming Soon) -->
+            <button class="sub-btn sub-disabled" data-sub="postgres" onclick="showToast('PostgreSQL Engine module is coming soon!', '⏳')" title="PostgreSQL: MVCC, WAL, VACUUM & GIN (Coming Soon)">
+              <span class="sub-icon" title="PostgreSQL">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 1.8 6.6 4.5 8.4V17c0-2.2 1.8-4 4-4h3c2.2 0 4 1.8 4 4v3.4c2.7-1.8 4.5-4.9 4.5-8.4 0-5.5-4.5-10-10-10z" stroke="#38bdf8"/>
+                  <circle cx="9" cy="9" r="1.5" fill="#38bdf8"/>
+                  <circle cx="15" cy="9" r="1.5" fill="#38bdf8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">PostgreSQL Engine</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">MVCC, WAL, VACUUM & GIN</span>
+              </div>
+              <kbd class="sub-shortcut">D</kbd>
+            </button>
+
+            <!-- MySQL (Coming Soon) -->
+            <button class="sub-btn sub-disabled" data-sub="mysql" onclick="showToast('MySQL & InnoDB module is coming soon!', '⏳')" title="MySQL: Locking, Binlogs & B+ Trees (Coming Soon)">
+              <span class="sub-icon" title="MySQL">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 13c3-3 7-4 10-2 2 1 3 4 5 4 1 0 2-1 3-2" stroke="#f59e0b"/>
+                  <path d="M13 11c1-2 3-3 5-3 2 0 3 1 3 3" stroke="#ea580c"/>
+                  <circle cx="7" cy="12" r="1" fill="#f59e0b"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">MySQL & InnoDB</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Locking, Binlogs & Indexing</span>
+              </div>
+              <kbd class="sub-shortcut">E</kbd>
+            </button>
+
+            <!-- MongoDB (Coming Soon) -->
+            <button class="sub-btn sub-disabled" data-sub="mongodb" onclick="showToast('MongoDB & NoSQL module is coming soon!', '⏳')" title="MongoDB: BSON, Aggregations & Sharding (Coming Soon)">
+              <span class="sub-icon" title="MongoDB">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2s-6 6-6 11c0 3.3 2.7 6 6 6s6-2.7 6-6c0-5-6-11-6-11z" stroke="#22c55e" fill="rgba(34,197,94,0.15)"/>
+                  <path d="M12 2v17" stroke="#4ade80"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">MongoDB & NoSQL</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">BSON, Aggregations & Shards</span>
+              </div>
+              <kbd class="sub-shortcut">F</kbd>
             </button>
           </div>
         </div>
@@ -1543,6 +1635,272 @@
             </button>
           </div>
         </div>
+
+        <!-- DIVISION 5: Full-Stack & Web Ecosystem -->
+        <div class="category-group collapsed" id="cat-web">
+          <button class="cat-header" onclick="toggleCategory('web')" title="Full-Stack & Web Ecosystem (Press 5)">
+            <div class="cat-title-wrap">
+              <span class="cat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" stroke="#38bdf8"/>
+                  <line x1="8" y1="21" x2="16" y2="21" stroke="#38bdf8"/>
+                  <line x1="12" y1="17" x2="12" y2="21" stroke="#38bdf8"/>
+                </svg>
+              </span>
+              <span class="cat-title">Full-Stack & Web</span>
+            </div>
+            <div class="cat-meta">
+              <kbd class="cat-shortcut">5</kbd>
+              <span class="cat-chevron">▾</span>
+            </div>
+          </button>
+          <div class="cat-content">
+            <!-- JavaScript & TypeScript -->
+            <button class="sub-btn sub-disabled" data-sub="js" onclick="showToast('JavaScript & TypeScript Internals module is coming soon!', '⏳')" title="JavaScript: V8, Event Loop & Closures (Coming Soon)">
+              <span class="sub-icon" title="JavaScript & TypeScript">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#facc15" fill="rgba(250,204,21,0.15)"/>
+                  <path d="M14 10v6m4-3a2 2 0 0 0-2-2h-1v5h1a2 2 0 0 0 2-2z" stroke="#facc15"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">JavaScript & TS</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">V8, Event Loop & Closures</span>
+              </div>
+              <kbd class="sub-shortcut">A</kbd>
+            </button>
+
+            <!-- HTML5 & Modern CSS -->
+            <button class="sub-btn sub-disabled" data-sub="html-css" onclick="showToast('HTML5 & Modern CSS module is coming soon!', '⏳')" title="HTML5 & Modern CSS: Flexbox, Grid & Layouts (Coming Soon)">
+              <span class="sub-icon" title="HTML5 & CSS">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 3l2 15 6 3 6-3 2-15H4z" stroke="#f97316"/>
+                  <path d="M8 8h8M8 12h7l-.5 4-3.5 1-3.5-1" stroke="#38bdf8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">HTML5 & Modern CSS</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Flexbox, Grid & Layouts</span>
+              </div>
+              <kbd class="sub-shortcut">B</kbd>
+            </button>
+
+            <!-- React.js -->
+            <button class="sub-btn sub-disabled" data-sub="react" onclick="showToast('React Ecosystem module is coming soon!', '⏳')" title="React: Virtual DOM, Fiber & Hooks (Coming Soon)">
+              <span class="sub-icon" title="React">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="12" rx="3" ry="9" stroke="#38bdf8"/>
+                  <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(60 12 12)" stroke="#38bdf8"/>
+                  <ellipse cx="12" cy="12" rx="3" ry="9" transform="rotate(120 12 12)" stroke="#38bdf8"/>
+                  <circle cx="12" cy="12" r="1.5" fill="#38bdf8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">React Ecosystem</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Virtual DOM, Fiber & Hooks</span>
+              </div>
+              <kbd class="sub-shortcut">C</kbd>
+            </button>
+
+            <!-- Next.js -->
+            <button class="sub-btn sub-disabled" data-sub="nextjs" onclick="showToast('Next.js Full-Stack module is coming soon!', '⏳')" title="Next.js: RSC, App Router & SSR (Coming Soon)">
+              <span class="sub-icon" title="Next.js">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9" stroke="#f8fafc"/>
+                  <path d="M9 16V8l8 9.5" stroke="#f8fafc"/>
+                  <path d="M15 8v4" stroke="#f8fafc"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Next.js & Full-Stack</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">RSC, App Router & SSR</span>
+              </div>
+              <kbd class="sub-shortcut">D</kbd>
+            </button>
+
+            <!-- Vue.js -->
+            <button class="sub-btn sub-disabled" data-sub="vue" onclick="showToast('Vue.js Framework module is coming soon!', '⏳')" title="Vue.js: Reactivity, Pinia & Vue 3 (Coming Soon)">
+              <span class="sub-icon" title="Vue.js">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h4l6 10 6-10h4L12 21 2 3z" stroke="#22c55e"/>
+                  <path d="M6.5 3L12 12.5 17.5 3h-3L12 7.5 9.5 3h-3z" stroke="#10b981"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Vue.js Framework</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Reactivity, Pinia & Vue 3</span>
+              </div>
+              <kbd class="sub-shortcut">E</kbd>
+            </button>
+
+            <!-- Node.js & Express -->
+            <button class="sub-btn sub-disabled" data-sub="node" onclick="showToast('Node.js & Express module is coming soon!', '⏳')" title="Node.js: Event-Driven I/O & REST (Coming Soon)">
+              <span class="sub-icon" title="Node.js">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z" stroke="#22c55e"/>
+                  <path d="M12 7v10m-4-7l8 4" stroke="#4ade80"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Node.js & Express</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Event-Driven I/O & REST</span>
+              </div>
+              <kbd class="sub-shortcut">F</kbd>
+            </button>
+
+            <!-- Django -->
+            <button class="sub-btn sub-disabled" data-sub="django" onclick="showToast('Django & Python Web module is coming soon!', '⏳')" title="Django: MVT, ORM, Auth & DRF (Coming Soon)">
+              <span class="sub-icon" title="Django">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#10b981" fill="rgba(16,185,129,0.15)"/>
+                  <path d="M11 7v7a3 3 0 0 1-3 3M15 7v10" stroke="#10b981" stroke-width="2.2"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Django & DRF</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">MVT, ORM, Auth & APIs</span>
+              </div>
+              <kbd class="sub-shortcut">G</kbd>
+            </button>
+          </div>
+        </div>
+
+        <!-- DIVISION 6: Data Science, ML & AI -->
+        <div class="category-group collapsed" id="cat-ai">
+          <button class="cat-header" onclick="toggleCategory('ai')" title="Data Science, ML & AI (Press 6)">
+            <div class="cat-title-wrap">
+              <span class="cat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a9 9 0 0 1 9 9c0 3.5-2 6.5-5 8v3H8v-3c-3-1.5-5-4.5-5-8a9 9 0 0 1 9-9z" stroke="#ec4899"/>
+                  <path d="M9 10h.01M15 10h.01M10 14h4" stroke="#f472b6"/>
+                </svg>
+              </span>
+              <span class="cat-title">Data Science & AI</span>
+            </div>
+            <div class="cat-meta">
+              <kbd class="cat-shortcut">6</kbd>
+              <span class="cat-chevron">▾</span>
+            </div>
+          </button>
+          <div class="cat-content">
+            <!-- NumPy -->
+            <button class="sub-btn sub-disabled" data-sub="numpy" onclick="showToast('NumPy Numerical Computing module is coming soon!', '⏳')" title="NumPy: Arrays, Broadcasting & Math (Coming Soon)">
+              <span class="sub-icon" title="NumPy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="7" height="7" stroke="#38bdf8"/>
+                  <rect x="13" y="4" width="7" height="7" stroke="#38bdf8"/>
+                  <rect x="4" y="13" width="7" height="7" stroke="#38bdf8"/>
+                  <rect x="13" y="13" width="7" height="7" stroke="#38bdf8"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">NumPy Computing</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Arrays, Broadcasting & Math</span>
+              </div>
+              <kbd class="sub-shortcut">A</kbd>
+            </button>
+
+            <!-- Pandas -->
+            <button class="sub-btn sub-disabled" data-sub="pandas" onclick="showToast('Pandas Data Analysis module is coming soon!', '⏳')" title="Pandas: Indexing, GroupBy & Series (Coming Soon)">
+              <span class="sub-icon" title="Pandas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#f43f5e"/>
+                  <line x1="3" y1="9" x2="21" y2="9" stroke="#f43f5e"/>
+                  <line x1="9" y1="3" x2="9" y2="21" stroke="#f43f5e"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Pandas DataFrames</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Indexing, GroupBy & Series</span>
+              </div>
+              <kbd class="sub-shortcut">B</kbd>
+            </button>
+
+            <!-- Matplotlib & Seaborn -->
+            <button class="sub-btn sub-disabled" data-sub="viz" onclick="showToast('Matplotlib & Seaborn Visualization module is coming soon!', '⏳')" title="Matplotlib & Seaborn: Statistical Plots & Heatmaps (Coming Soon)">
+              <span class="sub-icon" title="Data Visualization">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10" stroke="#3b82f6" stroke-width="2.5"/>
+                  <line x1="12" y1="20" x2="12" y2="4" stroke="#06b6d4" stroke-width="2.5"/>
+                  <line x1="6" y1="20" x2="6" y2="14" stroke="#3b82f6" stroke-width="2.5"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Matplotlib & Seaborn</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Statistical Plots & Heatmaps</span>
+              </div>
+              <kbd class="sub-shortcut">C</kbd>
+            </button>
+
+            <!-- Scikit-Learn -->
+            <button class="sub-btn sub-disabled" data-sub="sklearn" onclick="showToast('Scikit-Learn Machine Learning module is coming soon!', '⏳')" title="Scikit-Learn: Pipelines, Trees & Metrics (Coming Soon)">
+              <span class="sub-icon" title="Scikit-Learn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="6" cy="6" r="3" stroke="#f59e0b"/>
+                  <circle cx="18" cy="18" r="3" stroke="#f59e0b"/>
+                  <path d="M8.5 8.5l7 7" stroke="#fbbf24"/>
+                  <circle cx="18" cy="6" r="2" stroke="#f59e0b"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">Scikit-Learn (ML)</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Pipelines, Trees & Metrics</span>
+              </div>
+              <kbd class="sub-shortcut">D</kbd>
+            </button>
+
+            <!-- TensorFlow & Keras -->
+            <button class="sub-btn sub-disabled" data-sub="tensorflow" onclick="showToast('TensorFlow & Deep Learning module is coming soon!', '⏳')" title="TensorFlow: Neural Nets, Backprop & Tensors (Coming Soon)">
+              <span class="sub-icon" title="TensorFlow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2l7 4v12l-7 4-7-4V6l7-4z" stroke="#ea580c"/>
+                  <path d="M12 6v12M5 8l7 4 7-4" stroke="#f97316"/>
+                </svg>
+              </span>
+              <div class="sub-info">
+                <div class="sub-name-wrap">
+                  <span class="sub-name">TensorFlow & Keras</span>
+                  <span class="badge-soon">SOON</span>
+                </div>
+                <span class="sub-desc">Neural Nets & Backprop</span>
+              </div>
+              <kbd class="sub-shortcut">E</kbd>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Fixed Bottom-Left Shortcut Guide -->
@@ -1558,7 +1916,7 @@
             </span>
           </div>
           <div class="tips-grid">
-            <span><kbd>1-4</kbd> Cat ➔ <kbd>A-D</kbd></span>
+            <span><kbd>1-6</kbd> Cat ➔ <kbd>A-G</kbd></span>
             <span><kbd>F</kbd> Fit</span>
             <span><kbd>/</kbd> Search</span>
             <span><kbd>Esc</kbd> Cancel</span>
@@ -1819,7 +2177,7 @@
     }
 
     // Exclusive Accordion Category Toggles
-    const ALL_CATEGORIES = ['languages', 'cscore', 'dsa', 'tooling'];
+    const ALL_CATEGORIES = ['languages', 'cscore', 'dsa', 'tooling', 'web', 'ai'];
 
     function toggleCategory(catId) {
       const targetEl = document.getElementById('cat-' + catId);
@@ -1838,7 +2196,7 @@
             }
           }
         });
-        armChord(catId === 'languages' ? '1' : catId === 'cscore' ? '2' : catId === 'dsa' ? '3' : '4');
+        armChord(catId === 'languages' ? '1' : catId === 'cscore' ? '2' : catId === 'dsa' ? '3' : catId === 'tooling' ? '4' : catId === 'web' ? '5' : '6');
       } else {
         targetEl.classList.add('collapsed');
         disarmChord();
@@ -1866,10 +2224,12 @@
       disarmChord();
       activeChordCategory = categoryNum;
       const catMap = {
-        '1': { id: 'cat-languages', name: 'Languages & Runtimes', keys: '[A] Java, [B] Python' },
-        '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL' },
+        '1': { id: 'cat-languages', name: 'Languages & Runtimes', keys: '[A] Java, [B] Python, [C] C/C++ (Soon), [D] PHP (Soon)' },
+        '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL, [D] Postgres (Soon), [E] MySQL (Soon), [F] Mongo (Soon)' },
         '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' },
-        '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' }
+        '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' },
+        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS, [B] HTML/CSS, [C] React, [D] Next, [E] Vue, [F] Node, [G] Django' },
+        '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy, [B] Pandas, [C] Viz, [D] Sklearn, [E] TensorFlow' }
       };
       const info = catMap[categoryNum];
       if (!info) return;
@@ -1898,10 +2258,15 @@
       if (activeChordCategory === '1') {
         if (char === 'a') { switchSubject('java'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('python'); disarmChord(); return true; }
+        if (char === 'c') { showToast('💻 C & C++ Systems Programming module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'd') { showToast('🐘 PHP & Zend Engine module is coming soon!', '⏳'); disarmChord(); return true; }
       } else if (activeChordCategory === '2') {
         if (char === 'a') { switchSubject('os'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('networking'); disarmChord(); return true; }
         if (char === 'c') { switchSubject('sql'); disarmChord(); return true; }
+        if (char === 'd') { showToast('🐘 PostgreSQL Engine module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'e') { showToast('🐬 MySQL & InnoDB module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'f') { showToast('🍃 MongoDB & NoSQL module is coming soon!', '⏳'); disarmChord(); return true; }
       } else if (activeChordCategory === '3') {
         if (char === 'a') { switchSubject('dsa'); disarmChord(); return true; }
         if (char === 'b') { showToast('💻 DS Code & Memory Operations module is coming soon!', '⏳'); disarmChord(); return true; }
@@ -1911,6 +2276,20 @@
         if (char === 'b') { switchSubject('docker'); disarmChord(); return true; }
         if (char === 'c') { switchSubject('k8s'); disarmChord(); return true; }
         if (char === 'd') { switchSubject('postman'); disarmChord(); return true; }
+      } else if (activeChordCategory === '5') {
+        if (char === 'a') { showToast('💛 JavaScript & TypeScript Internals module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'b') { showToast('🎨 HTML5 & Modern CSS module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'c') { showToast('⚛️ React Ecosystem module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'd') { showToast('▲ Next.js Full-Stack module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'e') { showToast('💚 Vue.js Framework module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'f') { showToast('🟢 Node.js & Express module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'g') { showToast('🎯 Django & Python Web module is coming soon!', '⏳'); disarmChord(); return true; }
+      } else if (activeChordCategory === '6') {
+        if (char === 'a') { showToast('🔢 NumPy Numerical Computing module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'b') { showToast('🐼 Pandas Data Analysis module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'c') { showToast('📊 Matplotlib & Seaborn module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'd') { showToast('🤖 Scikit-Learn Machine Learning module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'e') { showToast('🧠 TensorFlow & Deep Learning module is coming soon!', '⏳'); disarmChord(); return true; }
       }
       return false;
     }
@@ -1934,7 +2313,7 @@
       }, 3000);
     }
 
-    // Interactive Keyboard Shortcuts (1-4 Accordion Chords, F, R, /, Ctrl+B)
+    // Interactive Keyboard Shortcuts (1-6 Accordion Chords, F, R, /, Ctrl+B)
     window.addEventListener('keydown', (e) => {
       if (document.activeElement && document.activeElement.tagName === 'INPUT') {
         if (e.key === 'Escape') {
@@ -1952,8 +2331,9 @@
         }
       }
 
-      // Check if modal chord key (A, B, C, D) was pressed
-      if (activeChordCategory && (e.key.toLowerCase() === 'a' || e.key.toLowerCase() === 'b' || e.key.toLowerCase() === 'c' || e.key.toLowerCase() === 'd')) {
+      // Check if modal chord key (A through G) was pressed
+      const chordKeys = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+      if (activeChordCategory && chordKeys.includes(e.key.toLowerCase())) {
         if (handleChordKey(e.key)) {
           e.preventDefault();
           return;
@@ -1976,6 +2356,14 @@
       else if (e.key === '4') {
         e.preventDefault();
         armChord('4');
+      }
+      else if (e.key === '5') {
+        e.preventDefault();
+        armChord('5');
+      }
+      else if (e.key === '6') {
+        e.preventDefault();
+        armChord('6');
       }
       else if (e.key.toLowerCase() === 'f') { resetFit(); }
       else if (e.key.toLowerCase() === 'r') { toggleActiveRecall(); }
