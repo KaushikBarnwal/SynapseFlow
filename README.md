@@ -88,7 +88,8 @@ SynapseFlow/
 │   ├── docker-prep.md            # Docker Namespaces, Cgroups, Multi-Stage Builds & Compose
 │   ├── k8s-prep.md               # Kubernetes Control Plane, Worker Nodes, Networking & Storage
 │   ├── postman-prep.md           # Postman HTTP/REST, Auth, Token Chaining & Newman CI
-│   └── js-ts-prep.md             # JavaScript & TypeScript: V8, Event Loop, Closures & Type System
+│   ├── js-ts-prep.md             # JavaScript & TypeScript: V8, Event Loop, Closures & Type System
+│   └── html-css-prep.md          # HTML5 & Modern CSS: Semantic Web, Box Model, Grid, Flexbox & CRP
 ├── data/                         # ⚡ Modular Offline Data Scripts (100% Zero-CORS safe)
 │   ├── java.js                   # Compiled Java curriculum module
 │   ├── python.js                 # Compiled Python curriculum module
@@ -100,7 +101,8 @@ SynapseFlow/
 │   ├── docker.js                 # Compiled Docker & Containers module
 │   ├── k8s.js                    # Compiled Kubernetes module
 │   ├── postman.js                # Compiled Postman & API Lifecycle module
-│   └── js-ts.js                  # Compiled JavaScript & TypeScript module
+│   ├── js-ts.js                  # Compiled JavaScript & TypeScript module
+│   └── html-css.js               # Compiled HTML5 & Modern CSS module
 ├── sync-data.js                  # 🔄 Auto-compiler: syncs subjects/*.md -> data/*.js
 ├── index.html                    # 🎨 Standalone Web Studio (Double-click & run!)
 ├── markmap-view.js               # ⚡ Engine with my centered link-curve alignment patch
@@ -124,6 +126,7 @@ SynapseFlow/
 | **Kubernetes (K8s)** | **[`subjects/k8s-prep.md`](subjects/k8s-prep.md)** | Control Plane (`kube-apiserver`, `etcd` Raft quorum, `kube-scheduler` 2-phase filtering/scoring, `controller-manager`), Worker nodes (`kubelet`, `kube-proxy` iptables/IPVS), Deployments vs StatefulSets vs DaemonSets, Probes, Services, Ingress, PV/PVC/StorageClasses, and Forensics (`CrashLoopBackOff`, `OOMKilled`). |
 | **Postman & APIs** | **[`subjects/postman-prep.md`](subjects/postman-prep.md)** | REST Constraints, Idempotency & Safety (`PUT` vs `PATCH`), HTTP Status Code taxonomy, Bearer JWT & OAuth 2.0 PKCE, Pre-request & Chai.js Test scripts, Dynamic Token Chaining, Mock Servers, Newman CLI headless CI/CD automation, and CORS preflight forensics. |
 | **JavaScript & TS** | **[`subjects/js-ts-prep.md`](subjects/js-ts-prep.md)** | V8 Engine pipeline (Ignition bytecode, TurboFan JIT, Hidden Classes & Inline Caching), Event Loop & Microtask Queue starvation, Execution Contexts & Temporal Dead Zone (TDZ), 4 Rules of `this` binding, Prototypal Inheritance & prototype chain lookups, Closures & Memory Leaks, Hand-written Polyfills (`debounce`, `throttle`, `deepClone`), TypeScript Type System (`infer`, Conditional Types, Mapped Types, Discriminated Unions), and Critical Rendering Path (CRP, Reflow vs Repaint). |
+| **HTML5 & Modern CSS** | **[`subjects/html-css-prep.md`](subjects/html-css-prep.md)** | Semantic tags, Forms & accessible labels, WAI-ARIA & native `<dialog>`, `content-box` vs `border-box`, Margin Collapse rules, Block Formatting Context (BFC), Stacking Context (`z-index`), Specificity vector `(Inline, ID, Class, Element)`, `@layer` cascade layers, `:has()`, `:is()` vs `:where()`, Flexbox axis & sizing algorithm (`flex: 1` vs `flex: auto`), CSS Grid (`repeat(auto-fit, minmax(...))`, `subgrid`), Container Queries (`@container`), Fluid typography `clamp()`, Critical Rendering Path (CRP), Reflow vs Repaint vs Compositing, `will-change`, and `content-visibility`. |
 
 ---
 
@@ -137,7 +140,7 @@ When studying in the web studio, navigate topics with quick hotkeys and modal ch
 | `2` → `A` / `B` / `C` | **CS Core Systems**: `2` then `A` for OS, `2` then `B` for Networks, `2` then `C` for SQL |
 | `3` → `A` / `B` / `C` | **Data Structures & Algo**: `3` then `A` for DS Theory, `B` for Code *(Soon)*, `C` for Algo *(Soon)* |
 | `4` → `A` / `B` / `C` / `D` | **Modern Tooling & Infra**: `4` then `A` for Git, `B` for Docker, `C` for K8s, `D` for Postman |
-| `5` → `A` | **Full-Stack & Web Ecosystem**: `5` then `A` for JavaScript & TypeScript |
+| `5` → `A` / `B` | **Full-Stack & Web Ecosystem**: `5` then `A` for JS/TS, `B` for HTML/CSS |
 | `/` | Jump straight to the **Search Bar** |
 | `R` | Toggle **Active Recall Mode** (collapses leaf answers for self-testing) |
 | `F` | **Fit & Center** the mindmap to the screen |

@@ -1671,7 +1671,7 @@
             </button>
 
             <!-- HTML5 & Modern CSS -->
-            <button class="sub-btn sub-disabled" data-sub="html-css" onclick="showToast('HTML5 & Modern CSS module is coming soon!', '⏳')" title="HTML5 & Modern CSS: Flexbox, Grid & Layouts (Coming Soon)">
+            <button class="sub-btn" data-sub="html-css" onclick="switchSubject('html-css')" title="HTML5 & Modern CSS: Flexbox, Grid & Layouts (Press 5 then B)">
               <span class="sub-icon" title="HTML5 & CSS">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M4 3l2 15 6 3 6-3 2-15H4z" stroke="#f97316"/>
@@ -1679,10 +1679,7 @@
                 </svg>
               </span>
               <div class="sub-info">
-                <div class="sub-name-wrap">
-                  <span class="sub-name">HTML5 & Modern CSS</span>
-                  <span class="badge-soon">SOON</span>
-                </div>
+                <span class="sub-name">HTML5 & Modern CSS</span>
                 <span class="sub-desc">Flexbox, Grid & Layouts</span>
               </div>
               <kbd class="sub-shortcut">B</kbd>
@@ -1996,6 +1993,7 @@
 
   <!-- MODULAR CURRICULA: Full-Stack & Web Ecosystem Division (100% Offline Safe, Zero CORS) -->
   <script src="data/js-ts.js"></script>
+  <script src="data/html-css.js"></script>
 
   <!-- STUDIO CLIENT LOGIC -->
   <script>
@@ -2040,9 +2038,10 @@
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
-      } else if (subjectId === 'js-ts') {
+      } else if (subjectId === 'js-ts' || subjectId === 'html-css') {
         expandCategory('web');
       }
+      disarmChord();
       loadSubject(subjectId, currentDepth);
     }
 
@@ -2092,7 +2091,8 @@
         docker: 'Docker & Containerization Ecosystem Roadmap',
         k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
         postman: 'Postman & API Lifecycle Engineering Roadmap',
-        'js-ts': 'JavaScript & TypeScript Internals Roadmap'
+        'js-ts': 'JavaScript & TypeScript Internals Roadmap',
+        'html-css': 'HTML5 & Modern CSS Architecture Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -2113,8 +2113,13 @@
       }
     }
 
+    let savedDepthBeforeRecall = 2;
+
     function setExpandDepth(depth) {
       currentDepth = depth;
+      if (!isActiveRecall) {
+        savedDepthBeforeRecall = depth;
+      }
       document.querySelectorAll('.depth-btn').forEach(btn => {
         const text = btn.innerText;
         btn.classList.toggle('active', 
@@ -2139,9 +2144,10 @@
       banner.classList.toggle('visible', isActiveRecall);
 
       if (isActiveRecall) {
+        savedDepthBeforeRecall = currentDepth;
         setExpandDepth(2);
       } else {
-        setExpandDepth(currentDepth);
+        setExpandDepth(savedDepthBeforeRecall || 2);
       }
     }
 
@@ -2151,7 +2157,8 @@
 
     function searchAndExpandTree(node, query) {
       let hasMatch = false;
-      if (node.content && node.content.toLowerCase().includes(query)) {
+      const rawText = node.content ? node.content.replace(/<[^>]*>/g, '').toLowerCase() : '';
+      if (rawText.includes(query)) {
         hasMatch = true;
       }
       if (node.children && node.children.length > 0) {
@@ -2194,7 +2201,12 @@
       });
 
       if (firstMatch && mmInstance) {
-        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        try {
+          const target = firstMatch.querySelector('.markmap-foreign div') || firstMatch;
+          if (target && typeof target.scrollIntoView === 'function') {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+          }
+        } catch (e) {}
       }
     }
 
@@ -2270,7 +2282,7 @@
         '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL, [D] Postgres (Soon), [E] MySQL (Soon), [F] Mongo (Soon)' },
         '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' },
         '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' },
-        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS (Soon), [C] React (Soon), [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
+        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS, [C] React (Soon), [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
         '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy (Soon), [B] Pandas (Soon), [C] Viz (Soon), [D] Sklearn (Soon), [E] TensorFlow (Soon)' }
       };
       const info = catMap[categoryNum];
@@ -2320,7 +2332,7 @@
         if (char === 'd') { switchSubject('postman'); disarmChord(); return true; }
       } else if (activeChordCategory === '5') {
         if (char === 'a') { switchSubject('js-ts'); disarmChord(); return true; }
-        if (char === 'b') { showToast('🎨 HTML5 & Modern CSS module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'b') { switchSubject('html-css'); disarmChord(); return true; }
         if (char === 'c') { showToast('⚛️ React Ecosystem module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'd') { showToast('▲ Next.js Full-Stack module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'e') { showToast('💚 Vue.js Framework module is coming soon!', '⏳'); disarmChord(); return true; }
