@@ -8,6 +8,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- Syntax Highlighter (Offline-Ready with CDN Fallback) -->
+  <script src="highlight.min.js"></script>
+  <script>
+    if (!window.hljs) {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.8.0/highlight.min.js"><\/script>');
+    }
+  </script>
+
   <!-- D3 & Markmap Engine -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="markmap-view.js"></script>
@@ -893,6 +901,8 @@
     .markmap-foreign pre code,
     .markmap-foreign-testing-max pre code {
       font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
       font-size: 11px !important;
       line-height: 1.55 !important;
       background: transparent !important;
@@ -1018,6 +1028,8 @@
     .markmap-foreign :not(pre) > code,
     .markmap-foreign-testing-max :not(pre) > code {
       font-family: 'JetBrains Mono', monospace !important;
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
       font-size: 0.85em !important;
       background: rgba(56, 189, 248, 0.14) !important;
       background-color: rgba(56, 189, 248, 0.14) !important;
@@ -1036,6 +1048,17 @@
     /* Hide the conflicting default underline line that slices across card bottoms */
     .markmap-node > line {
       display: none !important;
+    }
+
+    /* Global Ligature Elimination: Ensures == and === always render as literal operators */
+    code, pre, kbd,
+    .markmap code,
+    .markmap pre,
+    .markmap-foreign code,
+    .markmap-foreign pre,
+    .markmap-foreign-testing-max code {
+      font-variant-ligatures: none !important;
+      font-feature-settings: "liga" 0, "calt" 0 !important;
     }
 
     /* Markmap Curved Organic Links */
@@ -1082,26 +1105,13 @@
 
     /* 2. Visual Core Circle (Interactive Node Dot) */
     circle.markmap-node-circle,
-    .markmap-node > circle:not(.markmap-fold-hitbox):not(.markmap-fold-halo) {
+    .markmap-node > circle:not(.markmap-fold-hitbox) {
       cursor: pointer !important;
       pointer-events: all !important;
       stroke-width: 2.5px;
       transition: r 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
                   stroke-width 0.22s ease,
                   filter 0.22s ease;
-    }
-
-    /* 3. Visual Auto-Assist Halo (Targeting Reticle) */
-    .markmap-fold-halo {
-      pointer-events: none;
-      fill: none;
-      stroke-width: 1.5px;
-      stroke-dasharray: 4 3;
-      opacity: 0;
-      transform-origin: center;
-      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                  r 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  stroke-width 0.2s ease;
     }
 
     /* Magnetic Proximity Trigger: When cursor is anywhere in the 50px bubble or over the dot */
@@ -1111,20 +1121,6 @@
       r: 10px !important;
       stroke-width: 3.5px !important;
       filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor) !important;
-    }
-
-    .markmap-node:has(.markmap-fold-hitbox:hover) .markmap-fold-halo,
-    circle.markmap-node-circle:hover + .markmap-fold-halo,
-    .markmap-node:hover .markmap-fold-halo {
-      opacity: 0.85 !important;
-      r: 18px !important;
-      stroke-width: 2px !important;
-      animation: autoAssistSpin 4s linear infinite;
-    }
-
-    @keyframes autoAssistSpin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
     }
 
     /* Node card double-click feel */
@@ -2182,6 +2178,17 @@
       } else {
         mmInstance.setData(currentRoot);
         mmInstance.fit();
+      }
+
+      // Ensure all code blocks inside mindmap nodes have syntax tokens
+      if (window.hljs) {
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.markmap-foreign pre code').forEach((el) => {
+            if (!el.dataset.highlighted) {
+              try { window.hljs.highlightElement(el); } catch (e) {}
+            }
+          });
+        });
       }
 
       // Update HUD

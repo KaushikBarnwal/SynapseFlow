@@ -1543,37 +1543,6 @@
         .attr("y2", (d) => d.xSize)
         .attr("stroke", (d) => color(d.data))
         .attr("stroke-width", linkWidth);
-      // 1. Visual Auto-Assist Halo (Targeting Reticle Ring)
-      const halo = nodeMerge
-        .selectAll(childSelector((el) => el.tagName === "circle" && el.classList && el.classList.contains("markmap-fold-halo")))
-        .data(
-          (d) => {
-            var _a;
-            return ((_a = d.data.children) == null ? void 0 : _a.length)
-              ? [d]
-              : [];
-          },
-          (d) => d.data.state.key,
-        )
-        .join(
-          (enter) => {
-            return enter
-              .append("circle")
-              .attr("class", "markmap-fold-halo")
-              .attr("cx", (d) => d.ySize - spacingHorizontal)
-              .attr("cy", (d) => d.xSize / 2)
-              .attr("r", 0)
-              .attr("fill", "none")
-              .attr("stroke-width", "1.5");
-          },
-          (update) => update,
-          (exit) => exit.remove(),
-        );
-      this.transition(halo)
-        .attr("r", 15)
-        .attr("cx", (d) => d.ySize - spacingHorizontal)
-        .attr("cy", (d) => d.xSize / 2)
-        .attr("stroke", (d) => color(d.data));
       // 2. Visible Core Circle (Interactive Node Dot)
       const circle = nodeMerge
         .selectAll(childSelector((el) => el.tagName === "circle" && el.classList && el.classList.contains("markmap-node-circle")))
