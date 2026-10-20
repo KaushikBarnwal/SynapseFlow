@@ -51,6 +51,20 @@ markmap:
   - Focus Ring styling: `:focus` vs `:focus-visible` (maintains visible focus for keyboard users while silencing mouse clicks)
 - **Native Modal Dialogs (`<dialog>`)**:
   - Built-in `.showModal()` method creates top-layer backdrop, locks background scroll, traps focus, and closes on `Escape`
+  ```html
+  <!-- Accessible Native HTML5 Modal -->
+  <dialog id="confirm-modal">
+    <h2>Confirm Submission</h2>
+    <form method="dialog">
+      <button value="cancel">Cancel</button>
+      <button value="confirm">Confirm</button>
+    </form>
+  </dialog>
+  <script>
+    const modal = document.getElementById('confirm-modal');
+    modal.showModal(); // Opens with native backdrop & focus trap
+  </script>
+  ```
 
 ## 2. CSS Box Model, Flow Systems & Stacking Context
 ### Box Model Anatomy & Sizing Algorithms
@@ -99,6 +113,21 @@ markmap:
     - `opacity` less than `1`
     - `transform`, `filter`, `perspective`, `clip-path` set to non-default values
     - `isolation: isolate` (the clean modern way to create a stacking context without side effects)
+- **Stacking Context Isolation Trap (Classic Interview Bug)**:
+  ```css
+  /* Parent creates a new Stacking Context */
+  .parent-card {
+    position: relative;
+    z-index: 1;
+    opacity: 0.99; /* TRAP: Isolates all descendant z-indices! */
+  }
+
+  /* Child CANNOT break out above siblings of .parent-card */
+  .tooltip {
+    position: absolute;
+    z-index: 999999; /* Still rendered BEHIND outside z-index: 2 */
+  }
+  ```
 
 ## 3. The Cascade, Specificity Math & Modern CSS Selectors
 ### Specificity Calculation & The 4-Weight Vector
@@ -170,6 +199,15 @@ markmap:
   - `fr` (Fractional Unit): Represents a fraction of the free available container space
   - The Holy-Grail Auto-Layout: `grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));`
   - `auto-fit` (collapses empty tracks to 0) vs `auto-fill` (preserves empty tracks with declared width)
+- **Responsive Auto-Fit Grid Pattern**:
+  ```css
+  /* Responsive card grid with ZERO media queries */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  ```
 - **Template Areas & Grid Positioning**:
   - Visual layout design: `grid-template-areas: "header header" "sidebar content" "footer footer";`
   - Track spanning: `grid-column: 1 / -1` (spans full width from first to last grid line)
@@ -180,12 +218,22 @@ markmap:
 - **Media Queries vs Container Queries**:
   - **Media Queries (`@media`)**: Evaluates global viewport window width; rigid for modular component libraries
   - **Container Queries (`@container`)**: Evaluates parent container width; true modular responsive components
-- **Container Query Implementation**:
-  - Mark parent: `container-type: inline-size; container-name: card-wrapper;`
-  - Style child: `@container card-wrapper (min-width: 450px) { .card { flex-direction: row; } }`
-- **Fluid Typography & Clamp Calculations**:
-  - `font-size: clamp(min, preferred, max)`: e.g., `clamp(1rem, 2.5vw + 0.5rem, 2.25rem)`
-  - Fluid sizing without stepped media query breakpoints
+- **Container Queries & Fluid Typography**:
+  ```css
+  /* 1. Container Queries: Component responds to parent, not viewport */
+  .card-wrapper {
+    container-type: inline-size;
+    container-name: card;
+  }
+  @container card (min-width: 450px) {
+    .card-body { flex-direction: row; }
+  }
+
+  /* 2. Fluid Typography with clamp() (min, preferred, max) */
+  h1 {
+    font-size: clamp(1.5rem, 3vw + 1rem, 3rem);
+  }
+  ```
 - **Modern Viewport Units**:
   - `dvh` (Dynamic Viewport Height): Adapts dynamically to mobile address bar collapse/expansion
   - `svh` (Small Viewport Height) & `lvh` (Large Viewport Height) resolve mobile 100vh scrolling cut-off bugs

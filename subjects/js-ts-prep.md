@@ -45,6 +45,15 @@ markmap:
 - **Macrotask Queue (Standard Priority)**:
   - Event loop processes exactly one macrotask per tick, then immediately clears all pending microtasks
   - Sources: `setTimeout`, `setInterval`, `setImmediate` (Node.js), I/O events, message channels
+- **Event Loop Execution Order (Top Interview Quiz)**:
+  ```javascript
+  console.log('1: Sync');
+  setTimeout(() => console.log('2: Macrotask (Timer)'), 0);
+  Promise.resolve().then(() => console.log('3: Microtask (Promise)'));
+  queueMicrotask(() => console.log('4: Microtask (queueMicrotask)'));
+  console.log('5: Sync');
+  // Order: 1 -> 5 (Sync) -> 3 -> 4 (Microtasks) -> 2 (Macrotask)
+  ```
 ### Promise Internals & Combinators
 - **Promise State Machine**: `Pending` → `Fulfilled` or `Rejected` (immutable once settled; cannot be canceled)
 - **The 4 Promise Combinators (Crucial Interview Comparison)**:
@@ -54,6 +63,22 @@ markmap:
   - **`Promise.any`**: Ignores rejections; resolves on first successful promise (rejects with `AggregateError` only if all fail)
 - **Custom `Promise.all` Polyfill**:
   - Track completed count with counter; collect results into array preserving original order; reject on first error
+  ```javascript
+  function myPromiseAll(promises) {
+    return new Promise((resolve, reject) => {
+      const results = [];
+      let completed = 0;
+      if (promises.length === 0) return resolve(results);
+      promises.forEach((p, idx) => {
+        Promise.resolve(p).then((val) => {
+          results[idx] = val; // Preserves exact index order
+          completed++;
+          if (completed === promises.length) resolve(results);
+        }).catch(reject); // Fail-fast on first error
+      });
+    });
+  }
+  ```
 ### async / await Desugaring
 - Syntactic sugar built on top of ES6 Generators (`function*` and `yield`) combined with automated Promise resolution
 - Handled gracefully via `try...catch` blocks or chaining `.catch()` directly on the awaited expression
@@ -107,11 +132,49 @@ markmap:
 - **Throttle**:
   - Guarantees function executes at most once per N ms time interval
   - Use cases: Infinite scroll pagination, mouse move tracking, gaming canvas render loops
+- **Debounce & Throttle Implementation**:
+  ```javascript
+  // Debounce: Fires only after delay ms of silence
+  function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  // Throttle: Fires at most once per limit ms
+  function throttle(fn, limit) {
+    let inThrottle = false;
+    return function (...args) {
+      if (!inThrottle) {
+        fn.apply(this, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  }
+  ```
 ### Deep Clone Architecture
 - `JSON.parse(JSON.stringify(obj))` Traps: Strips functions, `undefined`, `Symbol`, converts `Date` to string, fails on circular references
 - Modern native `structuredClone()`: Fast built-in browser/Node deep-cloning utility supporting cyclic graphs
 - **Recursive Deep Clone Implementation**:
   - Handle primitives, Dates, RegExps; use `WeakMap` cache to resolve circular object references
+  ```javascript
+  function deepClone(obj, map = new WeakMap()) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (obj instanceof Date) return new Date(obj);
+    if (obj instanceof RegExp) return new RegExp(obj);
+    if (map.has(obj)) return map.get(obj); // Cycle protection
+
+    const clone = Array.isArray(obj) ? [] : {};
+    map.set(obj, clone);
+    for (const key of Object.keys(obj)) {
+      clone[key] = deepClone(obj[key], map);
+    }
+    return clone;
+  }
+  ```
 ### Currying & Polyfills
 - **Infinite Currying Polyfill**: `add(1)(2)(3)...(n)()` returning accumulated sum when invoked empty
 - **Array Polyfills**: Writing custom implementations for `Array.prototype.map`, `filter`, `reduce`, and `flat`
@@ -139,8 +202,18 @@ markmap:
 - **Conditional Types**: `T extends U ? X : Y` enables dynamic type branches
 - **The `infer` Keyword (Senior TS Interview Favorite)**:
   - Pattern matches and extracts embedded inner types dynamically:
-  - `type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;`
-  - `type ArrayElement<T> = T extends (infer U)[] ? U : T;`
+  ```typescript
+  // Dynamically unwrap a Promise inner type
+  type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+  // Extract array element type
+  type ElementType<T> = T extends (infer E)[] ? E : T;
+
+  // Discriminated Union pattern
+  type Action =
+    | { type: 'FETCH_SUCCESS'; payload: string[] }
+    | { type: 'FETCH_ERROR'; error: Error };
+  ```
 ### Utility Types Deep-Dive
 - `Partial<T>`, `Required<T>`, `Readonly<T>`: Mapped types toggling property optionality and immutability
 - `Pick<T, K>` vs `Omit<T, K>`: Whitelisting vs blacklisting specific keys from type `T`
