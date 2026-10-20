@@ -1228,6 +1228,9 @@
       this.handleClick = (e, d) => {
         let recursive = this.options.toggleRecursively;
         if (isMacintosh ? e.metaKey : e.ctrlKey) recursive = !recursive;
+        try {
+          if (window.playAutoAssistFeedback) window.playAutoAssistFeedback();
+        } catch (err) {}
         this.toggleNode(d.data, recursive);
       };
       this.svg = svg.datum ? svg : d32.select(svg);
@@ -1540,8 +1543,9 @@
         .attr("y2", (d) => d.xSize)
         .attr("stroke", (d) => color(d.data))
         .attr("stroke-width", linkWidth);
-      const circle = nodeMerge
-        .selectAll(childSelector("circle"))
+      // 1. Visual Auto-Assist Halo (Targeting Reticle Ring)
+      const halo = nodeMerge
+        .selectAll(childSelector((el) => el.tagName === "circle" && el.classList && el.classList.contains("markmap-fold-halo")))
         .data(
           (d) => {
             var _a;
@@ -1555,10 +1559,44 @@
           (enter) => {
             return enter
               .append("circle")
-              .attr("stroke-width", "1.5")
+              .attr("class", "markmap-fold-halo")
               .attr("cx", (d) => d.ySize - spacingHorizontal)
               .attr("cy", (d) => d.xSize / 2)
               .attr("r", 0)
+              .attr("fill", "none")
+              .attr("stroke-width", "1.5");
+          },
+          (update) => update,
+          (exit) => exit.remove(),
+        );
+      this.transition(halo)
+        .attr("r", 15)
+        .attr("cx", (d) => d.ySize - spacingHorizontal)
+        .attr("cy", (d) => d.xSize / 2)
+        .attr("stroke", (d) => color(d.data));
+      // 2. Visible Core Circle (Interactive Node Dot)
+      const circle = nodeMerge
+        .selectAll(childSelector((el) => el.tagName === "circle" && el.classList && el.classList.contains("markmap-node-circle")))
+        .data(
+          (d) => {
+            var _a;
+            return ((_a = d.data.children) == null ? void 0 : _a.length)
+              ? [d]
+              : [];
+          },
+          (d) => d.data.state.key,
+        )
+        .join(
+          (enter) => {
+            return enter
+              .append("circle")
+              .attr("class", "markmap-node-circle")
+              .attr("stroke-width", "2.5")
+              .attr("cx", (d) => d.ySize - spacingHorizontal)
+              .attr("cy", (d) => d.xSize / 2)
+              .attr("r", 0)
+              .style("pointer-events", "all")
+              .style("cursor", "pointer")
               .on("click", (e, d) => this.handleClick(e, d))
               .on("mousedown", stopPropagation);
           },
@@ -1592,7 +1630,12 @@
               .attr("y", 0)
               .style("opacity", 0)
               .on("mousedown", stopPropagation)
-              .on("dblclick", stopPropagation);
+              .on("dblclick", (e, d) => {
+                stopPropagation(e);
+                if (d.data.children && d.data.children.length > 0) {
+                  this.handleClick(e, d);
+                }
+              });
             fo.append("xhtml:div")
               .select(function select2(d) {
                 const clone = d.data.state.el.cloneNode(true);
@@ -1610,8 +1653,83 @@
         )
         .attr("height", (d) => d.xSize);
       this.transition(foreignObject).style("opacity", 1);
+      // 3. Bullet Magnetism Hitbox (Invisible 50px Top-Layer Collision Sphere)
+      // Appended AFTER foreignObject so nothing ever obscures or blocks clicking
+      const hitbox = nodeMerge
+        .selectAll(childSelector((el) => el.tagName === "circle" && el.classList && el.classList.contains("markmap-fold-hitbox")))
+        .data(
+          (d) => {
+            var _a;
+            return ((_a = d.data.children) == null ? void 0 : _a.length)
+              ? [d]
+              : [];
+          },
+          (d) => d.data.state.key,
+        )
+        .join(
+          (enter) => {
+            return enter
+              .append("circle")
+              .attr("class", "markmap-fold-hitbox")
+              .attr("cx", (d) => d.ySize - spacingHorizontal)
+              .attr("cy", (d) => d.xSize / 2)
+              .attr("r", 0)
+              .attr("fill", "rgba(0,0,0,0.001)")
+              .style("pointer-events", "all")
+              .style("cursor", "pointer")
+              .on("click", (e, d) => this.handleClick(e, d))
+              .on("mousedown", stopPropagation);
+          },
+          (update) => update,
+          (exit) => exit.remove(),
+        );
+      this.transition(hitbox)
+        .attr("r", 25) // 50px collision sphere for 100% effortless clicking
+        .attr("cx", (d) => d.ySize - spacingHorizontal)
+        .attr("cy", (d) => d.xSize / 2);
+      // 1. Link Hitbox (Wide 24px invisible stroke corridor for effortless hover)
+      const linkHitbox = this.g
+        .selectAll(childSelector((el) => el.tagName === "path" && el.classList && el.classList.contains("markmap-link-hitbox")))
+        .data(links, (d) => d.target.data.state.key)
+        .join(
+          (enter) => {
+            const source = [
+              y0 + origin.ySize - spacingHorizontal,
+              x0 + origin.xSize / 2,
+            ];
+            return enter
+              .insert("path", "g")
+              .attr("class", "markmap-link-hitbox")
+              .attr("d", linkShape({ source, target: source }))
+              .on("click", (e, d) => {
+                this.handleClick(e, d.target);
+              });
+          },
+          (update) => update,
+          (exit) => {
+            const source = [
+              origin.y + origin.ySize - spacingHorizontal,
+              origin.x + origin.xSize / 2,
+            ];
+            return this.transition(exit)
+              .attr("d", linkShape({ source, target: source }))
+              .remove();
+          },
+        );
+      this.transition(linkHitbox)
+        .attr("d", (d) => {
+          const origSource = d.source;
+          const origTarget = d.target;
+          const source = [
+            origSource.y + origSource.ySize - spacingHorizontal,
+            origSource.x,
+          ];
+          const target = [origTarget.y, origTarget.x];
+          return linkShape({ source, target });
+        });
+      // 2. Visible Link Path
       const path = this.g
-        .selectAll(childSelector("path"))
+        .selectAll(childSelector((el) => el.tagName === "path" && el.classList && el.classList.contains("markmap-link")))
         .data(links, (d) => d.target.data.state.key)
         .join(
           (enter) => {
@@ -1624,7 +1742,10 @@
               .attr("class", "markmap-link")
               .attr("data-depth", (d) => d.target.data.state.depth)
               .attr("data-path", (d) => d.target.data.state.path)
-              .attr("d", linkShape({ source, target: source }));
+              .attr("d", linkShape({ source, target: source }))
+              .on("click", (e, d) => {
+                this.handleClick(e, d.target);
+              });
           },
           (update) => update,
           (exit) => {
