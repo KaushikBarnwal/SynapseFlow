@@ -301,7 +301,7 @@
       position: relative;
     }
 
-    /* Left Subjects Navigation Sidebar — single scroll zone, simple layout */
+    /* Left Subjects Navigation Sidebar — Fixed frame, docked zones */
     .sidebar {
       width: 260px;
       flex-shrink: 0;
@@ -311,25 +311,10 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      overflow-y: auto;           /* sidebar ITSELF is the ONE scroll zone */
-      overflow-x: hidden;
-      scroll-behavior: smooth;
-      overscroll-behavior: contain;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+      overflow: hidden;           /* Frame is strictly bounded; never scrolls itself */
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 45;
       position: relative;
-    }
-
-    .sidebar::-webkit-scrollbar { width: 5px; }
-    .sidebar::-webkit-scrollbar-track { background: transparent; }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.32);
-      border-radius: 999px;
-    }
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background: rgba(56, 189, 248, 0.7);
     }
 
     .sidebar-header {
@@ -339,11 +324,7 @@
       justify-content: space-between;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       flex-shrink: 0;
-      position: sticky;
-      top: 0;
-      z-index: 20;
       background: rgba(10, 13, 20, 0.98);
-      backdrop-filter: blur(16px);
     }
 
     .sidebar.collapsed .sidebar-header {
@@ -368,12 +349,30 @@
       border-radius: 999px;
     }
 
-    /* sidebar-subjects: plain container, no scroll — sidebar handles scroll */
+    /* sidebar-subjects: The ONLY scrollable zone between header and docked footer */
     .sidebar-subjects {
-      padding: 8px 8px 24px;
+      padding: 8px 8px 16px;
       display: flex;
       flex-direction: column;
       gap: 4px;
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.4) transparent;
+    }
+
+    .sidebar-subjects::-webkit-scrollbar { width: 5px; }
+    .sidebar-subjects::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-subjects::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.32);
+      border-radius: 999px;
+    }
+    .sidebar-subjects::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.7);
     }
 
     .sidebar.collapsed .sidebar-subjects {
@@ -733,13 +732,12 @@
     }
 
     .sidebar-footer {
+      flex-shrink: 0;
       padding: 6px 10px;
-      margin: 0;
+      margin-top: auto;          /* Permanently docked to the very bottom */
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(10, 13, 20, 0.98);
       backdrop-filter: blur(16px);
-      position: sticky;   /* stays at bottom of scroll as user scrolls down */
-      bottom: 0;
       z-index: 10;
       transition: all 0.2s ease;
     }
