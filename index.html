@@ -350,7 +350,7 @@
     }
 
     .sidebar-subjects {
-      padding: 10px 8px 12px;
+      padding: 10px 8px 18px;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -361,22 +361,29 @@
       scroll-behavior: smooth;
       overscroll-behavior: contain;
       scrollbar-width: thin;
-      scrollbar-color: rgba(56, 189, 248, 0.35) transparent;
+      scrollbar-color: rgba(56, 189, 248, 0.45) rgba(255, 255, 255, 0.03);
     }
 
-    .sidebar-subjects::-webkit-scrollbar {
-      width: 5px;
+    .sidebar-subjects::-webkit-scrollbar,
+    .cat-content::-webkit-scrollbar {
+      width: 6px;
     }
-    .sidebar-subjects::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .sidebar-subjects::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.25);
+    .sidebar-subjects::-webkit-scrollbar-track,
+    .cat-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
       border-radius: 999px;
-      transition: background 0.2s ease;
     }
-    .sidebar-subjects::-webkit-scrollbar-thumb:hover {
-      background: rgba(56, 189, 248, 0.55);
+    .sidebar-subjects::-webkit-scrollbar-thumb,
+    .cat-content::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.38);
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sidebar-subjects::-webkit-scrollbar-thumb:hover,
+    .cat-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.85);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
     }
 
     .sidebar.collapsed .sidebar-subjects {
@@ -612,7 +619,14 @@
       flex-direction: column;
       gap: 4px;
       padding: 2px 6px 8px 6px;
-      max-height: 1200px;
+      max-height: min(440px, calc(100vh - 340px));
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.45) rgba(255, 255, 255, 0.03);
       opacity: 1;
       transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, padding 0.2s ease;
     }
@@ -623,6 +637,16 @@
       padding-top: 0;
       padding-bottom: 0;
       overflow: hidden;
+    }
+
+    /* Pass-through pointer-events on inner button decorations for seamless mouse wheel scrolling */
+    .sub-icon,
+    .sub-icon svg,
+    .sub-icon *,
+    .sub-info,
+    .sub-info *,
+    .sub-shortcut {
+      pointer-events: none;
     }
 
     /* Disabled / Coming Soon Sub-items */
@@ -1975,17 +1999,18 @@
             </button>
 
             <!-- Node.js & Express -->
-            <button class="sub-btn sub-disabled" data-sub="node" onclick="showToast('Node.js & Express module is coming soon!', '⏳')" title="Node.js: Event-Driven I/O & REST (Coming Soon)">
+            <button class="sub-btn" data-sub="node" onclick="switchSubject('node')" title="Node.js & Express: Runtime, Event Loop & REST (Press 5 then F)">
               <span class="sub-icon" title="Node.js">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z" stroke="#22c55e"/>
-                  <path d="M12 7v10m-4-7l8 4" stroke="#4ade80"/>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2.2L20.5 7.1V16.9L12 21.8L3.5 16.9V7.1L12 2.2Z" stroke="#22c55e" stroke-width="2" fill="rgba(34, 197, 94, 0.16)" stroke-linejoin="round"/>
+                  <path d="M12 6.5V17.5" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7.8 9.2L12 11.6L16.2 9.2" stroke="#86efac" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M7.8 14.8L12 12.4L16.2 14.8" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="sub-info">
                 <div class="sub-name-wrap">
                   <span class="sub-name">Node.js & Express</span>
-                  <span class="badge-soon">SOON</span>
                 </div>
                 <span class="sub-desc">Event-Driven I/O & REST</span>
               </div>
@@ -2229,6 +2254,7 @@
   <script src="data/js-ts.js"></script>
   <script src="data/html-css.js"></script>
   <script src="data/react.js"></script>
+  <script src="data/node.js"></script>
 
   <!-- STUDIO CLIENT LOGIC -->
   <script>
@@ -2334,11 +2360,7 @@
     function switchSubject(subjectId) {
       currentSubject = subjectId;
       document.querySelectorAll('.sub-btn').forEach(btn => {
-        const isActive = btn.dataset.sub === subjectId;
-        btn.classList.toggle('active', isActive);
-        if (isActive) {
-          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        btn.classList.toggle('active', btn.dataset.sub === subjectId);
       });
       // Clear active search when switching subjects to avoid stale state
       const searchInput = document.getElementById('search-input');
@@ -2355,11 +2377,19 @@
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
-      } else if (subjectId === 'js-ts' || subjectId === 'html-css' || subjectId === 'react') {
+      } else if (subjectId === 'js-ts' || subjectId === 'html-css' || subjectId === 'react' || subjectId === 'node') {
         expandCategory('web');
       }
       disarmChord();
       loadSubject(subjectId, currentDepth);
+
+      // Smoothly scroll the active subject into view within its scrollable container
+      setTimeout(() => {
+        const activeBtn = document.querySelector(`.sub-btn[data-sub="${subjectId}"]`);
+        if (activeBtn) {
+          activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 120);
     }
 
     function loadSubject(subjectId, depth = 2) {
@@ -2417,7 +2447,8 @@
         postman: 'Postman & API Lifecycle Engineering Roadmap',
         'js-ts': 'JavaScript & TypeScript Internals Roadmap',
         'html-css': 'HTML5 & Modern CSS Architecture Roadmap',
-        react: 'React Ecosystem: Virtual DOM, Fiber, Hooks & Architecture Roadmap'
+        react: 'React Ecosystem: Virtual DOM, Fiber, Hooks & Architecture Roadmap',
+        node: 'Node.js & Express: Runtime, Event Loop, Streams & Web Architecture Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -2578,6 +2609,9 @@
           }
         });
         armChord(catId === 'languages' ? '1' : catId === 'cscore' ? '2' : catId === 'dsa' ? '3' : catId === 'tooling' ? '4' : catId === 'web' ? '5' : '6');
+        setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 120);
       } else {
         targetEl.classList.add('collapsed');
         disarmChord();
@@ -2590,6 +2624,9 @@
         if (el) {
           if (id === catId) {
             el.classList.remove('collapsed');
+            setTimeout(() => {
+              el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 120);
           } else {
             el.classList.add('collapsed');
           }
@@ -2609,7 +2646,7 @@
         '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL, [D] Postgres (Soon), [E] MySQL (Soon), [F] Mongo (Soon)' },
         '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code, [C] Algo' },
         '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' },
-        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS, [C] React, [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
+        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS, [C] React, [D] Next (Soon), [E] Vue (Soon), [F] Node, [G] Django (Soon)' },
         '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy (Soon), [B] Pandas (Soon), [C] Viz (Soon), [D] Sklearn (Soon), [E] TensorFlow (Soon)' }
       };
       const info = catMap[categoryNum];
@@ -2663,7 +2700,7 @@
         if (char === 'c') { switchSubject('react'); disarmChord(); return true; }
         if (char === 'd') { showToast('▲ Next.js Full-Stack module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'e') { showToast('💚 Vue.js Framework module is coming soon!', '⏳'); disarmChord(); return true; }
-        if (char === 'f') { showToast('🟢 Node.js & Express module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'f') { switchSubject('node'); disarmChord(); return true; }
         if (char === 'g') { showToast('🎯 Django & Python Web module is coming soon!', '⏳'); disarmChord(); return true; }
       } else if (activeChordCategory === '6') {
         if (char === 'a') { showToast('🔢 NumPy Numerical Computing module is coming soon!', '⏳'); disarmChord(); return true; }
