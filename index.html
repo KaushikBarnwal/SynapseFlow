@@ -21,7 +21,14 @@
   <script src="markmap-view.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.17.0"></script>
 
+  <!-- KaTeX Math Styling -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+
   <style>
+    /* KaTeX Accessibility Duplicate Fix: hide raw MathML so math text is never doubled (e.g. O(1)O(1)) */
+    .katex-mathml {
+      display: none !important;
+    }
     :root, .markmap, .markmap-dark, .markmap-dark .markmap {
       --markmap-code-bg: rgba(56, 189, 248, 0.14) !important;
       --markmap-code-color: #38bdf8 !important;
@@ -1580,8 +1587,7 @@
               <kbd class="sub-shortcut">A</kbd>
             </button>
 
-            <!-- Greyed out & Coming Soon -->
-            <button class="sub-btn sub-disabled" data-sub="dsa-code" onclick="showToast('DS Code & Memory Operations module is coming soon!', '⏳')" title="DS Code & Memory Operations (Coming Soon)">
+            <button class="sub-btn" data-sub="dsa-code" onclick="switchSubject('dsa-code')" title="Linear DS Code & Operations in Java (Press 3 then B)">
               <span class="sub-icon" title="Code Operations">
                 <!-- Code Brackets Logo -->
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1591,11 +1597,8 @@
                 </svg>
               </span>
               <div class="sub-info">
-                <div class="sub-name-wrap">
-                  <span class="sub-name">DS Code & Operations</span>
-                  <span class="badge-soon">SOON</span>
-                </div>
-                <span class="sub-desc">Insert, Delete & Reversal Code</span>
+                <span class="sub-name">DS Code & Operations</span>
+                <span class="sub-desc">Linear Structures in Java</span>
               </div>
               <kbd class="sub-shortcut">B</kbd>
             </button>
@@ -2053,6 +2056,7 @@
 
   <!-- MODULAR CURRICULA: Data Structures & Algorithms Division (100% Offline Safe, Zero CORS) -->
   <script src="data/dsa.js"></script>
+  <script src="data/dsa-code.js"></script>
 
   <!-- MODULAR CURRICULA: Modern Tooling & Infrastructure Division (100% Offline Safe, Zero CORS) -->
   <script src="data/git.js"></script>
@@ -2135,7 +2139,7 @@
         expandCategory('languages');
       } else if (subjectId === 'os' || subjectId === 'networking' || subjectId === 'sql') {
         expandCategory('cscore');
-      } else if (subjectId === 'dsa') {
+      } else if (subjectId === 'dsa' || subjectId === 'dsa-code') {
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
@@ -2199,6 +2203,7 @@
         networking: 'Computer Networks & Protocols Roadmap',
         sql: 'SQL & Database Systems Roadmap',
         dsa: 'Data Structures (Theory & Blueprint) Roadmap',
+        'dsa-code': 'Linear Data Structures: Code & Operations Roadmap (Java)',
         git: 'Git & GitHub Architecture & CLI Roadmap',
         docker: 'Docker & Containerization Ecosystem Roadmap',
         k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
@@ -2435,7 +2440,7 @@
         if (char === 'f') { showToast('🍃 MongoDB & NoSQL module is coming soon!', '⏳'); disarmChord(); return true; }
       } else if (activeChordCategory === '3') {
         if (char === 'a') { switchSubject('dsa'); disarmChord(); return true; }
-        if (char === 'b') { showToast('💻 DS Code & Memory Operations module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'b') { switchSubject('dsa-code'); disarmChord(); return true; }
         if (char === 'c') { showToast('⚡ Algorithm Design & Patterns module is coming soon!', '⏳'); disarmChord(); return true; }
       } else if (activeChordCategory === '4') {
         if (char === 'a') { switchSubject('git'); disarmChord(); return true; }
