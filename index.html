@@ -29,6 +29,151 @@
     .katex-mathml {
       display: none !important;
     }
+
+    /* Crux Line Highlighting: Illuminates key algorithmic differences & levers */
+    foreignObject pre, .markmap-node pre, pre {
+      position: relative !important;
+      background: #070a12 !important;
+      border: 1px solid rgba(56, 189, 248, 0.25) !important;
+      border-radius: 8px !important;
+      padding: 10px 14px !important;
+      margin: 6px 0 !important;
+      overflow-x: auto !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: rgba(56, 189, 248, 0.35) rgba(15, 23, 42, 0.6) !important;
+    }
+
+    /* Sleek Custom Dark Scrollbar with Smooth Rounded Pill Edges */
+    foreignObject pre::-webkit-scrollbar,
+    .markmap-node pre::-webkit-scrollbar,
+    pre::-webkit-scrollbar,
+    .markmap-foreign pre::-webkit-scrollbar {
+      height: 6px !important;
+      width: 6px !important;
+    }
+
+    foreignObject pre::-webkit-scrollbar-track,
+    .markmap-node pre::-webkit-scrollbar-track,
+    pre::-webkit-scrollbar-track,
+    .markmap-foreign pre::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.65) !important;
+      border-radius: 999px !important;
+      margin: 0 8px !important;
+    }
+
+    foreignObject pre::-webkit-scrollbar-thumb,
+    .markmap-node pre::-webkit-scrollbar-thumb,
+    pre::-webkit-scrollbar-thumb,
+    .markmap-foreign pre::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.30) !important;
+      border-radius: 999px !important;
+      border: 1px solid rgba(56, 189, 248, 0.15) !important;
+      transition: background 0.2s ease !important;
+    }
+
+    foreignObject pre::-webkit-scrollbar-thumb:hover,
+    .markmap-node pre::-webkit-scrollbar-thumb:hover,
+    pre::-webkit-scrollbar-thumb:hover,
+    .markmap-foreign pre::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.65) !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.45) !important;
+    }
+
+    foreignObject pre::-webkit-scrollbar-button,
+    .markmap-node pre::-webkit-scrollbar-button,
+    pre::-webkit-scrollbar-button,
+    .markmap-foreign pre::-webkit-scrollbar-button {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    foreignObject pre code, .markmap-node pre code, pre code {
+      display: block !important;
+      min-width: 100% !important;
+      width: max-content !important;
+      box-sizing: border-box !important;
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Crux Line Highlighting: Full width continuous highlight with no gap */
+    .code-crux-card {
+      display: inline-block !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      margin: 0 !important;
+      padding: 1px 8px !important;
+      background: rgba(8, 28, 48, 0.75) !important;
+      border-left: 3.5px solid #38bdf8 !important;
+      border-radius: 4px !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.12) !important;
+      box-sizing: border-box !important;
+      vertical-align: top !important;
+    }
+
+    .crux-comment-line {
+      display: block !important;
+      color: #fde047 !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.01em !important;
+      line-height: inherit !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .crux-comment-line .hljs-comment {
+      color: #fde047 !important;
+      font-weight: 700 !important;
+    }
+
+    .crux-statement-line {
+      display: block !important;
+      color: #7dd3fc !important;
+      font-weight: 600 !important;
+      line-height: inherit !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .code-crux-standalone {
+      display: inline-block !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      margin: 0 !important;
+      padding: 1px 8px !important;
+      background: rgba(250, 204, 21, 0.12) !important;
+      border-left: 3.5px solid #facc15 !important;
+      border-radius: 4px !important;
+      color: #fde047 !important;
+      font-weight: 700 !important;
+      box-sizing: border-box !important;
+      vertical-align: top !important;
+    }
+
+    .crux-tag {
+      display: inline-block;
+      font-size: 0.70rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(250, 204, 21, 0.18);
+      color: #fde047;
+      border: 1px solid rgba(250, 204, 21, 0.45);
+      margin-right: 4px;
+      vertical-align: 1px;
+    }
+
+    mark.crux {
+      background: rgba(250, 204, 21, 0.22);
+      color: #fef08a;
+      border-bottom: 2px solid #facc15;
+      border-radius: 3px;
+      padding: 0 4px;
+      font-weight: 700;
+    }
+
     :root, .markmap, .markmap-dark, .markmap-dark .markmap {
       --markmap-code-bg: rgba(56, 189, 248, 0.14) !important;
       --markmap-code-color: #38bdf8 !important;
@@ -2113,7 +2258,57 @@
       }
 
       transformer = new window.markmap.Transformer();
+
+      // Debounced click listener on mindmap to highlight newly expanded nodes without freezing
+      const svgEl = document.querySelector('#mindmap-svg');
+      if (svgEl) {
+        svgEl.addEventListener('click', () => {
+          scheduleCruxHighlight(120);
+          scheduleCruxHighlight(380);
+        });
+      }
+
       switchSubject('java');
+    }
+
+    let cruxDebounceTimer = null;
+    function scheduleCruxHighlight(delay = 100) {
+      if (cruxDebounceTimer) clearTimeout(cruxDebounceTimer);
+      cruxDebounceTimer = setTimeout(processCodeCruxHighlighting, delay);
+    }
+
+    function processCodeCruxHighlighting() {
+      const codeBlocks = document.querySelectorAll('#mindmap-svg pre code, foreignObject pre code, .markmap-node pre code, pre code');
+      codeBlocks.forEach((el) => {
+        if (el.dataset.cruxDone) return; // Prevent re-processing same element
+        el.dataset.cruxDone = 'true';
+
+        if (window.hljs && !el.dataset.highlighted) {
+          try { window.hljs.highlightElement(el); } catch (e) {}
+        }
+        if (el.innerHTML.includes('[CRUX]') || el.innerHTML.includes('[KEY]')) {
+          const lines = el.innerHTML.split('\n');
+          const output = [];
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const isCrux = line.includes('[CRUX]') || line.includes('[KEY]');
+            if (isCrux) {
+              const plain = line.replace(/<[^>]*>/g, '').trim();
+              const isComment = plain.startsWith('//') || plain.startsWith('/*');
+              if (isComment && i + 1 < lines.length && lines[i + 1].trim().length > 0) {
+                const nextLine = lines[i + 1];
+                output.push(`<span class="code-crux-card"><span class="crux-comment-line">${line}</span><span class="crux-statement-line">${nextLine}</span></span>`);
+                i++; // Skip the next line since it is merged into the card
+              } else {
+                output.push(`<span class="code-crux-standalone">${line}</span>`);
+              }
+            } else {
+              output.push(line);
+            }
+          }
+          el.innerHTML = output.join('\n');
+        }
+      });
     }
 
     function switchSubject(subjectId) {
@@ -2173,24 +2368,18 @@
           maxWidth: 480,
           nodeMinHeight: 24,
           paddingX: 18,
-          spacingHorizontal: 85,
-          spacingVertical: 18
+          spacingHorizontal: 110,
+          spacingVertical: 36
         }, currentRoot);
       } else {
         mmInstance.setData(currentRoot);
         mmInstance.fit();
       }
 
-      // Ensure all code blocks inside mindmap nodes have syntax tokens
-      if (window.hljs) {
-        requestAnimationFrame(() => {
-          document.querySelectorAll('.markmap-foreign pre code').forEach((el) => {
-            if (!el.dataset.highlighted) {
-              try { window.hljs.highlightElement(el); } catch (e) {}
-            }
-          });
-        });
-      }
+      // Ensure all code blocks inside mindmap nodes have syntax tokens and Crux highlights
+      processCodeCruxHighlighting();
+      setTimeout(processCodeCruxHighlighting, 100);
+      setTimeout(processCodeCruxHighlighting, 400);
 
       // Update HUD
       const labels = {
@@ -2249,6 +2438,8 @@
       applyDepthToNode(currentRoot, depth);
       mmInstance.setData(currentRoot);
       mmInstance.fit();
+      setTimeout(processCodeCruxHighlighting, 100);
+      setTimeout(processCodeCruxHighlighting, 400);
     }
 
     function toggleActiveRecall() {
