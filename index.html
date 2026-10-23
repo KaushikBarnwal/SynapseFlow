@@ -517,8 +517,13 @@
       border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: visible; /* Never clip expanded children — sidebar-subjects scrolls */
+      transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    /* Only clip when collapsed to hide the max-height:0 animated content */
+    .category-group.collapsed {
       overflow: hidden;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .category-group:last-child {
@@ -625,7 +630,7 @@
     }
 
     .category-group.collapsed .cat-content {
-      max-height: 0;
+      max-height: 0 !important;
       opacity: 0;
       padding-top: 0;
       padding-bottom: 0;
