@@ -364,26 +364,20 @@
       scrollbar-color: rgba(56, 189, 248, 0.45) rgba(255, 255, 255, 0.03);
     }
 
-    .sidebar-subjects::-webkit-scrollbar,
-    .cat-content::-webkit-scrollbar {
-      width: 6px;
+    .sidebar-subjects::-webkit-scrollbar {
+      width: 5px;
     }
-    .sidebar-subjects::-webkit-scrollbar-track,
-    .cat-content::-webkit-scrollbar-track {
+    .sidebar-subjects::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.02);
       border-radius: 999px;
     }
-    .sidebar-subjects::-webkit-scrollbar-thumb,
-    .cat-content::-webkit-scrollbar-thumb {
-      background: rgba(56, 189, 248, 0.38);
+    .sidebar-subjects::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.35);
       border-radius: 999px;
-      border: 1px solid rgba(56, 189, 248, 0.18);
-      transition: background 0.2s ease, box-shadow 0.2s ease;
+      transition: background 0.2s ease;
     }
-    .sidebar-subjects::-webkit-scrollbar-thumb:hover,
-    .cat-content::-webkit-scrollbar-thumb:hover {
-      background: rgba(56, 189, 248, 0.85);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    .sidebar-subjects::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.75);
     }
 
     .sidebar.collapsed .sidebar-subjects {
@@ -394,15 +388,16 @@
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-muted);
-      padding: 7px 10px;
+      padding: 6px 10px;
       border-radius: var(--radius-md);
       font-family: inherit;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       text-align: left;
       width: 100%;
+      min-width: 0;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
     }
@@ -438,8 +433,8 @@
     }
 
     .sub-icon {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -451,8 +446,8 @@
     }
 
     .sub-icon svg {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       display: block;
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -484,10 +479,13 @@
     }
 
     .sub-name {
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: #f8fafc;
       letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .sub-desc {
@@ -513,17 +511,12 @@
 
     /* Category Accordion Groups */
     .category-group {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      overflow: visible; /* Never clip expanded children — sidebar-subjects scrolls */
+      overflow: hidden; /* Keep clipping for clean layout */
       transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    /* Only clip when collapsed to hide the max-height:0 animated content */
-    .category-group.collapsed {
-      overflow: hidden;
     }
 
     .category-group:last-child {
@@ -622,19 +615,19 @@
     .cat-content {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      padding: 2px 6px 14px 6px;
-      max-height: 1400px;
+      gap: 3px;
+      padding: 2px 6px 10px 6px;
+      max-height: 2000px;
       opacity: 1;
-      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, padding 0.2s ease;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, padding 0.2s ease;
     }
 
     .category-group.collapsed .cat-content {
-      max-height: 0 !important;
+      max-height: 0;
       opacity: 0;
       padding-top: 0;
       padding-bottom: 0;
-      overflow: hidden;
     }
 
     /* Pass-through pointer-events on inner button decorations for seamless mouse wheel scrolling */
