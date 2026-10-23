@@ -1603,8 +1603,7 @@
               <kbd class="sub-shortcut">B</kbd>
             </button>
 
-            <!-- Greyed out & Coming Soon -->
-            <button class="sub-btn sub-disabled" data-sub="dsa-algo" onclick="showToast('Algorithm Design & Patterns module is coming soon!', '⏳')" title="Algorithm Design & Patterns (Coming Soon)">
+            <button class="sub-btn" data-sub="dsa-algo" onclick="switchSubject('dsa-algo')" title="Algorithm Design & Patterns in Java (Press 3 then C)">
               <span class="sub-icon" title="Algorithm Patterns">
                 <!-- Algorithm Flow Lightning Logo -->
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1612,10 +1611,7 @@
                 </svg>
               </span>
               <div class="sub-info">
-                <div class="sub-name-wrap">
-                  <span class="sub-name">Algorithm Design</span>
-                  <span class="badge-soon">SOON</span>
-                </div>
+                <span class="sub-name">Algorithm Design</span>
                 <span class="sub-desc">Two Pointers, DP & Graphs</span>
               </div>
               <kbd class="sub-shortcut">C</kbd>
@@ -2057,6 +2053,7 @@
   <!-- MODULAR CURRICULA: Data Structures & Algorithms Division (100% Offline Safe, Zero CORS) -->
   <script src="data/dsa.js"></script>
   <script src="data/dsa-code.js"></script>
+  <script src="data/dsa-algo.js"></script>
 
   <!-- MODULAR CURRICULA: Modern Tooling & Infrastructure Division (100% Offline Safe, Zero CORS) -->
   <script src="data/git.js"></script>
@@ -2139,7 +2136,7 @@
         expandCategory('languages');
       } else if (subjectId === 'os' || subjectId === 'networking' || subjectId === 'sql') {
         expandCategory('cscore');
-      } else if (subjectId === 'dsa' || subjectId === 'dsa-code') {
+      } else if (subjectId === 'dsa' || subjectId === 'dsa-code' || subjectId === 'dsa-algo') {
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
@@ -2204,6 +2201,7 @@
         sql: 'SQL & Database Systems Roadmap',
         dsa: 'Data Structures (Theory & Blueprint) Roadmap',
         'dsa-code': 'Data Structures: Code & Operations Roadmap in Java (Linear & Non-Linear)',
+        'dsa-algo': 'Algorithm Design & Problem-Solving Patterns Roadmap (Java)',
         git: 'Git & GitHub Architecture & CLI Roadmap',
         docker: 'Docker & Containerization Ecosystem Roadmap',
         k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
@@ -2441,7 +2439,7 @@
       } else if (activeChordCategory === '3') {
         if (char === 'a') { switchSubject('dsa'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('dsa-code'); disarmChord(); return true; }
-        if (char === 'c') { showToast('⚡ Algorithm Design & Patterns module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'c') { switchSubject('dsa-algo'); disarmChord(); return true; }
       } else if (activeChordCategory === '4') {
         if (char === 'a') { switchSubject('git'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('docker'); disarmChord(); return true; }

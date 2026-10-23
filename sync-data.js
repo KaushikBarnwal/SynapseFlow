@@ -19,6 +19,7 @@ const subjectMap = {
   'sql-prep.md': 'sql',
   'dsa-prep.md': 'dsa',
   'dsa-code-prep.md': 'dsa-code',
+  'dsa-algo-prep.md': 'dsa-algo',
   'git-prep.md': 'git',
   'docker-prep.md': 'docker',
   'k8s-prep.md': 'k8s',
