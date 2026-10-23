@@ -25,7 +25,8 @@ const subjectMap = {
   'k8s-prep.md': 'k8s',
   'postman-prep.md': 'postman',
   'js-ts-prep.md': 'js-ts',
-  'html-css-prep.md': 'html-css'
+  'html-css-prep.md': 'html-css',
+  'react-prep.md': 'react'
 };
 
 console.log('⚡ SynapseFlow: Syncing subjects/ -> data/*.js ...');

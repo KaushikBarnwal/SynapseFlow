@@ -313,28 +313,18 @@
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 45;
       position: relative;
-      overflow: hidden;
       height: 100%;
-    }
-
-    .sidebar::-webkit-scrollbar {
-      width: 4px;
-    }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-    }
-
-    .sidebar.collapsed {
-      width: 68px;
+      max-height: 100%;
+      overflow: hidden;
     }
 
     .sidebar-header {
-      padding: 16px 16px 12px;
+      padding: 14px 16px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
     }
 
     .sidebar.collapsed .sidebar-header {
@@ -360,21 +350,33 @@
     }
 
     .sidebar-subjects {
-      padding: 12px 10px;
+      padding: 10px 8px 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      flex: 1;
+      flex: 1 1 0;
+      min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.35) transparent;
     }
 
     .sidebar-subjects::-webkit-scrollbar {
-      width: 4px;
+      width: 5px;
+    }
+    .sidebar-subjects::-webkit-scrollbar-track {
+      background: transparent;
     }
     .sidebar-subjects::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+      transition: background 0.2s ease;
+    }
+    .sidebar-subjects::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.55);
     }
 
     .sidebar.collapsed .sidebar-subjects {
@@ -504,12 +506,16 @@
 
     /* Category Accordion Groups */
     .category-group {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       border-radius: var(--radius-md);
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.06);
       overflow: hidden;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .category-group:last-child {
+      margin-bottom: 0;
     }
 
     .category-group.chord-armed {
@@ -606,9 +612,9 @@
       flex-direction: column;
       gap: 4px;
       padding: 2px 6px 8px 6px;
-      max-height: 420px;
+      max-height: 1200px;
       opacity: 1;
-      transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, padding 0.2s ease;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, padding 0.2s ease;
     }
 
     .category-group.collapsed .cat-content {
@@ -717,7 +723,8 @@
 
     .sidebar-footer {
       flex-shrink: 0;
-      padding: 10px 14px;
+      padding: 8px 12px;
+      margin: 0;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(10, 13, 20, 0.98);
       backdrop-filter: blur(16px);
@@ -1395,9 +1402,22 @@
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
-      <div class="brand-logo">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#fff" stroke="#fff"/>
+      <div class="brand-logo" title="SynapseFlow Knowledge Studio">
+        <svg viewBox="0 0 28 28" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Synaptic Central Core Node -->
+          <circle cx="14" cy="14" r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px rgba(255,255,255,0.8))"/>
+          <!-- Neural Connecting Axons / Flow Filaments -->
+          <path d="M14 10.5V4M14 17.5V24M10.5 14H4M17.5 14H24M11.5 11.5L6.5 6.5M16.5 16.5L21.5 21.5M11.5 16.5L6.5 21.5M16.5 11.5L21.5 6.5" 
+                stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.9"/>
+          <!-- Peripheral Synaptic Terminal Nodes -->
+          <circle cx="4" cy="14" r="1.8" fill="#ffffff"/>
+          <circle cx="24" cy="14" r="1.8" fill="#ffffff"/>
+          <circle cx="14" cy="4" r="1.8" fill="#ffffff"/>
+          <circle cx="14" cy="24" r="1.8" fill="#ffffff"/>
+          <circle cx="6.5" cy="6.5" r="1.5" fill="#ffffff" fill-opacity="0.8"/>
+          <circle cx="21.5" cy="21.5" r="1.5" fill="#ffffff" fill-opacity="0.8"/>
+          <circle cx="6.5" cy="21.5" r="1.5" fill="#ffffff" fill-opacity="0.8"/>
+          <circle cx="21.5" cy="6.5" r="1.5" fill="#ffffff" fill-opacity="0.8"/>
         </svg>
       </div>
       <div class="brand-text">
@@ -1899,7 +1919,7 @@
             </button>
 
             <!-- React.js -->
-            <button class="sub-btn sub-disabled" data-sub="react" onclick="showToast('React Ecosystem module is coming soon!', '⏳')" title="React: Virtual DOM, Fiber & Hooks (Coming Soon)">
+            <button class="sub-btn" data-sub="react" onclick="switchSubject('react')" title="React: Virtual DOM, Fiber & Hooks (Press 5 then C)">
               <span class="sub-icon" title="React">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <ellipse cx="12" cy="12" rx="3" ry="9" stroke="#38bdf8"/>
@@ -1911,7 +1931,6 @@
               <div class="sub-info">
                 <div class="sub-name-wrap">
                   <span class="sub-name">React Ecosystem</span>
-                  <span class="badge-soon">SOON</span>
                 </div>
                 <span class="sub-desc">Virtual DOM, Fiber & Hooks</span>
               </div>
@@ -2209,6 +2228,7 @@
   <!-- MODULAR CURRICULA: Full-Stack & Web Ecosystem Division (100% Offline Safe, Zero CORS) -->
   <script src="data/js-ts.js"></script>
   <script src="data/html-css.js"></script>
+  <script src="data/react.js"></script>
 
   <!-- STUDIO CLIENT LOGIC -->
   <script>
@@ -2335,7 +2355,7 @@
         expandCategory('dsa');
       } else if (subjectId === 'git' || subjectId === 'docker' || subjectId === 'k8s' || subjectId === 'postman') {
         expandCategory('tooling');
-      } else if (subjectId === 'js-ts' || subjectId === 'html-css') {
+      } else if (subjectId === 'js-ts' || subjectId === 'html-css' || subjectId === 'react') {
         expandCategory('web');
       }
       disarmChord();
@@ -2368,8 +2388,8 @@
           maxWidth: 480,
           nodeMinHeight: 24,
           paddingX: 18,
-          spacingHorizontal: 110,
-          spacingVertical: 36
+          spacingHorizontal: 90,
+          spacingVertical: 20
         }, currentRoot);
       } else {
         mmInstance.setData(currentRoot);
@@ -2396,7 +2416,8 @@
         k8s: 'Kubernetes (K8s) Architecture & Operations Roadmap',
         postman: 'Postman & API Lifecycle Engineering Roadmap',
         'js-ts': 'JavaScript & TypeScript Internals Roadmap',
-        'html-css': 'HTML5 & Modern CSS Architecture Roadmap'
+        'html-css': 'HTML5 & Modern CSS Architecture Roadmap',
+        react: 'React Ecosystem: Virtual DOM, Fiber, Hooks & Architecture Roadmap'
       };
       document.getElementById('hud-subject-label').innerText = labels[subjectId] || subjectId;
     }
@@ -2586,9 +2607,9 @@
       const catMap = {
         '1': { id: 'cat-languages', name: 'Languages & Runtimes', keys: '[A] Java, [B] Python, [C] C/C++ (Soon), [D] PHP (Soon)' },
         '2': { id: 'cat-cscore', name: 'CS Core Systems', keys: '[A] OS, [B] Networks, [C] SQL, [D] Postgres (Soon), [E] MySQL (Soon), [F] Mongo (Soon)' },
-        '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code (Soon), [C] Algo (Soon)' },
+        '3': { id: 'cat-dsa', name: 'Data Structures & Algo', keys: '[A] DS Theory, [B] Code, [C] Algo' },
         '4': { id: 'cat-tooling', name: 'Modern Tooling & Infra', keys: '[A] Git, [B] Docker, [C] K8s, [D] Postman' },
-        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS, [C] React (Soon), [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
+        '5': { id: 'cat-web', name: 'Full-Stack & Web Ecosystem', keys: '[A] JS/TS, [B] HTML/CSS, [C] React, [D] Next (Soon), [E] Vue (Soon), [F] Node (Soon), [G] Django (Soon)' },
         '6': { id: 'cat-ai', name: 'Data Science, ML & AI', keys: '[A] NumPy (Soon), [B] Pandas (Soon), [C] Viz (Soon), [D] Sklearn (Soon), [E] TensorFlow (Soon)' }
       };
       const info = catMap[categoryNum];
@@ -2639,7 +2660,7 @@
       } else if (activeChordCategory === '5') {
         if (char === 'a') { switchSubject('js-ts'); disarmChord(); return true; }
         if (char === 'b') { switchSubject('html-css'); disarmChord(); return true; }
-        if (char === 'c') { showToast('⚛️ React Ecosystem module is coming soon!', '⏳'); disarmChord(); return true; }
+        if (char === 'c') { switchSubject('react'); disarmChord(); return true; }
         if (char === 'd') { showToast('▲ Next.js Full-Stack module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'e') { showToast('💚 Vue.js Framework module is coming soon!', '⏳'); disarmChord(); return true; }
         if (char === 'f') { showToast('🟢 Node.js & Express module is coming soon!', '⏳'); disarmChord(); return true; }
