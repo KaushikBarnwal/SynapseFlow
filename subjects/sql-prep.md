@@ -11,20 +11,15 @@ markmap:
 ### DDL (Data Definition Language)
 - Defines and modifies database schema structure (Auto-commits immediately in most engines!)
 - Commands: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`
-- **`TRUNCATE` Syntax**:
-  ```sql
-  TRUNCATE TABLE employees;
-  ```
-  - *Key Difference*: Deallocates storage pages directly; resets auto-increment/sequences; $\mathcal{O}(1)$ speed; cannot use `WHERE`; does not fire row triggers; cannot rollback in MySQL.
-### DML (Data Manipulation Language)
-- Manages and mutates data rows within existing tables (Transactional; requires `COMMIT` to persist)
-- Commands: `INSERT`, `UPDATE`, `DELETE`, `MERGE`
-- **`DELETE` Syntax**:
-  ```sql
-  DELETE FROM employees
-  WHERE status = 'inactive';
-  ```
-  - *Key Difference*: Row-by-row deletion; logged in Undo/Rollback log; allows `WHERE` filtering; fires row-level triggers; reversible via `ROLLBACK`.
+- **`DELETE` vs `TRUNCATE` vs `DROP` Comparison**:
+  | Feature | `DELETE` | `TRUNCATE` | `DROP` |
+  | :--- | :--- | :--- | :--- |
+  | **SQL Category** | DML | DDL | DDL |
+  | **Scope** | Specified rows (`WHERE`) | All rows in table | Entire table & schema |
+  | **Execution Speed** | 🐢 Slow (row-by-row logging) | ⚡ Fast (deallocates pages) | ⚡ Fast (removes catalog object) |
+  | **Rollback Support** | ✅ Yes (recorded in Undo log) | ❌ No (auto-commit in most DBs) | ❌ No (irreversible) |
+  | **Triggers Fired** | ✅ Fires row-level triggers | ❌ Does not fire triggers | ❌ Does not fire triggers |
+  | **Identity Reset** | ❌ Retains current counter | ✅ Resets auto-increment to 1 | ❌ Table destroyed |
 ### DQL, DCL & TCL
 - **DQL (Data Query Language)**: `SELECT` (pure data retrieval without state mutation)
 - **DCL (Data Control Language)**: Manages permissions & privileges:
@@ -241,13 +236,13 @@ markmap:
 - High fanout $\rightarrow$ small depth ($\approx 3\text{--}4$ disk seeks for millions of rows)
 - Range queries (`BETWEEN`, `>`, `<`) perform fast sequential leaf walks
 ### Clustered vs Non-Clustered Indexes
-- **Clustered Index**:
-  - Dictates the physical storage order of data rows on disk
-  - Only **one** clustered index per table (typically Primary Key)
-  - Leaf nodes store the actual row data
-- **Non-Clustered (Secondary) Index**:
-  - Stored in a separate structure; leaf nodes contain indexed columns + pointer to clustered key
-  - Requires a **bookmark lookup** to retrieve unindexed columns unless it's a **Covering Index**
+- **Clustered vs Non-Clustered Comparison**:
+  | Dimension | Clustered Index | Non-Clustered (Secondary) Index |
+  | :--- | :--- | :--- |
+  | **Physical Ordering** | Dictates physical on-disk row order | Separate structure; does not reorder physical table |
+  | **Quantity per Table** | Exactly **1** per table (usually Primary Key) | Multiple allowed (typically 1–10 per table) |
+  | **Leaf Node Content** | Actual complete table row data pages | Indexed column values + pointer to clustered key |
+  | **Lookup Performance** | Fast direct seek; no secondary step | Requires **Bookmark Lookup** unless query is covered |
 ### SARGable Queries & Prefix Rule
 - **SARGable (Search Argument Able)**: Query conditions that can use index seeks
   - Avoid wrapping indexed columns in functions (e.g., `WHERE YEAR(date) = 2026` forces a Full Table Scan)
@@ -269,24 +264,22 @@ markmap:
 - **Non-Repeatable Read**: Re-reading the same row within a transaction returns different values due to another committed update
 - **Phantom Read**: Re-running a range query returns newly inserted rows committed by another transaction
 ### Isolation Levels Matrix
-- **Read Uncommitted**: Suffers from Dirty Reads, Non-Repeatable Reads, and Phantoms
-- **Read Committed**: Prevents Dirty Reads; allows Non-Repeatable Reads and Phantoms (PostgreSQL/Oracle default)
-- **Repeatable Read**: Prevents Dirty and Non-Repeatable Reads; allows Phantoms (MySQL InnoDB default)
-- **Serializable**: Strict serial execution; prevents all anomalies
+- **Transaction Isolation vs Concurrency Anomalies**:
+  | Isolation Level | Dirty Read | Non-Repeatable Read | Phantom Read | Default In |
+  | :--- | :--- | :--- | :--- | :--- |
+  | **Read Uncommitted** | ⚠️ Allowed | ⚠️ Allowed | ⚠️ Allowed | Rare / Custom |
+  | **Read Committed** | 🛡️ Prevented | ⚠️ Allowed | ⚠️ Allowed | PostgreSQL, Oracle, SQL Server |
+  | **Repeatable Read** | 🛡️ Prevented | 🛡️ Prevented | ⚠️ Allowed | MySQL InnoDB |
+  | **Serializable** | 🛡️ Prevented | 🛡️ Prevented | 🛡️ Prevented | Strict Financial Engines |
 
 ## 8. Window Functions & CTEs
 ### Ranking Functions Syntax
-- **`ROW_NUMBER()`**: Sequential integers without ties ($1, 2, 3, 4$)
-  ```sql
-  SELECT name,
-    ROW_NUMBER() OVER (
-      PARTITION BY dept_id
-      ORDER BY salary DESC
-    ) AS row_num
-  FROM emp;
-  ```
-- **`RANK()`**: Same rank for ties; skips numbers afterwards ($1, 1, 3, 4$)
-- **`DENSE_RANK()`**: Same rank for ties; never skips numbers ($1, 1, 2, 3$)
+- **Ranking Functions Comparison**:
+  | Function | Tie Handling | Post-Tie Gap | Example Sequence ($100, 100, 90, 80$) |
+  | :--- | :--- | :--- | :--- |
+  | **`ROW_NUMBER()`** | Arbitrary sequential numbering | No gaps | $1, 2, 3, 4$ |
+  | **`RANK()`** | Same rank assigned to equal values | Leaves gaps equal to tied count | $1, 1, 3, 4$ (skips $2$) |
+  | **`DENSE_RANK()`** | Same rank assigned to equal values | Never leaves gaps | $1, 1, 2, 3$ (no skipping) |
   ```sql
   SELECT name, salary,
     DENSE_RANK() OVER (

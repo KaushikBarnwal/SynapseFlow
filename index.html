@@ -1033,6 +1033,99 @@
       word-break: break-word !important;
     }
 
+    /* Cards containing tables get generous max-width so comparison columns breathe */
+    .markmap-foreign:has(table) > div,
+    .markmap-foreign-testing-max:has(table) > div,
+    .markmap-foreign > div:has(table),
+    .markmap-foreign-testing-max > div:has(table) {
+      max-width: 680px !important;
+      width: max-content !important;
+    }
+
+    /* SYNAPSEFLOW HIGH-TECH COMPARISON TABLE STYLING */
+    .markmap-foreign table,
+    .markmap-foreign-testing-max table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      width: 100% !important;
+      margin: 8px 0 4px 0 !important;
+      border: 1px solid rgba(56, 189, 248, 0.28) !important;
+      border-radius: 8px !important;
+      overflow: hidden !important;
+      background: rgba(8, 12, 22, 0.88) !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+      font-size: 11.5px !important;
+      line-height: 1.45 !important;
+    }
+
+    .markmap-foreign th,
+    .markmap-foreign-testing-max th {
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0.08) 100%) !important;
+      color: #7dd3fc !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 10.5px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      padding: 6px 12px !important;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.28) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+      text-align: left !important;
+      white-space: nowrap !important;
+    }
+
+    .markmap-foreign th:last-child,
+    .markmap-foreign-testing-max th:last-child {
+      border-right: none !important;
+    }
+
+    .markmap-foreign td,
+    .markmap-foreign-testing-max td {
+      padding: 6px 12px !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+      color: #cbd5e1 !important;
+      vertical-align: middle !important;
+    }
+
+    .markmap-foreign td:last-child,
+    .markmap-foreign-testing-max td:last-child {
+      border-right: none !important;
+    }
+
+    .markmap-foreign tbody tr:last-child td,
+    .markmap-foreign-testing-max tbody tr:last-child td {
+      border-bottom: none !important;
+    }
+
+    .markmap-foreign tbody tr:nth-child(even) td,
+    .markmap-foreign-testing-max tbody tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    .markmap-foreign tbody tr:hover td {
+      background: rgba(56, 189, 248, 0.08) !important;
+      color: #fff !important;
+    }
+
+    .markmap-foreign table strong,
+    .markmap-foreign-testing-max table strong {
+      color: #f8fafc !important;
+      font-weight: 700 !important;
+      padding-left: 0 !important;
+    }
+
+    .markmap-foreign table code,
+    .markmap-foreign-testing-max table code {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 11px !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+      color: #38bdf8 !important;
+      padding: 1.5px 5px !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(56, 189, 248, 0.22) !important;
+    }
+
     /* Natural positioning: elements stay strictly within allocated bounding boxes to prevent overlapping */
     .markmap-foreign > div {
       transform: none !important;

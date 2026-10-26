@@ -53,8 +53,11 @@ markmap:
 - **String Immutability**: Backed by `byte[]` array; thread-safe, secure, caches hashcode
 - **String Constant Pool**: Located in Heap; reuses literals (`"abc"`)
 - **`StringBuilder` vs `StringBuffer`**:
-  - `StringBuilder`: Mutable, fast, not thread-safe (single thread)
-  - `StringBuffer`: Mutable, thread-safe (all synchronized methods, slower)
+  | Feature | `StringBuilder` | `StringBuffer` |
+  | :--- | :--- | :--- |
+  | **Thread-Safety** | ❌ Not thread-safe (single thread) | ✅ Thread-safe (all synchronized methods) |
+  | **Performance** | ⚡ High speed (no lock overhead) | 🐢 Slower (locking overhead) |
+  | **Introduced** | Java 1.5 | Java 1.0 (legacy) |
 
 ## 2. Object-Oriented Programming (OOP) Deep Dive
 ### Encapsulation (Protecting Invariants)
@@ -133,9 +136,13 @@ markmap:
     }
   }
   ```
-- *Key Differences*:
-  - A class can extend only **one** Abstract Class, but implement **multiple** Interfaces.
-  - Abstract classes have instance fields and constructors; interfaces contain behavior contracts and `default`/`private` methods.
+- **Abstract Class vs Interface**:
+  | Dimension | `Abstract Class` | `Interface` |
+  | :--- | :--- | :--- |
+  | **Inheritance** | Single inheritance (`extends 1`) | Multiple implementation (`implements N`) |
+  | **State / Fields** | Can hold instance fields & constructors | Only `public static final` constants |
+  | **Mental Model** | Identity: What an object **IS** | Capability: What an object **CAN DO** |
+  | **Method Types** | Abstract, concrete, final, static | Abstract, `default`, `static`, `private` (Java 9+) |
 
 ## 3. JVM Architecture & Memory Model
 ### JVM Runtime Memory Areas
@@ -205,9 +212,13 @@ markmap:
 - Thousands of times lighter than 1:1 OS platform threads; ideal for high-throughput blocking I/O
 
 ## 6. Collections Framework (JCF)
-### Lists
-- **`ArrayList`**: Dynamic array; $\mathcal{O}(1)$ random access, $\mathcal{O}(n)$ insert/delete
-- **`LinkedList`**: Doubly linked list; $\mathcal{O}(1)$ insert/delete at ends, $\mathcal{O}(n)$ access
+- **`ArrayList` vs `LinkedList`**:
+  | Operation | `ArrayList` | `LinkedList` |
+  | :--- | :--- | :--- |
+  | **Underlying Data** | Dynamic resizing array | Doubly linked list nodes |
+  | **Random Access `get(i)`** | $\mathcal{O}(1)$ direct memory offset | $\mathcal{O}(n)$ pointer traversal |
+  | **Insert/Delete (Middle)** | $\mathcal{O}(n)$ array copy/shift | $\mathcal{O}(1)$ after node pointer reached |
+  | **Memory Overhead** | Low (contiguous array buffer) | High (node object + 2 pointer refs per entry) |
 ### Maps & Sets
 - **`HashMap` Internals**:
   - Array of buckets (`Node<K,V>[] table`), default capacity 16, load factor 0.75

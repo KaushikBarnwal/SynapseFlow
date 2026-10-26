@@ -11,15 +11,14 @@ markmap:
 
 ## 1. Process & Thread Management
 ### Process vs Thread
-- **Process**:
-  - Independent program in execution with private virtual address space (Text, Data, Heap, Stack)
-  - Heavyweight context switch (switches page tables, flushes TLB cache)
-  - Failure isolation: Crash in one process doesn't bring down others
-- **Thread**:
-  - Smallest schedulable unit of execution inside a process
-  - Shares parent process's heap, code, open file descriptors, and data segment
-  - Private Program Counter (PC), CPU registers, and Stack
-  - Lightweight creation and fast context switching
+- **Process vs Thread Comparison**:
+  | Dimension | Process | Thread |
+  | :--- | :--- | :--- |
+  | **Memory Space** | Isolated private address space (separate Heap/Data) | Shares parent process address space (Shared Heap) |
+  | **Context Switch** | Heavyweight (switches page tables, flushes TLB) | Lightweight (switches only registers & stack) |
+  | **Creation Cost** | High (\`fork()\` syscall + address map allocation) | Low (allocates tiny stack within existing process) |
+  | **Blast Radius** | Isolated: 1 process crash does not kill others | Shared: Uncaught crash in 1 thread terminates entire process |
+  | **Communication** | IPC required (Pipes, Sockets, Shared Memory) | Direct memory read/write (requires synchronization) |
 ### Process States & Life Cycle
 - **New**: Program being created and loaded into memory
 - **Ready**: In RAM queue, waiting for CPU assignment by scheduler
@@ -36,8 +35,13 @@ markmap:
 
 ## 2. CPU Scheduling Algorithms
 ### Preemptive vs Non-Preemptive
-- **Preemptive**: OS can forcibly interrupt running process (Round Robin, SRTF)
-- **Non-Preemptive**: Process holds CPU until it voluntarily yields or terminates (FCFS, basic SJF)
+- **Preemptive vs Non-Preemptive Scheduling**:
+  | Feature | Preemptive | Non-Preemptive |
+  | :--- | :--- | :--- |
+  | **CPU Control** | OS can forcibly interrupt running process | Process holds CPU until it yields or terminates |
+  | **Algorithms** | Round Robin, SRTF, Preemptive Priority | FCFS, Non-preemptive SJF |
+  | **Context Switches** | Frequent (incurs scheduler overhead) | Minimal (only on process completion/IO wait) |
+  | **Starvation Risk** | Low (bounded wait via time slices) | High (long jobs can starve short jobs) |
 ### Classic Algorithms
 - **First-Come, First-Served (FCFS)**: Simple queue; suffers from **Convoy Effect** (short jobs wait behind CPU hogs)
 - **Shortest Job First (SJF)**: Optimal average wait time, but impossible to know exact burst time; risks starvation
@@ -71,10 +75,13 @@ markmap:
 - **Critical Section**: Code block accessing shared resources
 - **Requirements for Solution**: Mutual Exclusion, Progress, Bounded Waiting
 ### Mutex vs Semaphore vs Spinlock
-- **Mutex**: Locking mechanism with ownership (only locking thread can release it)
-- **Binary Semaphore**: Signaling flag (values 0 or 1); thread A can wait, thread B can signal
-- **Counting Semaphore**: Manages a finite pool of $N$ identical resources
-- **Spinlock**: Busy-waits in a CPU loop; efficient only in multi-core kernels for microscopic hold times
+- **Synchronization Primitives**:
+  | Primitive | Locking Mechanism | Ownership & Release | Primary Use Case |
+  | :--- | :--- | :--- | :--- |
+  | **Mutex** | Sleep Lock (puts thread to sleep in OS wait queue) | Ownership enforced: only locking thread can unlock | Mutual exclusion on shared data structures |
+  | **Binary Semaphore** | Signaling Flag (Integer value $0$ or $1$) | No ownership: Thread A can wait, Thread B can signal | Inter-thread coordination and signaling |
+  | **Counting Semaphore** | Pool Counter (Integer value up to $N$) | Decremented on \`acquire\`, incremented on \`release\` | Managing access to a pool of $N$ identical resources |
+  | **Spinlock** | Busy-Wait Loop (polls CPU in active spin cycle) | No sleep; avoids OS thread context switch | Microsecond locks in multicore kernels & drivers |
 ### Deadlocks & Coffman Conditions
 - **4 Necessary Conditions**:
   - 1. **Mutual Exclusion**: Non-shareable resource

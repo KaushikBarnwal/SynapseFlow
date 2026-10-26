@@ -31,17 +31,16 @@ markmap:
 - **Physical**: Raw bits over wire
 
 ## 2. Transport Layer: TCP vs UDP
-### TCP (Transmission Control Protocol)
-- **Connection-Oriented**: Requires 3-way handshake before transmitting data
-- **Reliable Delivery**: Automatic retransmission upon packet loss (\`ACK\` tracking)
-- **Ordered Packets**: Uses sequence numbers to reassemble segments in order
-- **Header Size**: 20–60 bytes (heavier overhead)
-- **Use Cases**: Web (\`HTTP/HTTPS\`), File transfers (\`FTP\`, \`SSH\`), Email (\`SMTP\`)
-### UDP (User Datagram Protocol)
-- **Connectionless**: "Fire and forget" datagrams without handshakes
-- **Unreliable / Best-Effort**: No \`ACK\`s, no retransmissions, no order guarantee
-- **Header Size**: Fixed 8 bytes (ultra-lightweight and fast)
-- **Use Cases**: Live video streaming, VoIP calls, Online multiplayer gaming, \`DNS\` queries
+### TCP vs UDP Architecture
+- **TCP vs UDP Core Comparison**:
+  | Feature | TCP (Transmission Control Protocol) | UDP (User Datagram Protocol) |
+  | :--- | :--- | :--- |
+  | **Connection Model** | Connection-Oriented (3-way handshake required) | Connectionless ("Fire-and-forget" datagrams) |
+  | **Reliability** | Guaranteed delivery (retransmits lost packets via \`ACK\`s) | Best-effort (packets may drop without notice) |
+  | **Ordering** | Strictly ordered (reassembled by sequence numbers) | No order guarantee (arrives out of sequence) |
+  | **Header Overhead** | 20–60 bytes (sequence, ACK, window, flags) | Fixed 8 bytes (ports, length, checksum) |
+  | **Flow & Congestion** | Built-in windowing (\`rwnd\`) & congestion control | None (sends at full application rate) |
+  | **Ideal Use Cases** | Web (\`HTTP/HTTPS\`), File Transfer (\`SSH\`, \`FTP\`), DBs | Live video streaming, VoIP, Gaming, DNS queries |
 ### TCP 3-Way Handshake (Connection Setup)
 - **Step 1 (\`SYN\`)**: Client sends \`SYN\` with initial sequence number $ISN_c = X$
 - **Step 2 (\`SYN-ACK\`)**: Server replies with \`SYN-ACK\` ($ACK = X + 1, ISN_s = Y$)
@@ -61,8 +60,14 @@ markmap:
 
 ## 3. Network Layer & IP Addressing
 ### IPv4 vs IPv6
-- **IPv4**: 32-bit address, 4 octets (\`192.168.1.1\`), $\\approx 4.3 \\text{ billion}$ total addresses
-- **IPv6**: 128-bit address, 8 groups of 4 hex digits (\`2001:0db8::1\`), $3.4 \\times 10^{38}$ addresses
+- **IPv4 vs IPv6 Architecture**:
+  | Dimension | IPv4 | IPv6 |
+  | :--- | :--- | :--- |
+  | **Address Size** | 32 bits (4 bytes) | 128 bits (16 bytes) |
+  | **Format & Notation** | Dotted Decimal: \`192.168.1.1\` (4 octets) | Hexadecimal: \`2001:0db8::1\` (8 groups of 4 hex digits) |
+  | **Total Address Pool** | $\\approx 4.29 \\times 10^9$ (Exhausted) | $\\approx 3.4 \\times 10^{38}$ (Virtually limitless) |
+  | **Configuration** | Manual or DHCP | Stateless Autoconfig (SLAAC) or DHCPv6 |
+  | **Header Size** | Variable (20–60 bytes with options) | Fixed 40 bytes (faster routing lookup) |
 ### Subnetting Math (CIDR)
 - **Formula for Total IPs**: $2^{(32 - \\text{prefix})}$ (e.g., \`/24\` $\\rightarrow 2^8 = 256$)
 - **Formula for Usable Hosts**: $2^{(32 - \\text{prefix})} - 2$ (Subtract Network ID and Broadcast IP)
@@ -116,9 +121,12 @@ markmap:
 - **7. Server Response**: Server returns \`200 OK\` with HTML/CSS/JS payload
 - **8. Rendering**: Browser parses DOM + CSSOM $\\rightarrow$ Render Tree $\\rightarrow$ Layout $\\rightarrow$ Paint
 ### HTTP Evolution
-- **HTTP/1.1**: Persistent connections, but suffers from Head-of-Line (HoL) blocking
-- **HTTP/2**: Binary framing, **Multiplexing** over single TCP stream, HPACK header compression
-- **HTTP/3**: Built on **QUIC over UDP**; eliminates TCP-level HoL blocking and enables 0-RTT handshakes
+- **HTTP Version Comparison Matrix**:
+  | Version | Transport Protocol | Multiplexing | Header Compression | Head-of-Line (HoL) Blocking |
+  | :--- | :--- | :--- | :--- | :--- |
+  | **HTTP/1.1** | TCP | ❌ No (1 request per socket) | ❌ None (repetitive plain headers) | Severe at Application level |
+  | **HTTP/2** | TCP | ✅ Yes (Binary framing streams) | ✅ HPACK compression | Eliminated at HTTP level (persists on TCP packet loss) |
+  | **HTTP/3** | QUIC over UDP | ✅ Yes (Independent UDP streams) | ✅ QPACK compression | ❌ Completely eliminated (Packet loss in stream A doesn't stall stream B) |
 ### Real-Time Communication
 - **WebSockets**: Full-duplex persistent bidirectional TCP connection
 - **Server-Sent Events (SSE)**: Unidirectional real-time stream from server to client over HTTP
@@ -126,9 +134,12 @@ markmap:
 
 ## 5. Hardware & Switching
 ### Hub vs Switch vs Router
-- **Hub (L1)**: Dumb repeater; shares 1 collision domain and 1 broadcast domain
-- **Switch (L2)**: Intelligent forwarding using MAC address **CAM table**; separate collision domain per port
-- **Router (L3)**: Forwards packets between different subnets using IP routing tables; separates broadcast domains
+- **Network Hardware Comparison**:
+  | Device | OSI Layer | Addressing Used | Collision Domain | Broadcast Domain |
+  | :--- | :--- | :--- | :--- | :--- |
+  | **Hub** | Layer 1 (Physical) | None (Blind Electrical Repeater) | 1 shared domain (all ports) | 1 shared domain |
+  | **Switch** | Layer 2 (Data Link) | 48-bit \`MAC\` Address (CAM table) | Separate domain per port | 1 shared domain |
+  | **Router** | Layer 3 (Network) | 32/128-bit \`IP\` Address (Routing table) | Separate domain per port | Separate domain per subnet |
 ### Routing Protocols
 - **Interior (Within Autonomous System)**:
   - **OSPF (Open Shortest Path First)**: Link-state protocol using Dijkstra's shortest path algorithm

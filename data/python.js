@@ -45,10 +45,17 @@ markmap:
   # Memory identity (id(a) == id(b))
   id_eq = (a is b)   # False
   \`\`\`
-- *Key Difference*: \`==\` checks if two objects contain equivalent data. \`is\` checks if both variables point to the exact same physical heap memory address. Always use \`is\` for singletons like \`None\`.
+- **\`==\` vs \`is\` Comparison**:
+  | Operator | Evaluates | Mechanism | Typical Use Case |
+  | :--- | :--- | :--- | :--- |
+  | **\`==\` (Equality)** | Value equivalence | Invokes \`__eq__()\` magic method | Comparing content (\`[1, 2] == [1, 2]\` $\\rightarrow$ \`True\`) |
+  | **\`is\` (Identity)** | Physical memory address | Checks \`id(a) == id(b)\` | Checking singletons (\`x is None\`, \`flag is True\`) |
 ### Mutable vs Immutable Types
-- **Immutable**: \`int\`, \`float\`, \`str\`, \`tuple\`, \`frozenset\`, \`bytes\` (value cannot change in-place)
-- **Mutable**: \`list\`, \`dict\`, \`set\`, \`bytearray\` (modified in-place)
+- **Mutable vs Immutable Types**:
+  | Category | Types | In-Place Mutation | Hashable as Dict Key? |
+  | :--- | :--- | :--- | :--- |
+  | **Immutable** | \`int\`, \`float\`, \`str\`, \`tuple\`, \`frozenset\`, \`bytes\` | ❌ Disallowed (creates new object) | ✅ Yes (\`__hash__\` implemented) |
+  | **Mutable** | \`list\`, \`dict\`, \`set\`, \`bytearray\` | ✅ Allowed in-place | ❌ No (raises \`TypeError: unhashable\`) |
 ### Copy Semantics (\`copy\` vs \`deepcopy\`)
 - **Syntax Example**:
   \`\`\`python
@@ -87,7 +94,12 @@ markmap:
     if x % 2 == 0
   )
   \`\`\`
-- *Key Difference*: Use list comprehension when you need random access or indexing; use generators for massive streams or pipeline processing.
+- **List Comprehension vs Generator**:
+  | Dimension | List Comprehension \`[...]\` | Generator Expression \`(...)\` |
+  | :--- | :--- | :--- |
+  | **Evaluation** | Eager (computes and builds entire list in RAM) | Lazy (yields 1 element on-demand via \`next()\`) |
+  | **Memory Usage** | $\\mathcal{O}(n)$ proportional to dataset | $\\mathcal{O}(1)$ constant memory overhead |
+  | **Indexing & Re-use** | Supports random access & multiple iterations | Single-pass stream; consumed after 1 iteration |
 ### Iterators & Generators
 - **Iterable**: Any object with \`__iter__()\` returning an iterator
 - **Iterator**: Object with \`__iter__()\` and \`__next__()\`; raises \`StopIteration\` when finished
@@ -150,10 +162,12 @@ markmap:
     def is_valid_email(email):
       return "@" in email
   \`\`\`
-- *Key Differences*:
-  - Instance methods modify object state via \`self\`.
-  - Class methods (\`@classmethod\`) modify class state or provide alternative constructors via \`cls\`.
-  - Static methods (\`@staticmethod\`) take neither \`self\` nor \`cls\`; plain utility bound to class namespace.
+- **Method Types Comparison**:
+  | Method Type | Decorator | First Parameter | Access & State Scope |
+  | :--- | :--- | :--- | :--- |
+  | **Instance Method** | None (default) | \`self\` (current instance) | Reads & mutates instance state and class state |
+  | **Class Method** | \`@classmethod\` | \`cls\` (current class) | Mutates class state; factory constructors |
+  | **Static Method** | \`@staticmethod\` | None (normal args) | Isolated utility helper; no state access |
 ### \`__new__\` vs \`__init__\`
 - **Syntax Example**:
   \`\`\`python
