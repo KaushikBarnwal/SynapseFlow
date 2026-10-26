@@ -27,6 +27,18 @@ markmap:
 - **Terminated**: Finished execution; resources reclaimed
 - **Zombie Process**: Terminated process still in process table because parent hasn't called \`wait()\`
 - **Orphan Process**: Parent process died; reparented to \`init\` / \`systemd\` (PID 1) to be reaped
+- **Process Creation & Zombie Prevention**:
+  \`\`\`c
+  pid_t pid = fork();
+  if (pid == 0) {
+    // [KEY IDEA] Child process receives PID 0 from fork() and executes new binary image:
+    [hl]execlp("/bin/ls", "ls", "-la", NULL)[/hl];
+  } else if (pid > 0) {
+    // [KEY IDEA] Parent reaps child exit status via waitpid to prevent zombie process leaks:
+    int status;
+    [hl]waitpid(pid, &status, 0)[/hl];
+  }
+  \`\`\`
 ### Inter-Process Communication (IPC)
 - **Shared Memory**: Fastest IPC method; direct RAM access without kernel copying (requires mutex/semaphores)
 - **Message Passing / Queues**: Safe across systems; OS-managed buffer
@@ -56,6 +68,15 @@ markmap:
 - **Paging**: Physical RAM divided into fixed-size **Frames**; virtual memory divided into equal **Pages** (typically 4KB)
 - **Page Table**: Maps Virtual Page Numbers (VPN) to Physical Frame Numbers (PFN)
 - **Fragmentation**: Paging eliminates external fragmentation; suffers only from **Internal Fragmentation** (unused space in final page)
+- **Page Address Translation Math**:
+  \`\`\`c
+  // Given 32-bit address space with 4KB pages (2^12 bytes offset):
+  uint32_t virtual_addr = 0x00403ABC;
+  // [KEY IDEA] Right shift by 12 bits extracts VPN; bitwise AND with 0xFFF extracts page offset:
+  uint32_t [hl]vpn = virtual_addr >> 12[/hl];       // Virtual Page Number
+  uint32_t [hl]offset = virtual_addr & 0xFFF[/hl];  // Byte offset within frame
+  uint32_t physical_addr = ([hl]page_table[vpn] << 12[/hl]) | offset;
+  \`\`\`
 ### Translation Lookaside Buffer (TLB)
 - Hardware associative cache inside the CPU (MMU) storing recent page translations
 - **TLB Hit**: Address translated in 1 CPU cycle
@@ -82,6 +103,22 @@ markmap:
   | **Binary Semaphore** | Signaling Flag (Integer value $0$ or $1$) | No ownership: Thread A can wait, Thread B can signal | Inter-thread coordination and signaling |
   | **Counting Semaphore** | Pool Counter (Integer value up to $N$) | Decremented on \`acquire\`, incremented on \`release\` | Managing access to a pool of $N$ identical resources |
   | **Spinlock** | Busy-Wait Loop (polls CPU in active spin cycle) | No sleep; avoids OS thread context switch | Microsecond locks in multicore kernels & drivers |
+- **Mutex vs Semaphore Synchronization in C**:
+  \`\`\`c
+  // 1. POSIX Mutex: Mutual exclusion on critical section
+  pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  // [KEY IDEA] Mutex lock enforces thread ownership and sleeps waiting threads:
+  [hl]pthread_mutex_lock(&lock)[/hl];
+  counter++; // Thread-safe critical section
+  [hl]pthread_mutex_unlock(&lock)[/hl];
+
+  // 2. Counting Semaphore: Producer-Consumer coordination
+  sem_t empty_slots; // Initialized to buffer capacity N
+  // [KEY IDEA] Semaphores signal cross-thread availability without requiring ownership:
+  [hl]sem_wait(&empty_slots)[/hl]; // Decrement available slots or block if 0
+  enqueue_item(data);
+  [hl]sem_post(&full_slots)[/hl];  // Signal waiting consumers
+  \`\`\`
 ### Deadlocks & Coffman Conditions
 - **4 Necessary Conditions**:
   - 1. **Mutual Exclusion**: Non-shareable resource

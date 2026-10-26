@@ -77,11 +77,12 @@ markmap:
 ### Anti-Join Pattern (Exclusion Search)
 - Syntax:
   \`\`\`sql
-  SELECT e.name
+  -- [KEY IDEA] Anti-join via LEFT JOIN + IS NULL pinpoints records with zero matches:
+  SELECT [hl]e.name[/hl]
   FROM emp e
   LEFT JOIN dept d
-    ON e.dept_id = d.id
-  WHERE d.id IS NULL;
+    ON [hl]e.dept_id = d.id[/hl]
+  WHERE [hl]d.id IS NULL[/hl];
   \`\`\`
 - *Key Difference*: Pinpoints records in the left table that have **zero matches** in the right table (significantly faster and safer than \`NOT IN\`).
 ### \`RIGHT JOIN\` (Matching Left + All Right)
@@ -113,11 +114,12 @@ markmap:
 ### \`SELF JOIN\` (Hierarchical Relationships)
 - Syntax:
   \`\`\`sql
-  SELECT e.name AS emp,
-         m.name AS manager
+  -- [KEY IDEA] Self-join pairs two distinct aliases of the same table to resolve hierarchies:
+  SELECT [hl]e.name AS emp[/hl],
+         [hl]m.name AS manager[/hl]
   FROM emp e
   LEFT JOIN emp m
-    ON e.manager_id = m.id;
+    ON [hl]e.manager_id = m.id[/hl];
   \`\`\`
 - *Key Difference*: Joins a table to itself using two distinct table aliases (\`e\` and \`m\`) to resolve parent-child relationships.
 ### Set Operations (\`UNION\` vs \`UNION ALL\`)
@@ -167,30 +169,32 @@ markmap:
 - **Stored Procedure**:
   - Syntax:
     \`\`\`sql
+    -- [KEY IDEA] Stored procedures execute transactional DML and commit/rollback changes:
     CREATE OR REPLACE PROCEDURE give_raise(
       p_id IN INT,
       p_amt IN DECIMAL
     ) AS
     BEGIN
-      UPDATE emp
+      [hl]UPDATE emp[/hl]
       SET salary = salary + p_amt
       WHERE id = p_id;
-      COMMIT;
+      [hl]COMMIT;[/hl]
     END;
     \`\`\`
   - *Key Differences*: Invoked via \`CALL\` or \`EXEC\`; can execute DML and commit/rollback transactions; outputs values via \`OUT\` parameters; **cannot** be called inside \`SELECT\`.
 - **Stored Function**:
   - Syntax:
     \`\`\`sql
+    -- [KEY IDEA] Stored functions must return a single deterministic value and can be embedded in SELECT:
     CREATE OR REPLACE FUNCTION get_annual_sal(
       p_id IN INT
-    ) RETURN DECIMAL AS
+    ) [hl]RETURN DECIMAL[/hl] AS
       v_sal DECIMAL;
     BEGIN
       SELECT salary * 12 INTO v_sal
       FROM emp
       WHERE id = p_id;
-      RETURN v_sal;
+      [hl]RETURN v_sal;[/hl]
     END;
     \`\`\`
   - *Key Differences*: **Must return** a single value via \`RETURN\`; **can** be used directly in SQL queries; cannot execute transaction commits inside SQL queries.
@@ -198,12 +202,13 @@ markmap:
 - Automatic routines triggered by database events (\`INSERT\`, \`UPDATE\`, \`DELETE\`).
 - Syntax:
   \`\`\`sql
+  -- [KEY IDEA] Row-level triggers intercept mutations via :OLD and :NEW pseudorecords:
   CREATE OR REPLACE TRIGGER trg_audit_emp
   AFTER UPDATE OF salary ON emp
-  FOR EACH ROW
+  [hl]FOR EACH ROW[/hl]
   BEGIN
     INSERT INTO emp_audit(emp_id, old_sal, new_sal, changed_at)
-    VALUES (:OLD.id, :OLD.salary, :NEW.salary, SYSDATE);
+    VALUES ([hl]:OLD.id[/hl], [hl]:OLD.salary[/hl], [hl]:NEW.salary[/hl], SYSDATE);
   END;
   \`\`\`
 - **Timing**: \`BEFORE\` (data sanitization, validation) vs \`AFTER\` (audit logging, downstream sync) vs \`INSTEAD OF\` (updating views).
@@ -212,18 +217,19 @@ markmap:
 - Programmer-managed query result set pointer:
 - Syntax:
   \`\`\`sql
+  -- [KEY IDEA] Explicit cursors iterate over active query rows one at a time:
   DECLARE
     CURSOR c_emp IS
       SELECT id, salary FROM emp;
     v_id emp.id%TYPE;
     v_sal emp.salary%TYPE;
   BEGIN
-    OPEN c_emp;
+    [hl]OPEN c_emp;[/hl]
     LOOP
-      FETCH c_emp INTO v_id, v_sal;
-      EXIT WHEN c_emp%NOTFOUND;
+      [hl]FETCH c_emp INTO v_id, v_sal;[/hl]
+      [hl]EXIT WHEN c_emp%NOTFOUND;[/hl]
     END LOOP;
-    CLOSE c_emp;
+    [hl]CLOSE c_emp;[/hl]
   END;
   \`\`\`
 - **Implicit Cursor**: Created automatically for DML (\`SQL%FOUND\`, \`SQL%NOTFOUND\`, \`SQL%ROWCOUNT\`).
@@ -250,8 +256,9 @@ markmap:
   - Avoid wrapping indexed columns in functions (e.g., \`WHERE YEAR(date) = 2026\` forces a Full Table Scan)
   - Rewrite as range:
     \`\`\`sql
-    WHERE date >= '2026-01-01'
-      AND date < '2027-01-01'
+    -- [KEY IDEA] SARGable range predicates enable fast B+ Tree index seeks instead of full table scans:
+    WHERE [hl]date >= '2026-01-01'[/hl]
+      AND [hl]date < '2027-01-01'[/hl]
     \`\`\`
 - **Leftmost Prefix Rule**: Composite index on \`(A, B, C)\` can only be used by queries filtering \`A\`, \`(A, B)\`, or \`(A, B, C)\`
 
@@ -283,27 +290,30 @@ markmap:
   | **\`RANK()\`** | Same rank assigned to equal values | Leaves gaps equal to tied count | $1, 1, 3, 4$ (skips $2$) |
   | **\`DENSE_RANK()\`** | Same rank assigned to equal values | Never leaves gaps | $1, 1, 2, 3$ (no skipping) |
   \`\`\`sql
+  -- [KEY IDEA] DENSE_RANK assigns consecutive rankings across partition frames without skipping numbers:
   SELECT name, salary,
-    DENSE_RANK() OVER (
+    [hl]DENSE_RANK() OVER ([/hl]
       PARTITION BY dept_id
       ORDER BY salary DESC
-    ) AS sal_rank
+    [hl])[/hl] AS sal_rank
   FROM emp;
   \`\`\`
 ### Value Functions
 - **\`LEAD(col, 1)\` / \`LAG(col, 1)\`**: Accesses subsequent or previous row without a self-join:
   \`\`\`sql
+  -- [KEY IDEA] LAG accesses preceding row values within the ordered partition without self-joins:
   SELECT name, salary,
-    LAG(salary, 1) OVER (
+    [hl]LAG(salary, 1) OVER ([/hl]
       ORDER BY hire_date
-    ) AS prev_emp_sal
+    [hl])[/hl] AS prev_emp_sal
   FROM emp;
   \`\`\`
 - **\`OVER (PARTITION BY ... ORDER BY ...)\`**: Defines the evaluation window partition frame
 ### Common Table Expressions (CTEs)
 - Syntax:
   \`\`\`sql
-  WITH DeptAvg AS (
+  -- [KEY IDEA] CTE creates a clean named temporary result set to avoid redundant subqueries:
+  WITH [hl]DeptAvg AS[/hl] (
     SELECT dept_id,
            AVG(salary) AS avg_sal
     FROM emp
@@ -311,9 +321,9 @@ markmap:
   )
   SELECT e.name, e.salary, d.avg_sal
   FROM emp e
-  JOIN DeptAvg d
-    ON e.dept_id = d.dept_id
-  WHERE e.salary > d.avg_sal;
+  JOIN [hl]DeptAvg d[/hl]
+    ON [hl]e.dept_id = d.dept_id[/hl]
+  WHERE [hl]e.salary > d.avg_sal[/hl];
   \`\`\`
 - Can be **Recursive CTEs** (ideal for organizational hierarchies, trees, and graphs)
 

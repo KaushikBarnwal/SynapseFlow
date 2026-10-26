@@ -45,6 +45,19 @@ markmap:
 - **Step 1 (\`SYN\`)**: Client sends \`SYN\` with initial sequence number $ISN_c = X$
 - **Step 2 (\`SYN-ACK\`)**: Server replies with \`SYN-ACK\` ($ACK = X + 1, ISN_s = Y$)
 - **Step 3 (\`ACK\`)**: Client acknowledges ($ACK = Y + 1$); socket is now \`ESTABLISHED\`
+- **TCP Socket Lifecycle Example**:
+  \`\`\`python
+  import socket
+
+  # [KEY IDEA] SOCK_STREAM binds connection to reliable, ordered TCP byte-stream protocol:
+  server = socket.socket(socket.AF_INET, [hl]socket.SOCK_STREAM[/hl])
+  server.bind(('0.0.0.0', 8080))
+  server.listen(5)
+
+  # [KEY IDEA] accept() blocks thread until 3-way handshake (SYN, SYN-ACK, ACK) completes:
+  client_sock, client_addr = [hl]server.accept()[/hl]
+  request = [hl]client_sock.recv(4096)[/hl]
+  \`\`\`
 ### TCP 4-Way Teardown (Connection Termination)
 - **Step 1 (\`FIN\`)**: Client sends \`FIN\` to close outbound transmission
 - **Step 2 (\`ACK\`)**: Server acknowledges \`FIN\` (server can still finish sending pending data)
@@ -72,6 +85,14 @@ markmap:
 - **Formula for Total IPs**: $2^{(32 - \\text{prefix})}$ (e.g., \`/24\` $\\rightarrow 2^8 = 256$)
 - **Formula for Usable Hosts**: $2^{(32 - \\text{prefix})} - 2$ (Subtract Network ID and Broadcast IP)
 - **Example \`/28\`**: $32 - 28 = 4 \\rightarrow 2^4 = 16$ IPs $\\rightarrow$ 14 usable hosts
+- **Subnet Host Calculation Math**:
+  \`\`\`python
+  # Given CIDR Prefix /28:
+  prefix = 28
+  # [KEY IDEA] Bitwise shift calculates total IP pool; subtract 2 for network & broadcast IDs:
+  total_ips = [hl]1 << (32 - prefix)[/hl]  # 2^(32-28) = 16 total IPs
+  usable_hosts = [hl]total_ips - 2[/hl]    # 14 usable host IPs
+  \`\`\`
 ### Private IP Ranges (RFC 1918)
 - **Class A**: \`10.0.0.0/8\` (\`10.0.0.0\` – \`10.255.255.255\`)
 - **Class B**: \`172.16.0.0/12\` (\`172.16.0.0\` – \`172.31.255.255\`)
@@ -127,6 +148,15 @@ markmap:
   | **HTTP/1.1** | TCP | ❌ No (1 request per socket) | ❌ None (repetitive plain headers) | Severe at Application level |
   | **HTTP/2** | TCP | ✅ Yes (Binary framing streams) | ✅ HPACK compression | Eliminated at HTTP level (persists on TCP packet loss) |
   | **HTTP/3** | QUIC over UDP | ✅ Yes (Independent UDP streams) | ✅ QPACK compression | ❌ Completely eliminated (Packet loss in stream A doesn't stall stream B) |
+- **Raw HTTP/1.1 Wire Format**:
+  \`\`\`http
+  // [KEY IDEA] Host header enables virtual hosting; trailing CRLF marks end of HTTP header block:
+  [hl]GET /api/v1/users?page=1 HTTP/1.1[/hl]
+  [hl]Host: api.example.com[/hl]
+  User-Agent: Mozilla/5.0
+  Accept: application/json
+  Connection: keep-alive
+  \`\`\`
 ### Real-Time Communication
 - **WebSockets**: Full-duplex persistent bidirectional TCP connection
 - **Server-Sent Events (SSE)**: Unidirectional real-time stream from server to client over HTTP
