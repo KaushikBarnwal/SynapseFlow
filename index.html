@@ -2465,17 +2465,16 @@
           el.innerHTML = el.innerHTML.replace(/\[hl\]([\s\S]*?)\[\/hl\]/g, '<span class="code-hl-token">$1</span>');
         }
 
-        // 2. Process [CRUX] / [KEY] markers
-        if (el.innerHTML.includes('[CRUX]') || el.innerHTML.includes('[KEY]')) {
+        // 2. Process [KEY IDEA] / [KEY CONCEPT] / [CORE LOGIC] / [KEY] / [CRUX] markers
+        const keyIdeaRegex = /\[(KEY IDEA|KEY CONCEPT|CORE LOGIC|KEY TAKEAWAY|KEY|CRUX)\]/i;
+        if (keyIdeaRegex.test(el.innerHTML)) {
           const lines = el.innerHTML.split('\n');
           const output = [];
           for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            const isCrux = line.includes('[CRUX]') || line.includes('[KEY]');
+            const isCrux = keyIdeaRegex.test(line);
             if (isCrux) {
-              const formattedLine = line
-                .replace(/\[CRUX\]/g, '<span class="crux-pill">⚡ CRUX</span>')
-                .replace(/\[KEY\]/g, '<span class="crux-pill">💡 KEY</span>');
+              const formattedLine = line.replace(/\[(KEY IDEA|KEY CONCEPT|CORE LOGIC|KEY TAKEAWAY|KEY|CRUX)\]/gi, '<span class="crux-pill">⚡ KEY IDEA</span>');
               const plain = line.replace(/<[^>]*>/g, '').trim();
               const isComment = plain.startsWith('//') || plain.startsWith('#') || plain.startsWith('/*');
               if (isComment && i + 1 < lines.length && lines[i + 1].trim().length > 0) {

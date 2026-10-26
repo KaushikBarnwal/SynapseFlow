@@ -39,11 +39,9 @@ markmap:
   a = [1, 2, 3]
   b = [1, 2, 3]
 
-  # Value equality (calls __eq__)
-  val_eq = (a == b)  # True
-
-  # Memory identity (id(a) == id(b))
-  id_eq = (a is b)   # False
+  # [KEY IDEA] == checks content equivalence (__eq__); is checks memory pointer identity:
+  val_eq = ([hl]a == b[/hl])  # True: identical elements
+  id_eq = ([hl]a is b[/hl])   # False: distinct heap objects
   \`\`\`
 - **\`==\` vs \`is\` Comparison**:
   | Operator | Evaluates | Mechanism | Typical Use Case |
@@ -63,11 +61,9 @@ markmap:
 
   orig = [[1, 2], [3, 4]]
 
-  # Outer list duplicated; nested [1, 2] references shared
-  shallow = copy.copy(orig)
-
-  # Fully recursive independent clone of all levels
-  deep = copy.deepcopy(orig)
+  # [KEY IDEA] Shallow copy shares nested references; deepcopy clones all levels recursively:
+  shallow = [hl]copy.copy(orig)[/hl]      # Outer list cloned, inner lists shared
+  deep = [hl]copy.deepcopy(orig)[/hl]    # Complete independent recursive clone
   \`\`\`
 - **Assignment (\`b = a\`)**: Merely creates a new reference to the same heap object
 ### Dictionaries Under the Hood
@@ -80,19 +76,9 @@ markmap:
 ### List Comprehension vs Generator Expression
 - **Syntax Example**:
   \`\`\`python
-  # List Comprehension: Eagerly builds full list in RAM
-  squares_list = [
-    x**2
-    for x in range(1_000_000)
-    if x % 2 == 0
-  ]
-
-  # Generator Expression: Lazy stream, yields 1 item on-demand
-  squares_gen = (
-    x**2
-    for x in range(1_000_000)
-    if x % 2 == 0
-  )
+  # [KEY IDEA] Comprehensions allocate full list in RAM; generators stream 1 item on-demand (O(1) memory):
+  squares_list = [[hl]x**2 for x in range(1_000_000)[/hl] if x % 2 == 0]
+  squares_gen = ([hl]x**2 for x in range(1_000_000)[/hl] if x % 2 == 0)
   \`\`\`
 - **List Comprehension vs Generator**:
   | Dimension | List Comprehension \`[...]\` | Generator Expression \`(...)\` |
@@ -114,7 +100,8 @@ markmap:
   import time
 
   def timer(func):
-    @functools.wraps(func)
+    # [KEY IDEA] @wraps copies function metadata (__name__, __doc__) to prevent closure masking:
+    @[hl]functools.wraps(func)[/hl]
     def wrapper(*args, **kwargs):
       t0 = time.time()
       res = func(*args, **kwargs)
@@ -132,13 +119,14 @@ markmap:
       self.filename = filename
       self.file = None
 
-    def __enter__(self):
+    # [KEY IDEA] __enter__ allocates resource; __exit__ guarantees cleanup even on uncaught errors:
+    def [hl]__enter__[/hl](self):
       self.file = open(self.filename, 'r')
       return self.file
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def [hl]__exit__[/hl](self, exc_type, exc_val, exc_tb):
       if self.file:
-        self.file.close()
+        [hl]self.file.close()[/hl]
   \`\`\`
 
 ## 4. Object-Oriented Programming (OOP)
@@ -174,10 +162,10 @@ markmap:
   class Singleton:
     _instance = None
 
-    # 1. __new__: Allocates and returns raw instance
-    def __new__(cls, *args, **kwargs):
+    # [KEY IDEA] __new__ allocates the raw instance; __init__ initializes instance attributes:
+    def [hl]__new__[/hl](cls, *args, **kwargs):
       if cls._instance is None:
-        cls._instance = super().__new__(cls)
+        cls._instance = [hl]super().__new__(cls)[/hl]
       return cls._instance
 
     # 2. __init__: Sets attributes on the instance

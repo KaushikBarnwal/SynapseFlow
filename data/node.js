@@ -24,7 +24,7 @@ markmap:
   - Heap structured into **New Space** (young generation, collected frequently via Scavenger algorithm) and **Old Space** (survived objects, swept via Mark-Sweep-Compact)
   - V8 Memory limit default is ~1.4GB on 64-bit systems; adjustable via CLI flag:
   \`\`\`bash
-  # [CRUX] Expand V8 Old Space memory allocation for memory-heavy data pipelines:
+  # [KEY IDEA] Expand V8 Old Space memory allocation for memory-heavy data pipelines:
   node --max-old-space-size=4096 app.js
   \`\`\`
 
@@ -42,7 +42,7 @@ markmap:
 - **Threadpool Sizing & Thread Starvation**:
   - Default size is **4 threads**; heavy concurrent crypto operations can completely choke file I/O operations
   \`\`\`javascript
-  // [CRUX] Scale Libuv threadpool size before process initializes (must be set in environment):
+  // [KEY IDEA] Scale Libuv threadpool size before process initializes (must be set in environment):
   // Linux / macOS: UV_THREADPOOL_SIZE=16 node app.js
   // Inside code: must execute before any async call is initiated
   process.env.UV_THREADPOOL_SIZE = 16;
@@ -74,7 +74,7 @@ markmap:
   2. **Promise Queue (Standard Microtask)**: Handles resolved \`Promise.then()\`, \`catch()\`, \`finally()\`, and \`queueMicrotask()\`
 - **Execution Order Trap (\`setImmediate\` vs \`setTimeout\`)**:
   \`\`\`javascript
-  // [CRUX] Microtask priority: nextTick always executes before Promise microtasks and timers:
+  // [KEY IDEA] Microtask priority: nextTick always executes before Promise microtasks and timers:
   setTimeout(() => console.log('1. Timer Phase'), 0);
   setImmediate(() => console.log('2. Check Phase'));
   Promise.resolve().then(() => console.log('3. Promise Microtask'));
@@ -83,7 +83,7 @@ markmap:
   \`\`\`
 - **Guaranteed Order Inside I/O Callbacks**:
   \`\`\`javascript
-  // [CRUX] Inside any I/O callback (Poll phase), setImmediate ALWAYS runs before setTimeout(0):
+  // [KEY IDEA] Inside any I/O callback (Poll phase), setImmediate ALWAYS runs before setTimeout(0):
   const fs = require('fs');
   fs.readFile(__filename, () => {
     setTimeout(() => console.log('Timeout'), 0);
@@ -100,7 +100,7 @@ markmap:
   - \`Buffer.alloc(size)\`: Initializes and zeros out allocated memory (safe from data leaks)
   - \`Buffer.allocUnsafe(size)\`: Fast allocation without zero-filling; contains leftover sensitive garbage memory
   \`\`\`javascript
-  // [CRUX] Always use Buffer.alloc or Buffer.from to prevent leaking residual memory:
+  // [KEY IDEA] Always use Buffer.alloc or Buffer.from to prevent leaking residual memory:
   const secureBuf = Buffer.alloc(1024); // Zero-filled 1KB buffer
   const strBuf = Buffer.from('SynapseFlow', 'utf-8'); // Encodes string to raw hex bytes
   \`\`\`
@@ -117,7 +117,7 @@ markmap:
   - Without backpressure control, unconsumed chunks accumulate in RAM, triggering V8 out-of-memory crashes
 - **The \`highWaterMark\` & Drain Engine**:
   \`\`\`javascript
-  // [CRUX] Native backpressure handling: pause reading when writable buffer hits highWaterMark:
+  // [KEY IDEA] Native backpressure handling: pause reading when writable buffer hits highWaterMark:
   const readable = fs.createReadStream('source.mp4');
   const writable = fs.createWriteStream('dest.mp4');
 
@@ -135,7 +135,7 @@ markmap:
   - \`.pipe()\` has a fatal flaw: it does NOT automatically destroy all streams or clean up descriptors if an error occurs mid-stream
   - Always use \`stream.pipeline\` (or \`stream/promises\`) in production:
   \`\`\`javascript
-  // [CRUX] stream.pipeline ensures zero memory leaks and cleans up all stream descriptors on failure:
+  // [KEY IDEA] stream.pipeline ensures zero memory leaks and cleans up all stream descriptors on failure:
   const { pipeline } = require('stream/promises');
   const zlib = require('zlib');
 
@@ -154,7 +154,7 @@ markmap:
   - Core of Node.js event-driven architecture; classes like \`http.Server\`, \`Stream\`, and \`Socket\` inherit from \`EventEmitter\`
   - Event listeners execute **synchronously** in the order they were registered when \`.emit()\` is triggered
   \`\`\`javascript
-  // [CRUX] Custom Event Emitter implementation with clean listener lifecycle:
+  // [KEY IDEA] Custom Event Emitter implementation with clean listener lifecycle:
   const EventEmitter = require('events');
   class OrderService extends EventEmitter {
     placeOrder(order) {
@@ -169,7 +169,7 @@ markmap:
   - By default, attaching more than 10 listeners to an emitter prints a \`MaxListenersExceededWarning\`
   - Un-removed listeners on long-lived objects (e.g. WebSocket connection handles) cause major memory leaks
   \`\`\`javascript
-  // [CRUX] Increase listener threshold or remove listeners on resource teardown:
+  // [KEY IDEA] Increase listener threshold or remove listeners on resource teardown:
   emitter.setMaxListeners(25);
   emitter.removeListener('data', onDataCallback); // Critical for socket cleanups
   \`\`\`
@@ -178,7 +178,7 @@ markmap:
 - **Synchronous Methods Anti-Pattern**: Never call \`fs.readFileSync\` or \`fs.writeFileSync\` in request handlers (freezes all concurrent users)
 - **Modern Async/Await File Operations**:
   \`\`\`javascript
-  // [CRUX] Clean async file system operations using fs/promises:
+  // [KEY IDEA] Clean async file system operations using fs/promises:
   const fs = require('fs/promises');
   async function readConfig(filePath) {
     try {
@@ -197,7 +197,7 @@ markmap:
   - Express is a routing and middleware framework layered on top of Node's native \`http\` module
   - Passing \`app\` directly into \`http.createServer(app)\` binds Express's request handler to Node's HTTP server
   \`\`\`javascript
-  // [CRUX] Native HTTP server instantiation using Express application handler:
+  // [KEY IDEA] Native HTTP server instantiation using Express application handler:
   const express = require('express');
   const http = require('http');
   const app = express();
@@ -213,7 +213,7 @@ markmap:
     3. Delegate to next middleware (\`next()\`)
 - **Application vs Modular Router Middleware**:
   \`\`\`javascript
-  // [CRUX] Modular Router partitioning with local route middleware:
+  // [KEY IDEA] Modular Router partitioning with local route middleware:
   const router = express.Router();
   const requireAuth = (req, res, next) => {
     if (!req.headers.authorization) return res.status(401).json({ error: 'Unauthorized' });
@@ -231,7 +231,7 @@ markmap:
   - Express distinguishes error middleware by inspecting function arity (\`fn.length === 4\` parameters: \`err, req, res, next\`)
   - Any call to \`next(err)\` bypasses all downstream standard middleware and routes directly to the error handler
   \`\`\`javascript
-  // [CRUX] Centralized Express error-handling middleware:
+  // [KEY IDEA] Centralized Express error-handling middleware:
   app.use((err, req, res, next) => {
     console.error('Unhandled System Error:', err.stack);
     const statusCode = err.statusCode || 500;
@@ -245,7 +245,7 @@ markmap:
 - **Async Error Handling Wrapper**:
   - Express 4 does not automatically catch rejected promises in async route handlers; unhandled rejections crash the server
   \`\`\`javascript
-  // [CRUX] Async handler wrapper forwards async Promise rejections to Express error middleware:
+  // [KEY IDEA] Async handler wrapper forwards async Promise rejections to Express error middleware:
   const asyncHandler = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
@@ -265,7 +265,7 @@ markmap:
   - \`DELETE\`: Idempotent (removes resource, returns \`204 No Content\` or \`200\`)
 - **Route Parameter Extraction**:
   \`\`\`javascript
-  // [CRUX] Express parameter extraction: URL params, query filters, and body payload:
+  // [KEY IDEA] Express parameter extraction: URL params, query filters, and body payload:
   app.patch('/api/products/:id', (req, res) => {
     const productId = req.params.id; // Route param
     const notifyAdmin = req.query.notify === 'true'; // Query param
@@ -280,7 +280,7 @@ markmap:
   - Configures \`Content-Security-Policy\` (CSP), \`X-Frame-Options\` (prevents Clickjacking), \`Strict-Transport-Security\` (HSTS)
 - **CORS Configuration & Rate Limiting**:
   \`\`\`javascript
-  // [CRUX] Defensive security configuration: Helmet, strict CORS whitelist, and Rate Limiter:
+  // [KEY IDEA] Defensive security configuration: Helmet, strict CORS whitelist, and Rate Limiter:
   const helmet = require('helmet');
   const cors = require('cors');
   const rateLimit = require('express-rate-limit');
@@ -305,7 +305,7 @@ markmap:
   - **Access Token**: Short-lived (15 minutes), signed with secret key, stored in frontend memory (never \`localStorage\` due to XSS)
   - **Refresh Token**: Long-lived (7 days), stored in secure \`httpOnly\`, \`sameSite=strict\`, \`secure\` cookie
   \`\`\`javascript
-  // [CRUX] JWT verification middleware and token decoding:
+  // [KEY IDEA] JWT verification middleware and token decoding:
   const jwt = require('jsonwebtoken');
 
   function authenticateJWT(req, res, next) {
@@ -328,7 +328,7 @@ markmap:
   - Node runs on a single CPU core by default; an 8-core server wastes 87% of capacity
   - The \`cluster\` module forks identical worker processes that share the same server TCP port via OS-level socket sharing
   \`\`\`javascript
-  // [CRUX] Multi-core process clustering with automatic zero-downtime worker resurrection:
+  // [KEY IDEA] Multi-core process clustering with automatic zero-downtime worker resurrection:
   const cluster = require('cluster');
   const os = require('os');
 
@@ -353,7 +353,7 @@ markmap:
   - Node's event loop must NEVER be blocked with heavy CPU calculations (e.g. generating hashes, complex JSON serialization, matrix operations)
   - Worker threads share the same process memory space and communicate via message channels without process fork overhead
   \`\`\`javascript
-  // [CRUX] Worker Thread offloading CPU-intensive calculation away from Event Loop:
+  // [KEY IDEA] Worker Thread offloading CPU-intensive calculation away from Event Loop:
   const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
   if (isMainThread) {
@@ -378,7 +378,7 @@ markmap:
   - In Kubernetes or Docker, rolling updates send \`SIGTERM\` to request containers shut down
   - Immediately killing the process aborts database transactions and drops active customer HTTP requests
   \`\`\`javascript
-  // [CRUX] Graceful shutdown pattern: drain in-flight requests and close DB pools before exit:
+  // [KEY IDEA] Graceful shutdown pattern: drain in-flight requests and close DB pools before exit:
   function setupGracefulShutdown(server, dbPool) {
     const shutdown = async (signal) => {
       console.log(\`Received \${signal}. Starting graceful termination...\`);

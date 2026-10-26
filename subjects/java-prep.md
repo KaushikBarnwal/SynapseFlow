@@ -23,14 +23,10 @@ markmap:
   String s1 = "java";
   String s2 = new String("java");
 
-  // Compares Heap memory address references
-  boolean refEqual = (s1 == s2); // false
-
-  // Compares logical character values
-  boolean valEqual = s1.equals(s2); // true
-
-  // Null-safe content comparison
-  boolean safeEqual = Objects.equals(s1, s2); // true
+  // [KEY IDEA] == checks Heap memory address; .equals() checks logical character values:
+  boolean refEqual = ([hl]s1 == s2[/hl]); // false
+  boolean valEqual = [hl]s1.equals(s2)[/hl]; // true
+  boolean safeEqual = [hl]Objects.equals(s1, s2)[/hl]; // true
   ```
 - *Key Difference*: `==` checks whether both references point to the exact same memory address. `.equals()` evaluates logical contents.
 ### Control Flow & Exception Handling
@@ -40,11 +36,9 @@ markmap:
   - `finally`: Executes even if `return` is called (except `System.exit(0)`)
 - **Try-with-Resources (Java 7+)**:
   ```java
-  // Automatically calls close() on AutoCloseable
-  try (BufferedReader br = new BufferedReader(
-         new FileReader("data.txt"))) {
-    String line = br.readLine();
-    return line;
+  // [KEY IDEA] Automatically invokes close() on AutoCloseable even on exceptions:
+  try ([hl]BufferedReader br = new BufferedReader[/hl](new FileReader("data.txt"))) {
+    return br.readLine();
   } catch (IOException e) {
     e.printStackTrace();
   }
@@ -108,7 +102,8 @@ markmap:
   }
 
   Animal pet = new Dog();
-  pet.makeSound(); // Prints "Woof" via vtable dynamic dispatch
+  // [KEY IDEA] Resolved dynamically at runtime via JVM Virtual Method Table (vtable):
+  pet.[hl]makeSound()[/hl]; // Prints "Woof" from Dog instance
   ```
   - *Key Difference*: Resolved dynamically at runtime by JVM consulting the object's Virtual Method Table (`vtable`).
 ### Abstraction (Abstract Class vs Interface)
@@ -182,7 +177,8 @@ markmap:
 - **Double-Checked Locking Singleton**:
   ```java
   public class SafeSingleton {
-    private static volatile SafeSingleton instance;
+    // [KEY IDEA] volatile prevents CPU instruction reordering during object instantiation:
+    private static [hl]volatile[/hl] SafeSingleton instance;
 
     private SafeSingleton() {}
 
@@ -201,12 +197,9 @@ markmap:
 ### Java 21 Virtual Threads (Project Loom)
 - Lightweight M:N user-mode threads managed by JVM
   ```java
-  try (var executor =
-      Executors.newVirtualThreadPerTaskExecutor()) {
-    executor.submit(() -> {
-      // High-throughput lightweight blocking I/O
-      fetchRemoteData();
-    });
+  // [KEY IDEA] User-mode M:N threads: unmounts task without blocking OS kernel threads:
+  try (var executor = [hl]Executors.newVirtualThreadPerTaskExecutor()[/hl]) {
+    executor.submit(() -> fetchRemoteData());
   }
   ```
 - Thousands of times lighter than 1:1 OS platform threads; ideal for high-throughput blocking I/O

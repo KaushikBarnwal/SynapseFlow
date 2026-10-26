@@ -23,7 +23,7 @@ markmap:
   - JSX is syntactic sugar transformed by Babel or SWC into `React.createElement()` or modern `_jsxRuntime.jsx()` calls
   - Returns lightweight plain JavaScript objects (React Elements) with shape `{ type, props, key, ref }`
   ```jsx
-  // [CRUX] JSX compiles into pure nested JavaScript objects (React Elements):
+  // [KEY IDEA] JSX compiles into pure nested JavaScript objects (React Elements):
   const element = <button className="primary" onClick={handleClick}>Submit</button>;
   // Compiles to: jsx('button', { className: 'primary', onClick: handleClick, children: 'Submit' });
   ```
@@ -34,7 +34,7 @@ markmap:
 - **The Critical Importance of the `key` Prop**:
   - **Why never use index as key on dynamic lists?** If items are prepended or sorted, React reuses old DOM nodes and local state (e.g. input text or active animations), causing visual corruption and state desynchronization
   ```jsx
-  // [CRUX] Always use persistent, unique entity IDs instead of array indices:
+  // [KEY IDEA] Always use persistent, unique entity IDs instead of array indices:
   {items.map(item => (
     <TodoRow key={item.id} task={item} onToggle={() => handleToggle(item.id)} />
   ))}
@@ -57,7 +57,7 @@ markmap:
   - React detects state changes via reference equality (`Object.is`)
   - Direct mutation (`state.count = 5` or `arr.push(x)`) retains identical object references, causing React to bail out and skip re-renders
   ```jsx
-  // [CRUX] Immutable array operations: filter, map, and spread preserve pure state identity:
+  // [KEY IDEA] Immutable array operations: filter, map, and spread preserve pure state identity:
   const addItem = (item) => setItems(prev => [...prev, item]);
   const removeItem = (id) => setItems(prev => prev.filter(x => x.id !== id));
   const updateItem = (id, text) => setItems(prev => prev.map(x => x.id === id ? { ...x, text } : x));
@@ -68,7 +68,7 @@ markmap:
 - **Functional State Updaters**:
   - When new state depends on prior state, always pass a callback updater `prev => prev + 1` to prevent reading stale closure values
   ```jsx
-  // [CRUX] Functional updater reads latest queued Fiber state rather than stale render snapshot:
+  // [KEY IDEA] Functional updater reads latest queued Fiber state rather than stale render snapshot:
   setCount(prev => prev + 1);
   setCount(prev => prev + 1); // Increments by 2 deterministically
   ```
@@ -81,7 +81,7 @@ markmap:
   - **Anti-Pattern**: Copying props into local `useState` (creates split-brain state desynchronization)
   - **Best Practice**: Compute derived values inline during render
   ```jsx
-  // [CRUX] Compute derived state on the fly during render instead of caching in useEffect/useState:
+  // [KEY IDEA] Compute derived state on the fly during render instead of caching in useEffect/useState:
   function UserList({ users, filterText }) {
     const filteredUsers = users.filter(u => u.name.toLowerCase().includes(filterText.toLowerCase()));
     return <ul>{filteredUsers.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
@@ -94,12 +94,12 @@ markmap:
 ### State & Reference Hooks
 - **`useState`**: Local component state with optional lazy initial function:
   ```jsx
-  // [CRUX] Lazy initializer function runs only once on initial mount, avoiding expensive re-computation:
+  // [KEY IDEA] Lazy initializer function runs only once on initial mount, avoiding expensive re-computation:
   const [data, setData] = useState(() => JSON.parse(localStorage.getItem('token') || '{}'));
   ```
 - **`useReducer`**: Predictable state machine transitions for complex, interrelated state:
   ```jsx
-  // [CRUX] useReducer consolidates complex state transitions into a pure, testable reducer function:
+  // [KEY IDEA] useReducer consolidates complex state transitions into a pure, testable reducer function:
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case 'SUCCESS': return { loading: false, data: action.payload, error: null };
@@ -112,7 +112,7 @@ markmap:
   - Accessing direct DOM nodes (focus, measuring dimensions, canvas manipulation)
   - Holding timers and mutable instance variables
   ```jsx
-  // [CRUX] useRef stores mutable values without scheduling a component re-render:
+  // [KEY IDEA] useRef stores mutable values without scheduling a component re-render:
   const timerRef = useRef(null);
   const startTimer = () => { timerRef.current = setInterval(tick, 1000); };
   const stopTimer = () => clearInterval(timerRef.current);
@@ -124,7 +124,7 @@ markmap:
   - Dependency rules: `[]` runs once on mount; `[dep]` runs when `dep` reference changes; omitting runs every single render
 - **Effect Cleanup & Race Condition Prevention**:
   ```jsx
-  // [CRUX] AbortController cleanup prevents state updates after unmount and avoids race conditions:
+  // [KEY IDEA] AbortController cleanup prevents state updates after unmount and avoids race conditions:
   useEffect(() => {
     const controller = new AbortController();
     fetch(`/api/user/${userId}`, { signal: controller.signal })
@@ -144,7 +144,7 @@ markmap:
   - `useMemo`: Caches the **result** of a computationally heavy calculation
   - `useCallback`: Caches the **function instance** to preserve identity for children wrapped in `React.memo`
   ```jsx
-  // [CRUX] useCallback preserves callback reference to prevent React.memo re-renders:
+  // [KEY IDEA] useCallback preserves callback reference to prevent React.memo re-renders:
   const handleDelete = useCallback((id) => {
     setList(prev => prev.filter(item => item.id !== id));
   }, []); // Dependencies remain empty because functional updater reads latest state
@@ -153,7 +153,7 @@ markmap:
   - `useTransition`: Marks state updates as non-urgent, keeping inputs responsive
   - `useDeferredValue`: Defers re-rendering heavy downstream list until urgent input finishes
   ```jsx
-  // [CRUX] useTransition keeps high-priority keystroke fluid while deferring heavy chart updates:
+  // [KEY IDEA] useTransition keeps high-priority keystroke fluid while deferring heavy chart updates:
   const [isPending, startTransition] = useTransition();
   const handleSearch = (e) => {
     setText(e.target.value); // Urgent input update
@@ -174,7 +174,7 @@ markmap:
   - Solves prop drilling and decouples parent layouts from child implementation details
 - **Slots Pattern**:
   ```jsx
-  // [CRUX] Slots pattern enables flexible component customization without prop drilling:
+  // [KEY IDEA] Slots pattern enables flexible component customization without prop drilling:
   function ModalLayout({ headerSlot, footerSlot, children }) {
     return (
       <div className="modal-backdrop">
@@ -190,7 +190,7 @@ markmap:
 - **Compound Components Pattern**:
   - Implicitly share state through Context without requiring consumers to pass explicit props to every child
   ```jsx
-  // [CRUX] Compound component pattern allows declarative, flexible child composition:
+  // [KEY IDEA] Compound component pattern allows declarative, flexible child composition:
   const TabsContext = createContext();
   function Tabs({ activeTab, onChange, children }) {
     return <TabsContext.Provider value={{ activeTab, onChange }}>{children}</TabsContext.Provider>;
@@ -204,7 +204,7 @@ markmap:
 - **Custom Hooks for Reusable Stateful Logic**:
   - Encapsulate business logic, listeners, and APIs into composable primitives
   ```jsx
-  // [CRUX] Custom hook encapsulates window resize event listener and cleans up on unmount:
+  // [KEY IDEA] Custom hook encapsulates window resize event listener and cleans up on unmount:
   function useWindowDimensions() {
     const [dim, setDim] = useState({ width: window.innerWidth, height: window.innerHeight });
     useEffect(() => {
@@ -229,7 +229,7 @@ markmap:
   - **Moving State Down**: Isolate rapidly changing state to tiny leaf components
   - **Lifting Content Up as Children**: Passing JSX as `children` preserves identical element reference, completely skipping child re-render
   ```jsx
-  // [CRUX] Passing heavy components as children prevents re-rendering when parent state changes:
+  // [KEY IDEA] Passing heavy components as children prevents re-rendering when parent state changes:
   function ScrollTracker({ children }) {
     const [scroll, setScroll] = useState(0); // Only ScrollTracker re-renders, children are untouched
     return <div onScroll={e => setScroll(e.target.scrollTop)}>{children}</div>;
@@ -258,7 +258,7 @@ markmap:
   - Every component calling `useContext(MyContext)` re-renders whenever **any** property of the context value changes
   - **Remedy**: Split State and Dispatch into two separate context providers, or use selector-based stores (Zustand)
   ```jsx
-  // [CRUX] Split State Context and Dispatch Context to prevent unnecessary consumer re-renders:
+  // [KEY IDEA] Split State Context and Dispatch Context to prevent unnecessary consumer re-renders:
   const CountStateContext = createContext();
   const CountDispatchContext = createContext();
   ```
@@ -275,7 +275,7 @@ markmap:
   - Boundary marker indicating this subtree needs browser interactivity, state, event listeners, or browser APIs
   - Can accept Server Components passed as `children`
   ```jsx
-  // [CRUX] Composition pattern: Server Component passed as child into Client Component preserves zero bundle size:
+  // [KEY IDEA] Composition pattern: Server Component passed as child into Client Component preserves zero bundle size:
   'use client';
   export function ClientModal({ children }) {
     const [open, setOpen] = useState(false);

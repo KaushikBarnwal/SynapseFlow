@@ -18,7 +18,7 @@ markmap:
     int left = 0, right = numbers.length - 1;
     while (left < right) {
       int sum = numbers[left] + numbers[right];
-      // [CRUX] Inward convergence based on target comparison:
+      // [KEY IDEA] Inward convergence based on target comparison:
       if (sum == target) return new int[]{left + 1, right + 1}; // 1-based index
       else if (sum < target) [hl]left++[/hl]; // Need a larger sum
       else [hl]right--[/hl]; // Need a smaller sum
@@ -33,7 +33,7 @@ markmap:
     while (left < right) {
       int h = Math.min(height[left], height[right]);
       maxWater = Math.max(maxWater, h * (right - left));
-      // [CRUX] Greedy bottleneck elimination: always advance the shorter pillar
+      // [KEY IDEA] Greedy bottleneck elimination: always advance the shorter pillar
       if (height[left] < height[right]) [hl]left++[/hl];
       else [hl]right--[/hl];
     }
@@ -49,7 +49,7 @@ markmap:
 
     for (int i = 0; i < n - 2; i++) {
       if (nums[i] > 0) break; // Cannot sum to 0 if smallest number > 0
-      // [CRUX] Skip duplicate anchor to prevent identical triplets:
+      // [KEY IDEA] Skip duplicate anchor to prevent identical triplets:
       if (i > 0 && nums[i] == nums[i - 1]) continue;
 
       int left = i + 1, right = n - 1;
@@ -57,7 +57,7 @@ markmap:
         int sum = nums[i] + nums[left] + nums[right];
         if (sum == 0) {
           result.add(java.util.Arrays.asList(nums[i], nums[left], nums[right]));
-          // [CRUX] Skip duplicate inner pairs:
+          // [KEY IDEA] Skip duplicate inner pairs:
           while (left < right && nums[left] == nums[left + 1]) left++;
           while (left < right && nums[right] == nums[right - 1]) right--;
           left++; right--;
@@ -73,7 +73,7 @@ markmap:
   public static boolean isPalindrome(String s) {
     int left = 0, right = s.length() - 1;
     while (left < right) {
-      // [CRUX] Skip non-alphanumeric chars dynamically:
+      // [KEY IDEA] Skip non-alphanumeric chars dynamically:
       while (left < right && !Character.isLetterOrDigit(s.charAt(left))) left++;
       while (left < right && !Character.isLetterOrDigit(s.charAt(right))) right--;
       if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
@@ -91,7 +91,7 @@ markmap:
     if (nums.length == 0) return 0;
     int slow = 0; // Writes unique elements
     for (int fast = 1; fast < nums.length; fast++) {
-      // [CRUX] Fast runner writes to slow pointer only on distinct element discovery:
+      // [KEY IDEA] Fast runner writes to slow pointer only on distinct element discovery:
       if (nums[fast] != nums[slow]) {
         nums[++slow] = nums[fast];
       }
@@ -108,7 +108,7 @@ markmap:
       windowSum += nums[i];
       if (i >= k - 1) {
         maxSum = Math.max(maxSum, windowSum);
-        // [CRUX] Discard leftmost element as window slides:
+        // [KEY IDEA] Discard leftmost element as window slides:
         windowSum -= [hl]nums[i - k + 1][/hl];
       }
     }
@@ -124,7 +124,7 @@ markmap:
 
     for (int right = 0; right < s.length(); right++) {
       char c = s.charAt(right);
-      // [CRUX] Jump left pointer past previous occurrence of duplicate:
+      // [KEY IDEA] Jump left pointer past previous occurrence of duplicate:
       if (lastIndex[c] >= left) {
         left = [hl]lastIndex[c] + 1[/hl];
       }
@@ -140,7 +140,7 @@ markmap:
     int left = 0, sum = 0, minLen = Integer.MAX_VALUE;
     for (int right = 0; right < nums.length; right++) {
       sum += nums[right];
-      // [CRUX] Shrink window from left while target sum is satisfied:
+      // [KEY IDEA] Shrink window from left while target sum is satisfied:
       while (sum >= target) {
         minLen = Math.min(minLen, right - left + 1);
         sum -= [hl]nums[left++][/hl];
@@ -159,7 +159,7 @@ markmap:
 
     for (int num : nums) {
       prefixSum += num;
-      // [CRUX] If (prefixSum - k) seen before, a valid subarray exists:
+      // [KEY IDEA] If (prefixSum - k) seen before, a valid subarray exists:
       if (map.containsKey([hl]prefixSum - k[/hl])) {
         count += map.get([hl]prefixSum - k[/hl]);
       }
@@ -182,7 +182,7 @@ markmap:
         }
       }
     }
-    // [CRUX] 2D Inclusion-Exclusion formula for O(1) rectangular query:
+    // [KEY IDEA] 2D Inclusion-Exclusion formula for O(1) rectangular query:
     public int sumRegion(int r1, int c1, int r2, int c2) {
       return p[r2 + 1][c2 + 1] - p[r1][c2 + 1] - p[r2 + 1][c1] + p[r1][c1];
     }
@@ -197,7 +197,7 @@ markmap:
       diff[0] = nums[0];
       for (int i = 1; i < nums.length; i++) diff[i] = nums[i] - nums[i - 1];
     }
-    // [CRUX] O(1) boundary updates: add at L, subtract at R + 1:
+    // [KEY IDEA] O(1) boundary updates: add at L, subtract at R + 1:
     public void update(int i, int j, int val) {
       diff[i] += val;
       if (j + 1 < diff.length) diff[j + 1] -= val;
@@ -226,7 +226,7 @@ markmap:
     int ans = high;
     while (low <= high) {
       int mid = low + ((high - low) >>> 1);
-      // [CRUX] Feasible mid found: record answer and try smaller capacity:
+      // [KEY IDEA] Feasible mid found: record answer and try smaller capacity:
       if (canShip(weights, days, mid)) {
         [hl]ans = mid; high = mid - 1;[/hl] // Seek smaller capacity
       } else {
@@ -256,7 +256,7 @@ markmap:
     while (low <= high) {
       int mid = low + ((high - low) >>> 1);
       long totalHours = 0;
-      // [CRUX] Ceil division for eating speed hours: (p + mid - 1) / mid:
+      // [KEY IDEA] Ceil division for eating speed hours: (p + mid - 1) / mid:
       for (int p : piles) totalHours += (p + mid - 1) / mid;
       if (totalHours <= h) {
         speed = mid;
@@ -281,7 +281,7 @@ markmap:
   private static void merge(int[] arr, int l, int mid, int r) {
     int[] temp = new int[r - l + 1];
     int i = l, j = mid + 1, k = 0;
-    // [CRUX] Merge two sorted halves: stable comparison retains original order:
+    // [KEY IDEA] Merge two sorted halves: stable comparison retains original order:
     while (i <= mid && j <= r) temp[k++] = (arr[i] <= arr[j]) ? arr[i++] : arr[j++];
     while (i <= mid) temp[k++] = arr[i++];
     while (j <= r) temp[k++] = arr[j++];
@@ -293,7 +293,7 @@ markmap:
   public static void quickSort3Way(int[] arr, int l, int r) {
     if (l >= r) return;
     int lt = l, gt = r, i = l + 1, pivot = arr[l];
-    // [CRUX] 3-Way Dutch National Flag: partition into < pivot, == pivot, > pivot:
+    // [KEY IDEA] 3-Way Dutch National Flag: partition into < pivot, == pivot, > pivot:
     while (i <= gt) {
       if (arr[i] < pivot) swap(arr, lt++, i++);
       else if (arr[i] > pivot) swap(arr, i, gt--);
@@ -314,7 +314,7 @@ markmap:
         if (nums[i] <= pivot) swap(nums, i, pIndex++);
       }
       swap(nums, pIndex, right);
-      // [CRUX] Quickselect: only recurse into partition containing target rank:
+      // [KEY IDEA] Quickselect: only recurse into partition containing target rank:
       if (pIndex == target) return nums[pIndex];
       else if (pIndex < target) left = pIndex + 1;
       else right = pIndex - 1;
@@ -328,7 +328,7 @@ markmap:
   public static void countingSort(int[] arr, int min, int max) {
     int range = max - min + 1;
     int[] count = new int[range];
-    // [CRUX] Shift values by min offset to handle non-zero based integers:
+    // [KEY IDEA] Shift values by min offset to handle non-zero based integers:
     for (int x : arr) count[x - min]++;
     int idx = 0;
     for (int i = 0; i < range; i++) {
@@ -347,7 +347,7 @@ markmap:
       for (int x : arr) count[(x / exp) % 10]++;
       for (int i = 1; i < 10; i++) count[i] += count[i - 1];
       for (int i = arr.length - 1; i >= 0; i--) {
-        // [CRUX] Stable LSD sorting by digit bucket: (arr[i] / exp) % 10:
+        // [KEY IDEA] Stable LSD sorting by digit bucket: (arr[i] / exp) % 10:
         int d = (arr[i] / exp) % 10;
         output[--count[d]] = arr[i];
       }
@@ -377,7 +377,7 @@ markmap:
                                        java.util.List<java.util.List<Integer>> result) {
     result.add(new java.util.ArrayList<>(path)); // Clone current path
     for (int i = start; i < nums.length; i++) {
-      // [CRUX] Skip duplicate choices at the same recursion depth:
+      // [KEY IDEA] Skip duplicate choices at the same recursion depth:
       if (i > start && nums[i] == nums[i - 1]) continue;
       path.add(nums[i]);                           // 1. Choose
       backtrackSubsets(nums, i + 1, path, result); // 2. Recurse
@@ -399,7 +399,7 @@ markmap:
     for (int i = start; i < cand.length; i++) {
       if (cand[i] > remain) break; // Pruning branch: numbers sorted
       path.add(cand[i]);
-      // [CRUX] Pass 'i' instead of 'i + 1' to allow unlimited reuse of candidate:
+      // [KEY IDEA] Pass 'i' instead of 'i + 1' to allow unlimited reuse of candidate:
       backtrackComb(cand, i, remain - cand[i], path, res);
       path.remove(path.size() - 1);
     }
@@ -418,7 +418,7 @@ markmap:
     if (path.size() == nums.length) { result.add(new java.util.ArrayList<>(path)); return; }
     for (int i = 0; i < nums.length; i++) {
       if (used[i]) continue;
-      // [CRUX] Boolean array tracks visited elements in current path:
+      // [KEY IDEA] Boolean array tracks visited elements in current path:
       used[i] = true; path.add(nums[i]);
       backtrackPermute(nums, used, path, result);
       used[i] = false; path.remove(path.size() - 1);
@@ -443,7 +443,7 @@ markmap:
       return false;
     }
     char temp = board[r][c];
-    // [CRUX] In-place grid marking and state restoration (Backtrack):
+    // [KEY IDEA] In-place grid marking and state restoration (Backtrack):
     board[r][c] = '#';
     boolean found = dfsWord(board, word, r + 1, c, idx + 1) ||
                     dfsWord(board, word, r - 1, c, idx + 1) ||
@@ -472,7 +472,7 @@ markmap:
       return;
     }
     for (int c = 0; c < n; c++) {
-      // [CRUX] 3-way conflict check: column, diagonal (r-c+n), anti-diagonal (r+c):
+      // [KEY IDEA] 3-way conflict check: column, diagonal (r-c+n), anti-diagonal (r+c):
       int id1 = r - c + n, id2 = r + c;
       if (cols[c] || d1[id1] || d2[id2]) continue; // Under attack!
       board[r][c] = 'Q'; cols[c] = d1[id1] = d2[id2] = true;
@@ -503,7 +503,7 @@ markmap:
   private static boolean isValidSudoku(char[][] b, int r, int c, char val) {
     for (int i = 0; i < 9; i++) {
       if (b[r][i] == val || b[i][c] == val) return false;
-      // [CRUX] Validate 3x3 sub-box index mapping: 3*(r/3) + i/3, 3*(c/3) + i%3:
+      // [KEY IDEA] Validate 3x3 sub-box index mapping: 3*(r/3) + i/3, 3*(c/3) + i%3:
       if (b[3 * (r / 3) + i / 3][3 * (c / 3) + i % 3] == val) return false;
     }
     return true;
@@ -554,7 +554,7 @@ markmap:
         int v = edge[0], wt = edge[1];
         if (dist[u] + wt < dist[v]) {
           dist[v] = dist[u] + wt;
-          // [CRUX] 0-weight edges pushed to FRONT, 1-weight edges pushed to BACK:
+          // [KEY IDEA] 0-weight edges pushed to FRONT, 1-weight edges pushed to BACK:
           if (wt == 0) [hl]deque.offerFirst(v)[/hl];
           else [hl]deque.offerLast(v)[/hl];
         }
@@ -581,7 +581,7 @@ markmap:
       int u = queue.poll();
       resolved++;
       for (int v : adj.get(u)) {
-        // [CRUX] Push to queue only when in-degree reaches ZERO:
+        // [KEY IDEA] Push to queue only when in-degree reaches ZERO:
         if (--inDegree[v] == 0) queue.offer(v);
       }
     }
@@ -610,7 +610,7 @@ markmap:
 
       for (int[] edge : adj.get(u)) {
         int v = edge[0], weight = edge[1];
-        // [CRUX] Edge relaxation: update dist and push shorter candidate to Min-Heap:
+        // [KEY IDEA] Edge relaxation: update dist and push shorter candidate to Min-Heap:
         if (dist[u] + weight < dist[v]) {
           dist[v] = [hl]dist[u] + weight[/hl];
           pq.offer(new int[]{v, [hl]dist[v][/hl]});
@@ -638,7 +638,7 @@ markmap:
         if (dist[u] + wt < dist[v]) dist[v] = dist[u] + wt;
       }
     }
-    // [CRUX] V-th relaxation cycle check: if any dist decreases, negative cycle exists:
+    // [KEY IDEA] V-th relaxation cycle check: if any dist decreases, negative cycle exists:
     for (int[] edge : edges) {
       int u = edge[0], v = edge[1], wt = edge[2];
       if (dist[u] + wt < dist[v]) throw new IllegalStateException("Negative cycle detected");
@@ -649,7 +649,7 @@ markmap:
 - **Floyd-Warshall All-Pairs Shortest Path**: $\\mathcal{O}(V^3)$ Time | $\\mathcal{O}(V^2)$ Space
   \`\`\`java
   public static void floydWarshall(int[][] dist, int n) {
-    // [CRUX] Intermediate vertex 'k' loop must be outermost:
+    // [KEY IDEA] Intermediate vertex 'k' loop must be outermost:
     for (int k = 0; k < n; k++) {
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -672,7 +672,7 @@ markmap:
     int totalWeight = 0, edgesCount = 0;
     for (int[] edge : edges) {
       int rootU = find(parent, edge[0]), rootV = find(parent, edge[1]);
-      // [CRUX] Cycle prevention: union only if endpoints have different DSU roots:
+      // [KEY IDEA] Cycle prevention: union only if endpoints have different DSU roots:
       if (rootU != rootV) {
         parent[rootU] = rootV;
         totalWeight += edge[2];
@@ -696,7 +696,7 @@ markmap:
     while (!pq.isEmpty() && count < n) {
       int[] curr = pq.poll();
       int u = curr[0], wt = curr[1];
-      // [CRUX] Greedy vertex expansion: mark visited and push non-MST neighbor edges:
+      // [KEY IDEA] Greedy vertex expansion: mark visited and push non-MST neighbor edges:
       if (inMST[u]) continue;
       inMST[u] = true;
       totalWeight += wt;
@@ -726,7 +726,7 @@ markmap:
   public static int rob(int[] nums) {
     int prev1 = 0, prev2 = 0; // prev1 = dp[i-1], prev2 = dp[i-2]
     for (int num : nums) {
-      // [CRUX] Space optimization: only track dp[i-1] and dp[i-2]:
+      // [KEY IDEA] Space optimization: only track dp[i-1] and dp[i-2]:
       int curr = Math.max(prev1, prev2 + num);
       prev2 = prev1;
       prev1 = curr;
@@ -742,7 +742,7 @@ markmap:
     dp[0] = 0;
     for (int i = 1; i <= amount; i++) {
       for (int coin : coins) {
-        // [CRUX] Unbounded state transition: 1 + min coins for remaining amount:
+        // [KEY IDEA] Unbounded state transition: 1 + min coins for remaining amount:
         if (i - coin >= 0) dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
       }
     }
@@ -756,7 +756,7 @@ markmap:
     int size = 0;
     for (int x : nums) {
       int i = 0, j = size;
-      // [CRUX] Binary search on tails array for smallest tail >= x (Patience Sort):
+      // [KEY IDEA] Binary search on tails array for smallest tail >= x (Patience Sort):
       while (i < j) {
         int m = i + ((j - i) >>> 1);
         if (tails[m] < x) i = m + 1;
@@ -775,7 +775,7 @@ markmap:
     int[] dp = new int[n];
     java.util.Arrays.fill(dp, 1);
     for (int r = 1; r < m; r++) {
-      // [CRUX] 1D row rolling array: dp[c] accumulates top + left:
+      // [KEY IDEA] 1D row rolling array: dp[c] accumulates top + left:
       for (int c = 1; c < n; c++) dp[c] += dp[c - 1];
     }
     return dp[n - 1];
@@ -791,7 +791,7 @@ markmap:
     for (int r = 1; r < m; r++) {
       dp[0] += grid[r][0];
       for (int c = 1; c < n; c++) {
-        // [CRUX] Choose minimum between top and left incoming paths:
+        // [KEY IDEA] Choose minimum between top and left incoming paths:
         dp[c] = Math.min(dp[c], dp[c - 1]) + grid[r][c];
       }
     }
@@ -809,7 +809,7 @@ markmap:
     boolean[] dp = new boolean[target + 1];
     dp[0] = true;
     for (int num : nums) {
-      // [CRUX] 0/1 Knapsack: REVERSE iteration (target down to num) prevents reuse:
+      // [KEY IDEA] 0/1 Knapsack: REVERSE iteration (target down to num) prevents reuse:
       for (int j = target; j >= num; j--) dp[j] = dp[j] || dp[j - num];
     }
     return dp[target];
@@ -821,7 +821,7 @@ markmap:
     int[] dp = new int[amount + 1];
     dp[0] = 1; // 1 combination to make amount 0
     for (int coin : coins) {
-      // [CRUX] Unbounded Knapsack: FORWARD iteration (coin up to amount) enables reuse:
+      // [KEY IDEA] Unbounded Knapsack: FORWARD iteration (coin up to amount) enables reuse:
       for (int j = coin; j <= amount; j++) dp[j] += dp[j - coin];
     }
     return dp[amount];
@@ -835,7 +835,7 @@ markmap:
     int[][] dp = new int[m + 1][n + 1];
     for (int i = 1; i <= m; i++) {
       for (int j = 1; j <= n; j++) {
-        // [CRUX] If characters match, extend diagonal; else take max of subproblems:
+        // [KEY IDEA] If characters match, extend diagonal; else take max of subproblems:
         if (text1.charAt(i - 1) == text2.charAt(j - 1)) dp[i][j] = 1 + dp[i - 1][j - 1];
         else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
       }
@@ -853,7 +853,7 @@ markmap:
 
     for (int i = 1; i <= m; i++) {
       for (int j = 1; j <= n; j++) {
-        // [CRUX] If characters match: no cost; else take 1 + min(replace, delete, insert):
+        // [KEY IDEA] If characters match: no cost; else take 1 + min(replace, delete, insert):
         if (word1.charAt(i - 1) == word2.charAt(j - 1)) dp[i][j] = dp[i - 1][j - 1];
         else dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));
       }
@@ -869,7 +869,7 @@ markmap:
     int hold = -prices[0], sold = 0, rest = 0;
     for (int i = 1; i < prices.length; i++) {
       int prevSold = sold;
-      // [CRUX] Tri-state machine with mandatory 1-day rest after sell:
+      // [KEY IDEA] Tri-state machine with mandatory 1-day rest after sell:
       sold = hold + prices[i];
       hold = Math.max(hold, rest - prices[i]);
       rest = Math.max(rest, prevSold);
@@ -890,7 +890,7 @@ markmap:
       for (int l = 1; l <= n - len + 1; l++) {
         int r = l + len - 1;
         for (int k = l; k <= r; k++) {
-          // [CRUX] Interval DP: 'k' is chosen as the LAST balloon to burst in [l, r]:
+          // [KEY IDEA] Interval DP: 'k' is chosen as the LAST balloon to burst in [l, r]:
           int coins = arr[l - 1] * arr[k] * arr[r + 1] + dp[l][k - 1] + dp[k + 1][r];
           dp[l][r] = Math.max(dp[l][r], coins);
         }
@@ -907,7 +907,7 @@ markmap:
   public static int hammingWeight(int n) {
     int count = 0;
     while (n != 0) {
-      // [CRUX] n & (n - 1) clears the lowest set bit in O(1):
+      // [KEY IDEA] n & (n - 1) clears the lowest set bit in O(1):
       n &= (n - 1);
       count++;
     }
@@ -919,7 +919,7 @@ markmap:
   public static int singleNumber(int[] nums) {
     int unique = 0;
     for (int num : nums) {
-      // [CRUX] XOR cancellation: x ^ x = 0 leaves only the unique non-paired element:
+      // [KEY IDEA] XOR cancellation: x ^ x = 0 leaves only the unique non-paired element:
       unique ^= num;
     }
     return unique;
@@ -933,7 +933,7 @@ markmap:
     for (int mask = 0; mask < total; mask++) {
       java.util.List<Integer> sub = new java.util.ArrayList<>();
       for (int i = 0; i < n; i++) {
-        // [CRUX] Test if i-th bit is set to include element in current subset:
+        // [KEY IDEA] Test if i-th bit is set to include element in current subset:
         if ((mask & (1 << i)) != 0) sub.add(nums[i]);
       }
       result.add(sub);
@@ -954,7 +954,7 @@ markmap:
   }
   public static long lcm(long a, long b) {
     if (a == 0 || b == 0) return 0;
-    // [CRUX] Divide first by GCD to prevent integer overflow:
+    // [KEY IDEA] Divide first by GCD to prevent integer overflow:
     return (a / gcd(a, b)) * b;
   }
   \`\`\`
@@ -966,7 +966,7 @@ markmap:
     int count = 0;
     for (int i = 2; i * i < n; i++) {
       if (!isComposite[i]) {
-        // [CRUX] Start marking multiples from i * i up to n:
+        // [KEY IDEA] Start marking multiples from i * i up to n:
         for (int j = i * i; j < n; j += i) isComposite[j] = true;
       }
     }
@@ -981,7 +981,7 @@ markmap:
     if (exp < 0) { x = 1.0 / x; exp = -exp; }
     double ans = 1.0;
     while (exp > 0) {
-      // [CRUX] Multiply x when LSB is 1, square x on each bit shift:
+      // [KEY IDEA] Multiply x when LSB is 1, square x on each bit shift:
       if ((exp & 1) == 1) ans *= x;
       x *= x;
       exp >>>= 1;
@@ -1007,7 +1007,7 @@ markmap:
       if (j == needle.length()) {
         return i - j; // Match found at starting index
       } else if (i < haystack.length() && haystack.charAt(i) != needle.charAt(j)) {
-        // [CRUX] On mismatch, backtrack pattern index via LPS table without moving text pointer:
+        // [KEY IDEA] On mismatch, backtrack pattern index via LPS table without moving text pointer:
         if (j != 0) j = lps[j - 1];
         else i++;
       }
@@ -1049,7 +1049,7 @@ markmap:
         if (text.startsWith(pattern, i)) return i; // Exact verification on collision
       }
       if (i < n - m) {
-        // [CRUX] Constant-time rolling hash: subtract old high-order char, shift, add new char:
+        // [KEY IDEA] Constant-time rolling hash: subtract old high-order char, shift, add new char:
         winHash = (winHash - (text.charAt(i) * power) % mod + mod) % mod;
         winHash = (winHash * base + text.charAt(i + m)) % mod;
       }
@@ -1066,7 +1066,7 @@ markmap:
     int l = 0, r = 0; // [l, r] defines current Z-box
 
     for (int i = 1; i < n; i++) {
-      // [CRUX] Reuse precomputed Z-values inside the current [L, R] Z-box:
+      // [KEY IDEA] Reuse precomputed Z-values inside the current [L, R] Z-box:
       if (i <= r) {
         z[i] = Math.min(r - i + 1, z[i - l]);
       }
@@ -1098,7 +1098,7 @@ markmap:
 
     for (int i = 1; i < t.length - 1; i++) {
       int iMirror = 2 * center - i;
-      // [CRUX] Mirror symmetry optimization: borrow radius from mirror across center:
+      // [KEY IDEA] Mirror symmetry optimization: borrow radius from mirror across center:
       if (right > i) p[i] = Math.min(right - i, p[iMirror]);
 
       // Expand around center i
