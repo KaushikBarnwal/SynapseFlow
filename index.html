@@ -96,27 +96,22 @@
       font-family: 'JetBrains Mono', monospace !important;
     }
 
-    /* Crux Line Highlighting: Zero-shift highlight preserving exact indentation */
+    /* Crux Line Highlighting: Zero-shift highlight preserving exact line spacing & indentation */
     .code-crux-card {
-      display: block !important;
-      width: 100% !important;
-      min-width: 100% !important;
+      display: inline !important;
+      background: transparent !important;
+      border: none !important;
       margin: 0 !important;
       padding: 0 !important;
-      background: rgba(56, 189, 248, 0.07) !important;
-      border: none !important;
-      border-radius: 4px !important;
-      box-shadow: none !important;
-      box-sizing: border-box !important;
     }
 
     .crux-comment-line {
-      display: block !important;
-      color: #cbd5e1 !important;
-      font-weight: 600 !important;
+      display: inline !important;
+      color: #94a3b8 !important;
+      font-weight: 500 !important;
       line-height: inherit !important;
       margin: 0 !important;
-      padding: 2px 0 !important;
+      padding: 0 !important;
     }
 
     .crux-comment-line .hljs-comment {
@@ -145,22 +140,20 @@
     }
 
     .crux-statement-line {
-      display: block !important;
+      display: inline !important;
       line-height: inherit !important;
       margin: 0 !important;
-      padding: 1px 0 !important;
+      padding: 1px 2px !important;
+      background: rgba(56, 189, 248, 0.09) !important;
+      border-radius: 3px !important;
     }
 
     .code-crux-standalone {
-      display: block !important;
-      width: 100% !important;
-      min-width: 100% !important;
+      display: inline !important;
       margin: 0 !important;
       padding: 0 !important;
-      background: rgba(250, 204, 21, 0.08) !important;
+      background: transparent !important;
       border: none !important;
-      border-radius: 4px !important;
-      box-sizing: border-box !important;
     }
 
     /* Word/Token-Level Highlight: [hl]...[/hl] */
@@ -2463,7 +2456,6 @@
       codeBlocks.forEach((el) => {
         if (el.dataset.cruxDone) return; // Prevent re-processing same element
         el.dataset.cruxDone = 'true';
-
         if (window.hljs && !el.dataset.highlighted) {
           try { window.hljs.highlightElement(el); } catch (e) {}
         }
@@ -2488,8 +2480,9 @@
               const isComment = plain.startsWith('//') || plain.startsWith('#') || plain.startsWith('/*');
               if (isComment && i + 1 < lines.length && lines[i + 1].trim().length > 0) {
                 const nextLine = lines[i + 1];
-                output.push(`<span class="code-crux-card"><span class="crux-comment-line">${formattedLine}</span><span class="crux-statement-line">${nextLine}</span></span>`);
-                i++; // Skip the next line since it is merged into the card
+                output.push(`<span class="crux-comment-line">${formattedLine}</span>`);
+                output.push(`<span class="crux-statement-line">${nextLine}</span>`);
+                i++; // Skip the next line since it was processed
               } else {
                 output.push(`<span class="code-crux-standalone">${formattedLine}</span>`);
               }
