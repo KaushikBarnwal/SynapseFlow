@@ -18,8 +18,8 @@ markmap:
       int sum = numbers[left] + numbers[right];
       // [CRUX] Inward convergence based on target comparison:
       if (sum == target) return new int[]{left + 1, right + 1}; // 1-based index
-      else if (sum < target) left++; // Need a larger sum
-      else right--; // Need a smaller sum
+      else if (sum < target) [hl]left++[/hl]; // Need a larger sum
+      else [hl]right--[/hl]; // Need a smaller sum
     }
     return new int[]{-1, -1};
   }
@@ -32,8 +32,8 @@ markmap:
       int h = Math.min(height[left], height[right]);
       maxWater = Math.max(maxWater, h * (right - left));
       // [CRUX] Greedy bottleneck elimination: always advance the shorter pillar
-      if (height[left] < height[right]) left++;
-      else right--;
+      if (height[left] < height[right]) [hl]left++[/hl];
+      else [hl]right--[/hl];
     }
     return maxWater;
   }
@@ -107,7 +107,7 @@ markmap:
       if (i >= k - 1) {
         maxSum = Math.max(maxSum, windowSum);
         // [CRUX] Discard leftmost element as window slides:
-        windowSum -= nums[i - k + 1];
+        windowSum -= [hl]nums[i - k + 1][/hl];
       }
     }
     return maxSum;
@@ -124,7 +124,7 @@ markmap:
       char c = s.charAt(right);
       // [CRUX] Jump left pointer past previous occurrence of duplicate:
       if (lastIndex[c] >= left) {
-        left = lastIndex[c] + 1;
+        left = [hl]lastIndex[c] + 1[/hl];
       }
       lastIndex[c] = right;
       maxLen = Math.max(maxLen, right - left + 1);
@@ -141,7 +141,7 @@ markmap:
       // [CRUX] Shrink window from left while target sum is satisfied:
       while (sum >= target) {
         minLen = Math.min(minLen, right - left + 1);
-        sum -= nums[left++];
+        sum -= [hl]nums[left++][/hl];
       }
     }
     return minLen == Integer.MAX_VALUE ? 0 : minLen;
@@ -158,8 +158,8 @@ markmap:
     for (int num : nums) {
       prefixSum += num;
       // [CRUX] If (prefixSum - k) seen before, a valid subarray exists:
-      if (map.containsKey(prefixSum - k)) {
-        count += map.get(prefixSum - k);
+      if (map.containsKey([hl]prefixSum - k[/hl])) {
+        count += map.get([hl]prefixSum - k[/hl]);
       }
       map.put(prefixSum, map.getOrDefault(prefixSum, 0) + 1);
     }
@@ -226,10 +226,9 @@ markmap:
       int mid = low + ((high - low) >>> 1);
       // [CRUX] Feasible mid found: record answer and try smaller capacity:
       if (canShip(weights, days, mid)) {
-        ans = mid;
-        high = mid - 1; // Seek smaller capacity
+        [hl]ans = mid; high = mid - 1;[/hl] // Seek smaller capacity
       } else {
-        low = mid + 1;
+        [hl]low = mid + 1;[/hl]
       }
     }
     return ans;
@@ -554,8 +553,8 @@ markmap:
         if (dist[u] + wt < dist[v]) {
           dist[v] = dist[u] + wt;
           // [CRUX] 0-weight edges pushed to FRONT, 1-weight edges pushed to BACK:
-          if (wt == 0) deque.offerFirst(v);
-          else deque.offerLast(v);
+          if (wt == 0) [hl]deque.offerFirst(v)[/hl];
+          else [hl]deque.offerLast(v)[/hl];
         }
       }
     }
@@ -611,8 +610,8 @@ markmap:
         int v = edge[0], weight = edge[1];
         // [CRUX] Edge relaxation: update dist and push shorter candidate to Min-Heap:
         if (dist[u] + weight < dist[v]) {
-          dist[v] = dist[u] + weight;
-          pq.offer(new int[]{v, dist[v]});
+          dist[v] = [hl]dist[u] + weight[/hl];
+          pq.offer(new int[]{v, [hl]dist[v][/hl]});
         }
       }
     }

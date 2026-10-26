@@ -96,58 +96,84 @@
       font-family: 'JetBrains Mono', monospace !important;
     }
 
-    /* Crux Line Highlighting: Full width continuous highlight with no gap */
+    /* Crux Line Highlighting: Zero-shift highlight preserving exact indentation */
     .code-crux-card {
-      display: inline-block !important;
+      display: block !important;
       width: 100% !important;
       min-width: 100% !important;
       margin: 0 !important;
-      padding: 1px 8px !important;
-      background: rgba(8, 28, 48, 0.75) !important;
-      border-left: 3.5px solid #38bdf8 !important;
+      padding: 0 !important;
+      background: rgba(56, 189, 248, 0.07) !important;
+      border: none !important;
       border-radius: 4px !important;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.12) !important;
+      box-shadow: none !important;
       box-sizing: border-box !important;
-      vertical-align: top !important;
     }
 
     .crux-comment-line {
       display: block !important;
-      color: #fde047 !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.01em !important;
+      color: #cbd5e1 !important;
+      font-weight: 600 !important;
       line-height: inherit !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: 2px 0 !important;
     }
 
     .crux-comment-line .hljs-comment {
-      color: #fde047 !important;
-      font-weight: 700 !important;
+      color: #94a3b8 !important;
+      font-weight: 500 !important;
+    }
+
+    /* Crux Educational Badge: replaces raw [CRUX] text */
+    .crux-pill {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 9.5px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      padding: 1px 6px !important;
+      margin-right: 6px !important;
+      border-radius: 999px !important;
+      background: rgba(250, 204, 21, 0.16) !important;
+      border: 1px solid rgba(250, 204, 21, 0.38) !important;
+      color: #facc15 !important;
+      vertical-align: 1px !important;
+      user-select: none !important;
     }
 
     .crux-statement-line {
       display: block !important;
-      color: #7dd3fc !important;
-      font-weight: 600 !important;
       line-height: inherit !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: 1px 0 !important;
     }
 
     .code-crux-standalone {
-      display: inline-block !important;
+      display: block !important;
       width: 100% !important;
       min-width: 100% !important;
       margin: 0 !important;
-      padding: 1px 8px !important;
-      background: rgba(250, 204, 21, 0.12) !important;
-      border-left: 3.5px solid #facc15 !important;
+      padding: 0 !important;
+      background: rgba(250, 204, 21, 0.08) !important;
+      border: none !important;
       border-radius: 4px !important;
-      color: #fde047 !important;
-      font-weight: 700 !important;
       box-sizing: border-box !important;
-      vertical-align: top !important;
+    }
+
+    /* Word/Token-Level Highlight: [hl]...[/hl] */
+    .code-hl-token {
+      background: rgba(56, 189, 248, 0.22) !important;
+      color: #38bdf8 !important;
+      border-bottom: 1.5px solid #38bdf8 !important;
+      border-radius: 3px !important;
+      padding: 1px 4px !important;
+      margin: 0 1px !important;
+      font-weight: 700 !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3) !important;
+      display: inline !important;
     }
 
     .crux-tag {
@@ -2441,6 +2467,13 @@
         if (window.hljs && !el.dataset.highlighted) {
           try { window.hljs.highlightElement(el); } catch (e) {}
         }
+
+        // 1. Process Word/Token-level highlighting: [hl]target[/hl]
+        if (el.innerHTML.includes('[hl]')) {
+          el.innerHTML = el.innerHTML.replace(/\[hl\]([\s\S]*?)\[\/hl\]/g, '<span class="code-hl-token">$1</span>');
+        }
+
+        // 2. Process [CRUX] / [KEY] markers
         if (el.innerHTML.includes('[CRUX]') || el.innerHTML.includes('[KEY]')) {
           const lines = el.innerHTML.split('\n');
           const output = [];
@@ -2448,14 +2481,17 @@
             const line = lines[i];
             const isCrux = line.includes('[CRUX]') || line.includes('[KEY]');
             if (isCrux) {
+              const formattedLine = line
+                .replace(/\[CRUX\]/g, '<span class="crux-pill">⚡ CRUX</span>')
+                .replace(/\[KEY\]/g, '<span class="crux-pill">💡 KEY</span>');
               const plain = line.replace(/<[^>]*>/g, '').trim();
-              const isComment = plain.startsWith('//') || plain.startsWith('/*');
+              const isComment = plain.startsWith('//') || plain.startsWith('#') || plain.startsWith('/*');
               if (isComment && i + 1 < lines.length && lines[i + 1].trim().length > 0) {
                 const nextLine = lines[i + 1];
-                output.push(`<span class="code-crux-card"><span class="crux-comment-line">${line}</span><span class="crux-statement-line">${nextLine}</span></span>`);
+                output.push(`<span class="code-crux-card"><span class="crux-comment-line">${formattedLine}</span><span class="crux-statement-line">${nextLine}</span></span>`);
                 i++; // Skip the next line since it is merged into the card
               } else {
-                output.push(`<span class="code-crux-standalone">${line}</span>`);
+                output.push(`<span class="code-crux-standalone">${formattedLine}</span>`);
               }
             } else {
               output.push(line);
